@@ -1,0 +1,14 @@
+---
+:resources:
+- :name: user
+  :keys:
+  - :name: name
+    :type: &1 !ruby/class 'String'
+  - :name: email
+    :type: *1
+- :name: admin
+  :keys:
+  - :name: name
+    :type: *1
+  - :name: email
+    :type: *1

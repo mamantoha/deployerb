@@ -1,0 +1,12 @@
+base: &base
+  adapter: mongodb
+  database: deployd
+  # These are needed to authenticate with your db
+  # should it run on another server
+  # host: localhost
+  # port: 27017
+  # username:
+  # password:
+
+development:
+  <<: *base
