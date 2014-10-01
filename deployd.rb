@@ -19,6 +19,9 @@ module Deployd
       set :root, (settings.root || File.dirname(__FILE__))
       set :config_file, YAML.load(File.read(File.expand_path('config/config.yml', File.dirname(__FILE__))))
 
+      # enable the POST _method hack
+      use Rack::MethodOverride
+
       $logger = Logger.new(STDOUT)
     end
 

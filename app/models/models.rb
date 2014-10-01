@@ -27,10 +27,11 @@ module Deployd
     #   key_type - Class object
     #
     def self.add_key(class_name, key_name, key_type)
-      class_name.constantize.send :key, key_name, key_type
+      key = class_name.constantize.key(key_name, key_type)
+    end
 
-      # attr_accessible allows to specify a whitelist of keys that can be set when using mass-assignment
-      class_name.constantize.send :attr_accessible, key_name
+    def self.remove_key(class_name, key_name)
+      class_name.constantize.remove_key(key_name)
     end
 
     def self.initialize_from_config_file!
