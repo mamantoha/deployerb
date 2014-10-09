@@ -31,7 +31,6 @@ module Deployd
         @member_route = "/#{route_key}/:id/?"
 
         set_content_type(:json)
-        set_not_found
       end
 
       def resource_name
@@ -60,12 +59,6 @@ module Deployd
       def set_content_type(type)
         Deployd::Application.send :before, /^\/#{route_key}(\/)?(.)*/ do
           content_type type
-        end
-      end
-
-      def set_not_found
-        Deployd::Application.send :not_found do
-          { status: 'error', data: 'Page not found' }.to_json
         end
       end
 

@@ -37,6 +37,11 @@ module Deployd
       $logger = Logger.new(STDOUT)
     end
 
+    not_found do
+      content_type :json
+      { status: 'error', data: 'Page not found' }.to_json
+    end
+
     register Sinatra::Namespace
   end
 end
