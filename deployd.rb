@@ -11,12 +11,23 @@ Slim::Engine.set_default_options :pretty => true
 
 module Deployd
   class Application < Sinatra::Base
+    def self.load_or_initialize_config_file
+      File.open(File.expand_path('config/config.yml', settings.root), 'a+') do |f|
+        config = YAML.load(f)
+        unless config # config file empty
+          config = { resources: [] }.to_yaml
+          f.write config
+        end
+      end
+      YAML.load(File.open(File.expand_path('config/config.yml', settings.root)))
+    end
+
     configure do
       set :logging, true
       set :views, 'app/views'
       set :public_folder, 'public'
       set :root, (settings.root || File.dirname(__FILE__))
-      set :config_file, YAML.load(File.open(File.expand_path('config/config.yml', File.dirname(__FILE__))))
+      set :config_file, load_or_initialize_config_file
 
       # enable the POST _method hack
       use Rack::MethodOverride
@@ -27,7 +38,6 @@ module Deployd
     end
 
     register Sinatra::Namespace
-    Rack::Webconsole.inject_jquery = true
   end
 end
 

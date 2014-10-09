@@ -36,7 +36,6 @@ module Deployd
       end
     end
 
-
   end
 end
 
