@@ -132,7 +132,7 @@ module Deployd
         if instance_variable_get(:"@#{resource_name}")
           { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
         else
-          { status: 'error', data: "No #{resource_name}" }.to_json
+          { status: 'error', data: "No #{resource_name.singularize}" }.to_json
         end
       end
 
@@ -151,7 +151,7 @@ module Deployd
             instance_variable_get(:"@#{resource_name}").reload
             { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
           else
-            { status: 'error', data: "No #{resource_name}" }.to_json
+            { status: 'error', data: "No #{resource_name.singularize}" }.to_json
           end
         rescue Exception => e
           { status: 'error', data: e.message }.to_json
@@ -169,7 +169,7 @@ module Deployd
             instance_variable_get(:"@#{resource_name}").destroy
             { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
           else
-            { status: 'error', data: "No #{resource_name}" }.to_json
+            { status: 'error', data: "No #{resource_name.singularize}" }.to_json
           end
         rescue Exception => e
           { status: 'error', data: e.message }.to_json
