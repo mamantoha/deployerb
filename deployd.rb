@@ -22,6 +22,8 @@ module Deployd
       # enable the POST _method hack
       use Rack::MethodOverride
 
+      use Rack::Static, :urls => ['/bootstrap-3.2.0-dist'], :root => 'public'
+
       $logger = Logger.new(STDOUT)
     end
 
