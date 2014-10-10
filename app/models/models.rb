@@ -14,6 +14,18 @@ module Deployd
       klass = Object.const_set(class_name, Class.new)
       klass.class_eval do
         include MongoMapper::Document
+
+        attr_accessor :serializable_keys
+
+        @@serializable_keys = [:id]
+
+        def self.serializable_keys
+          @@serializable_keys
+        end
+
+        def serializable_hash(options = {})
+          super({ only: @@serializable_keys }.merge(options))
+        end
       end
     end
 
@@ -28,10 +40,12 @@ module Deployd
     #
     def self.add_key(class_name, key_name, key_type)
       key = class_name.constantize.key(key_name, key_type)
+      class_name.constantize.serializable_keys << key_name.to_sym
     end
 
     def self.remove_key(class_name, key_name)
       class_name.constantize.remove_key(key_name)
+      class_name.constantize.serializable_keys.delete(key_name.to_sym)
     end
 
     def self.initialize_from_config_file!
