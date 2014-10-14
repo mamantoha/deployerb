@@ -9,5 +9,6 @@ gem 'sinatra-flash'
 
 gem 'slim'
 
-gem 'mongo_mapper'
+# TODO switch back when my changes will be in the main branch of Mongomapper https://github.com/mongomapper/mongomapper/pull/585
+gem 'mongo_mapper', path: '../mongomapper'
 gem 'bson_ext'
