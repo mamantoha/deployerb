@@ -7,10 +7,10 @@ module Deployd
     # create MongoMapper::Document class
     #
     # params:
-    #   class_name - UpperCamelCase string
+    #   resource_name - String
     #
-    def self.new(class_name)
-      class_name = class_name.classify
+    def self.new(resource_name)
+      class_name = resource_name.classify
       klass = Object.const_set(class_name, Class.new)
       klass.class_eval do
         include MongoMapper::Document
@@ -26,6 +26,18 @@ module Deployd
         def serializable_hash(options = {})
           super({ only: @@serializable_keys }.merge(options))
         end
+      end
+    end
+
+    # remove MongoMapper::Document class
+    #
+    # params:
+    #   resource_name - String
+    #
+    def self.remove(resource_name)
+      class_name = resource_name.classify
+      if Object.constants.include?(class_name.to_sym)
+        Object.send(:remove_const, class_name.to_sym)
       end
     end
 

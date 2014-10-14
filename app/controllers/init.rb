@@ -26,6 +26,18 @@ module Deployd
       instance_variable_get(:"@#{resource_name.pluralize}_controller").mount_actions
     end
 
+    # params:
+    #   resource_name - String
+    #
+    def self.remove(resource_name)
+      class_name = "#{resource_name.classify.pluralize}Controller"
+      klass = "Deployd::Controllers::#{class_name}".constantize
+      @generated_classes.delete(klass)
+      if Deployd::Controllers.constants.include?(class_name.to_sym)
+        Deployd::Controllers.send(:remove_const, class_name.to_sym)
+      end
+    end
+
     def self.initialize_from_config_file!
       # read resources from config file
       resources = Deployd::Application::settings.config_file[:resources]
