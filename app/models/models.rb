@@ -10,7 +10,7 @@ module Deployd
     #   resource_name - String
     #
     def self.new(resource_name)
-      class_name = resource_name.classify
+      class_name = resource_name.singularize.classify
       klass = Object.const_set(class_name, Class.new)
       klass.class_eval do
         include MongoMapper::Document
@@ -35,7 +35,7 @@ module Deployd
     #   resource_name - String
     #
     def self.remove(resource_name)
-      class_name = resource_name.classify
+      class_name = resource_name.singularize.classify
       if Object.constants.include?(class_name.to_sym)
         Object.send(:remove_const, class_name.to_sym)
       end
@@ -46,16 +46,18 @@ module Deployd
     # Keys are named and type-cast so you know your data is stored in the correct format.
     #
     # params:
-    #   class_name - UpperCamelCase string
+    #   resource_name - String
     #   key_name - Symbol
     #   key_type - Class object
     #
-    def self.add_key(class_name, key_name, key_type)
+    def self.add_key(resource_name, key_name, key_type)
+      class_name = resource_name.singularize.classify
       key = class_name.constantize.key(key_name, key_type)
       class_name.constantize.serializable_keys << key_name.to_sym
     end
 
-    def self.remove_key(class_name, key_name)
+    def self.remove_key(resource_name, key_name)
+      class_name = resource_name.singularize.classify
       class_name.constantize.remove_key(key_name)
       class_name.constantize.serializable_keys.delete(key_name.to_sym)
     end
@@ -64,11 +66,10 @@ module Deployd
       resources = Deployd::Application.settings.config_file[:resources]
 
       resources.each do |res|
-        class_name = res[:name].classify
-        Deployd::Models::new(class_name)
+        Deployd::Models::new(res[:name])
 
         res[:keys].each do |key|
-          Deployd::Models::add_key(class_name, key[:name].to_sym, key[:type])
+          Deployd::Models::add_key(res[:name], key[:name].to_sym, key[:type])
         end
       end
 
