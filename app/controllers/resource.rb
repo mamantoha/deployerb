@@ -31,6 +31,7 @@ module Deployd
         @member_route = "/#{route_key}/:id/?"
 
         set_content_type(:json)
+        require_resource!(resource_name)
       end
 
       def resource_name
@@ -59,6 +60,17 @@ module Deployd
       def set_content_type(type)
         Deployd::Application.send :before, /^\/#{route_key}(\/)?(.)*/ do
           content_type type
+        end
+      end
+
+      # return 404 if Deployd::Controlles::%ModelName%sController not found in application
+      # TODO try to find better solution to remove routes in real time
+      def require_resource!(resource_name)
+        Deployd::Application.send :before, /^\/#{route_key}(\/)?(.)*/ do
+          class_name = "#{resource_name.singularize.classify.pluralize}Controller"
+          unless Deployd::Controllers.constants.include?(class_name.to_sym)
+            halt(404, { status: 'error', data: 'Page not found' }.to_json)
+          end
         end
       end
 
