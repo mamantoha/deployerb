@@ -51,10 +51,15 @@ module Deployd
         key_name = params[:name]
         key_type = params[:type]
 
-        if @resources && @resources.detect { |r| r[:name] == resource_name }
-          Deployd::Models::add_key(resource_name, key_name.to_sym, key_type.constantize)
+        # Validations
+        required = params[:required] ? true : false
+        unique = params[:unique] ? true : false
+        options = { required: required, unique: unique }
 
-          @resources.detect { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize }
+        if @resources && @resources.detect { |r| r[:name] == resource_name }
+          Deployd::Models::add_key(resource_name, key_name.to_sym, key_type.constantize, options)
+
+          @resources.detect { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options }
           File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
             f.write settings.config_file.to_yaml
           end

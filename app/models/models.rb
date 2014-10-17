@@ -45,14 +45,24 @@ module Deployd
     # Each document is made up of keys.
     # Keys are named and type-cast so you know your data is stored in the correct format.
     #
+    # The available options when defining keys are:
+    #   * :required
+    #   * :unique
+    #   * :numeric (not supported)
+    #   * :format (not supported)
+    #   * :in (not supported)
+    #   * :not_in (not supported)
+    #   * :length (not supported)
+    #
     # params:
     #   resource_name - String
     #   key_name - Symbol
     #   key_type - Class object
+    #   options - Hash
     #
-    def self.add_key(resource_name, key_name, key_type)
+    def self.add_key(resource_name, key_name, key_type, options = { required: false, unique: false })
       class_name = resource_name.singularize.classify
-      key = class_name.constantize.key(key_name, key_type)
+      key = class_name.constantize.key(key_name, key_type, options)
       class_name.constantize.serializable_keys << key_name.to_sym
     end
 
@@ -69,7 +79,7 @@ module Deployd
         Deployd::Models::new(res[:name])
 
         res[:keys].each do |key|
-          Deployd::Models::add_key(res[:name], key[:name].to_sym, key[:type])
+          Deployd::Models::add_key(res[:name], key[:name].to_sym, key[:type], key[:options])
         end
       end
 
