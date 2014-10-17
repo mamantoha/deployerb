@@ -116,21 +116,6 @@ module Deployd
       # params:
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
-      def create(context)
-        permitted_params = resource_keys.map{ |k| k[:name] }
-        permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
-
-        begin
-          instance_variable_set(:"@#{resource_name.pluralize}", resource_name.classify.constantize.create(permitted_params))
-          { status: 'ok', data: instance_variable_get(:"@#{resource_name.pluralize}") }.to_json
-        rescue Exception => e
-          { status: 'error', data: e.message }.to_json
-        end
-      end
-
-      # params:
-      #   context - the instance (not the class of Deployd::Application for this controller)
-      #
       def show(context)
         set_resource(context.params[:id])
 
@@ -138,6 +123,26 @@ module Deployd
           { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
         else
           { status: 'error', data: "No #{resource_name.singularize}" }.to_json
+        end
+      end
+
+      # params:
+      #   context - the instance (not the class of Deployd::Application for this controller)
+      #
+      def create(context)
+        permitted_params = resource_keys.map{ |k| k[:name] }
+        permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
+
+        begin
+          instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.new(permitted_params))
+          if instance_variable_get(:"@#{resource_name}").save
+            { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
+          else
+            errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}"}.join('; ')
+            { status: 'error', data: errors }.to_json
+          end
+        rescue Exception => e
+          { status: 'error', data: e.message }.to_json
         end
       end
 
@@ -152,9 +157,13 @@ module Deployd
             permitted_params = resource_keys.map{ |k| k[:name] }
             permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
 
-            instance_variable_get(:"@#{resource_name}").set(permitted_params)
-            instance_variable_get(:"@#{resource_name}").reload
-            { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
+            if instance_variable_get(:"@#{resource_name}").update_attributes(permitted_params)
+              instance_variable_get(:"@#{resource_name}").reload
+              { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
+            else
+              errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}"}.join('; ')
+              { status: 'error', data: errors }.to_json
+            end
           else
             { status: 'error', data: "No #{resource_name.singularize}" }.to_json
           end
