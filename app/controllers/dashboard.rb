@@ -65,7 +65,7 @@ module Deployd
           end
 
           @resource = resource_name.classify.constantize
-          slim :show
+          redirect "/dashboard/resources/#{resource_name}"
         else
           redirect '/dashboard/resources'
         end
