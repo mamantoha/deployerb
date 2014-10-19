@@ -35,6 +35,7 @@ module Deployd
       #
       get '/resources/:resource_name' do
         @resource_name = params[:resource_name]
+        @route_key = @resource_name.pluralize
 
         if @resources && @resources.detect { |r| r[:name] == @resource_name }
           @resource = @resource_name.classify.constantize

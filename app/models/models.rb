@@ -15,16 +15,14 @@ module Deployd
       klass.class_eval do
         include MongoMapper::Document
 
-        attr_accessor :serializable_keys
+        class << self; attr_accessor :serializable_keys end
 
-        @@serializable_keys = [:id]
+        @serializable_keys = [:id]
 
-        def self.serializable_keys
-          @@serializable_keys
-        end
 
         def serializable_hash(options = {})
-          super({ only: @@serializable_keys }.merge(options))
+          serializable_keys = self.class.serializable_keys
+          super({ only: serializable_keys }.merge(options))
         end
       end
     end
