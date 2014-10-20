@@ -7,7 +7,7 @@ require 'slim'
 require 'mongo_mapper'
 require 'logger'
 
-Slim::Engine.set_default_options :pretty => true
+Slim::Engine.set_default_options pretty: true
 
 module Deployd
   class Application < Sinatra::Base
@@ -32,7 +32,7 @@ module Deployd
       # enable the POST _method hack
       use Rack::MethodOverride
 
-      use Rack::Static, :urls => ['/bootstrap-3.2.0-dist'], :root => 'public'
+      use Rack::Static, urls: ['/bootstrap-3.2.0-dist'], root: 'public'
 
       $logger = Logger.new(STDOUT)
     end

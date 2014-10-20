@@ -18,8 +18,8 @@ module Deployd
       post '/resources' do
         resource_name = params[:name].downcase.singularize
 
-        Deployd::Models::new(resource_name)
-        Deployd::Controllers::new(resource_name)
+        Deployd::Models.new(resource_name)
+        Deployd::Controllers.new(resource_name)
 
         @resources << { name: resource_name, keys: [] }
         File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
@@ -37,7 +37,7 @@ module Deployd
         @resource_name = params[:resource_name]
         @route_key = @resource_name.pluralize
 
-        if @resources && @resources.detect { |r| r[:name] == @resource_name }
+        if @resources && @resources.find { |r| r[:name] == @resource_name }
           @resource = @resource_name.classify.constantize
           slim :'/resources/show'
         else
@@ -50,11 +50,11 @@ module Deployd
       delete '/resources/:resource_name' do
         resource_name = params[:resource_name]
 
-        if @resources && @resources.detect { |r| r[:name] == resource_name }
-          Deployd::Models::remove(resource_name)
-          Deployd::Controllers::remove(resource_name)
+        if @resources && @resources.find { |r| r[:name] == resource_name }
+          Deployd::Models.remove(resource_name)
+          Deployd::Controllers.remove(resource_name)
 
-          @resources.delete_if{ |r| r[:name] == resource_name }
+          @resources.delete_if { |r| r[:name] == resource_name }
           File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
             f.write settings.config_file.to_yaml
           end
@@ -77,10 +77,10 @@ module Deployd
         unique = params[:unique] ? true : false
         options = { required: required, unique: unique }
 
-        if @resources && @resources.detect { |r| r[:name] == resource_name }
-          Deployd::Models::add_key(resource_name, key_name.to_sym, key_type.constantize, options)
+        if @resources && @resources.find { |r| r[:name] == resource_name }
+          Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options)
 
-          @resources.detect { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options }
+          @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options }
           File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
             f.write settings.config_file.to_yaml
           end
@@ -100,8 +100,8 @@ module Deployd
         resource_name = params[:resource_name]
         key_name = params[:key_name]
 
-        if @resources && @resources.detect { |r| r[:name] == resource_name }
-          Deployd::Models::remove_key(resource_name, key_name.to_sym)
+        if @resources && @resources.find { |r| r[:name] == resource_name }
+          Deployd::Models.remove_key(resource_name, key_name.to_sym)
 
           @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
           File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
@@ -121,7 +121,7 @@ module Deployd
         @resource_name = params[:resource_name]
         @key_name = params[:key_name]
 
-        if @resources && @resources.detect { |r| r[:name] == @resource_name }
+        if @resources && @resources.find { |r| r[:name] == @resource_name }
           @resource = @resource_name.classify.constantize
           @key = @resource.keys.select { |k| k[@key_name] }[@key_name]
         end
@@ -142,13 +142,13 @@ module Deployd
         unique = params[:unique] ? true : false
         options = { required: required, unique: unique }
 
-        if @resources && @resources.detect { |r| r[:name] == resource_name }
+        if @resources && @resources.find { |r| r[:name] == resource_name }
           # change type and/or options, remove key and add new
-          Deployd::Models::remove_key(resource_name, key_name.to_sym)
-          Deployd::Models::add_key(resource_name, key_name.to_sym, key_type.constantize, options)
+          Deployd::Models.remove_key(resource_name, key_name.to_sym)
+          Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options)
 
           @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
-          @resources.detect { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options }
+          @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options }
 
           File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
             f.write settings.config_file.to_yaml
@@ -157,10 +157,7 @@ module Deployd
 
           redirect "/dashboard/resources/#{resource_name}"
         end
-
       end
-
-
     end
   end
 end

@@ -1,3 +1,3 @@
 require_relative 'models'
 
-Deployd::Models::initialize_from_config_file!
+Deployd::Models.initialize_from_config_file!

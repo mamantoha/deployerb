@@ -40,15 +40,14 @@ module Deployd
 
     def self.initialize_from_config_file!
       # read resources from config file
-      resources = Deployd::Application::settings.config_file[:resources]
+      resources = Deployd::Application.settings.config_file[:resources]
 
       # create classes for resources
       resources.each do |resource|
-        Deployd::Controllers::new(resource[:name], resource[:keys])
+        Deployd::Controllers.new(resource[:name], resource[:keys])
       end
     end
-
   end
 end
 
-Deployd::Controllers::initialize_from_config_file!
+Deployd::Controllers.initialize_from_config_file!

@@ -3,12 +3,14 @@ module Deployd
     module Resource
       extend ActiveSupport::Concern
 
+      attr_reader :resource_name, :resource_class
+
       DEFAULT_ACTIONS = {
         index:   { method: :get,    type: :collection },
         show:    { method: :get,    type: :member     },
         create:  { method: :post,   type: :collection },
         update:  { method: :put,    type: :member     },
-        destroy: { method: :delete, type: :member     },
+        destroy: { method: :delete, type: :member     }
       }
 
       included do
@@ -23,7 +25,7 @@ module Deployd
 
       def initialize(resource_name, resource_keys = [])
         @resource_class = resource_name.classify.constantize
-        raise TypeError.new("wrong argument type #{@resource_class.name} (expected MongoMapper::Document)") unless @resource_class.include?(MongoMapper::Document)
+        fail TypeError, "wrong argument type #{@resource_class.name} (expected MongoMapper::Document)" unless @resource_class.include?(MongoMapper::Document)
 
         @resource_name = resource_name
         @resource_keys = resource_keys
@@ -34,18 +36,10 @@ module Deployd
         require_resource!(resource_name)
       end
 
-      def resource_name
-        @resource_name
-      end
-
-      def resource_class
-        @resource_class
-      end
-
       def resource_keys
         keys = []
         resource_class.keys.each do |_, key|
-          if key.name != '_id' and !key.dynamic?
+          if key.name != '_id' && !key.dynamic?
             keys << { name: key.name, type: key.type }
           end
         end
@@ -58,7 +52,7 @@ module Deployd
       end
 
       def set_content_type(type)
-        Deployd::Application.send :before, /^\/#{route_key}(\/)?(.)*/ do
+        Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
           content_type type
         end
       end
@@ -66,7 +60,7 @@ module Deployd
       # return 404 if Deployd::Controlles::%ModelName%sController not found in application
       # TODO try to find better solution to remove routes in real time
       def require_resource!(resource_name)
-        Deployd::Application.send :before, /^\/#{route_key}(\/)?(.)*/ do
+        Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
           class_name = "#{resource_name.singularize.classify.pluralize}Controller"
           unless Deployd::Controllers.constants.include?(class_name.to_sym)
             halt(404, { status: 'error', data: 'Page not found' }.to_json)
@@ -83,7 +77,7 @@ module Deployd
       #           Since :delete wasn't listed, a route for it will not be generated.
       #
       def mount_default_actions(actions)
-        raise TypeError.new("wrong argument type #{actions.class.name} (expected Array)") unless actions.is_a?(Array)
+        fail TypeError, "wrong argument type #{actions.class.name} (expected Array)" unless actions.is_a?(Array)
 
         actions.each do |action|
           create_route_for(action)
@@ -103,11 +97,11 @@ module Deployd
       # params:
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
-      def index(context)
+      def index(_context)
         instance_variable_set(:"@#{resource_name.pluralize}", resource_name.classify.constantize.all)
 
         if instance_variable_get(:"@#{resource_name.pluralize}").empty?
-          { status: 'error', data: "No #{resource_name.pluralize }"}.to_json
+          { status: 'error', data: "No #{resource_name.pluralize }" }.to_json
         else
           { status: 'ok', data: instance_variable_get(:"@#{resource_name.pluralize}") }.to_json
         end
@@ -130,7 +124,7 @@ module Deployd
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def create(context)
-        permitted_params = resource_keys.map{ |k| k[:name] }
+        permitted_params = resource_keys.map { |k| k[:name] }
         permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
 
         begin
@@ -138,10 +132,10 @@ module Deployd
           if instance_variable_get(:"@#{resource_name}").save
             { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
           else
-            errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}"}.join('; ')
+            errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
             { status: 'error', data: errors }.to_json
           end
-        rescue Exception => e
+        rescue StandardError => e
           { status: 'error', data: e.message }.to_json
         end
       end
@@ -154,20 +148,20 @@ module Deployd
 
         begin
           if instance_variable_get(:"@#{resource_name}")
-            permitted_params = resource_keys.map{ |k| k[:name] }
+            permitted_params = resource_keys.map { |k| k[:name] }
             permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
 
             if instance_variable_get(:"@#{resource_name}").update_attributes(permitted_params)
               instance_variable_get(:"@#{resource_name}").reload
               { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
             else
-              errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}"}.join('; ')
+              errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
               { status: 'error', data: errors }.to_json
             end
           else
             { status: 'error', data: "No #{resource_name.singularize}" }.to_json
           end
-        rescue Exception => e
+        rescue StandardError => e
           { status: 'error', data: e.message }.to_json
         end
       end
@@ -185,7 +179,7 @@ module Deployd
           else
             { status: 'error', data: "No #{resource_name.singularize}" }.to_json
           end
-        rescue Exception => e
+        rescue StandardError => e
           { status: 'error', data: e.message }.to_json
         end
       end
@@ -197,7 +191,6 @@ module Deployd
       def set_resource(id)
         instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.find(id))
       end
-
     end
   end
 end

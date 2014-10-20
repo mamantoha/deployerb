@@ -4,7 +4,7 @@ module Deployd
       include Deployd::Controllers::Resource
 
       def mount_actions
-        raise 'please implement #mount_actions'
+        fail 'please implement #mount_actions'
       end
     end
   end

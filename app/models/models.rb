@@ -1,6 +1,5 @@
 module Deployd
   module Models
-
     # http://mongomapper.com/documentation/documents/types.html
     AVAILABLE_TYPES = [Array, Float, Hash, Integer, NilClass, Object, String, Time, Binary, Boolean, Date, ObjectId, Set]
 
@@ -18,7 +17,6 @@ module Deployd
         class << self; attr_accessor :serializable_keys end
 
         @serializable_keys = [:id]
-
 
         def serializable_hash(options = {})
           serializable_keys = self.class.serializable_keys
@@ -60,7 +58,7 @@ module Deployd
     #
     def self.add_key(resource_name, key_name, key_type, options = { required: false, unique: false })
       class_name = resource_name.singularize.classify
-      key = class_name.constantize.key(key_name, key_type, options)
+      class_name.constantize.key(key_name, key_type, options)
       class_name.constantize.serializable_keys << key_name.to_sym
     end
 
@@ -74,13 +72,12 @@ module Deployd
       resources = Deployd::Application.settings.config_file[:resources]
 
       resources.each do |res|
-        Deployd::Models::new(res[:name])
+        Deployd::Models.new(res[:name])
 
         res[:keys].each do |key|
-          Deployd::Models::add_key(res[:name], key[:name].to_sym, key[:type], key[:options])
+          Deployd::Models.add_key(res[:name], key[:name].to_sym, key[:type], key[:options])
         end
       end
-
     end
   end
 end
