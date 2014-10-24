@@ -1,0 +1,40 @@
+ol class='breadcrumb'
+  li
+    a href='/dashboard/resources' Resources
+  li
+    a href="/dashboard/resources/#{@resource_name}"= @resource_name
+  li class='active'= @key.name
+
+div class='panel panel-primary'
+  div class='panel-heading'
+    h3 class='panel-title' Edit key
+  div class='panel-body'
+    form role='form' id='edit' style='display:inline!important;' method='post' action="#"
+      input name='_method' value='put' type='hidden'
+      div.form-group
+        select.form-control name='type'
+          option value="Type" disabled=true Type
+          - Deployd::Models::AVAILABLE_TYPES.each do |type|
+            - if type == @key.type
+              option value="#{type}" selected=true = type
+            - else
+              option value="#{type}"= type
+      div.checkbox
+        label
+          - if @key.options[:required]
+            input type='checkbox' name='required' checked="checked" Required
+          - else
+            input type='checkbox' name='required' Required
+      div.checkbox
+        label
+          - if @key.options[:unique]
+            input type='checkbox' name='unique' checked="checked" Unique
+          - else
+            input type='checkbox' name='unique' Unique
+      div.form-group
+        button type='submit' class='btn btn-primary'
+          span class='glyphicon glyphicon-floppy-disk'
+          | Save
+        button type='reset' class='btn btn-default'
+          | Reset
+

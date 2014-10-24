@@ -1,0 +1,35 @@
+ol class='breadcrumb'
+  li class='active' Resources
+
+div class='panel panel-primary'
+  div class='panel-heading'
+    h3 class='panel-title' Add resource
+  div class='panel-body'
+    form class='form-inline' role='form' action='#' method='post'
+      div.form-group
+        label class='sr-only' for='name' Name
+        input.form-control id='name' name='name' placeholder='Enter name of new resource'
+      div.form-group
+        button type='submit' class='btn btn-primary' Submit
+        button type='reset' class='btn btn-default' Reset
+
+div class='panel panel-default'
+  div class='panel-heading'
+    h3 class='panel-title' Resources
+
+  table class='table table-hover'
+    thead
+      tr
+        th Name
+        th
+    tbody
+      - @resources.each do |resource|
+        tr
+          td
+            a href="resources/#{resource[:name]}"= resource[:name]
+          td class='col-md-1'
+            span.actions
+              form onsubmit="return confirm('Are you sure you want to delete?');" id='delete' style='display:inline!important;' method='post' action="/dashboard/resources/#{resource[:name].underscore}"
+                input name='_method' value='delete' type='hidden'
+                button type='submit' class='btn btn-danger btn-xs'
+                  span class='glyphicon glyphicon-remove'

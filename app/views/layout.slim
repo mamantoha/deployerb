@@ -1,0 +1,28 @@
+doctype html
+html
+  head
+    meta charset='utf-8'
+    title Deployerb
+    link href='/bootstrap-3.2.0-dist/css/bootstrap.min.css' media='screen' rel='stylesheet' type='text/css'
+    // link href='/bootstrap-3.2.0-dist/css/bootstrap-theme.min.css' media='screen' rel='stylesheet' type='text/css'
+    link href='/deployd.css' media='screen' rel='stylesheet' type='text/css'
+  body
+    div class='navbar navbar-default navbar-static-top' role='navigation'
+      div.container
+        div.navbar-header
+          a class='navbar-brand' href='/'
+            strong Deployerb
+            sup αλφα
+        div class='navbar-collapse collapse'
+          ul class='nav navbar-nav navbar-right'
+            li
+              a href='#' About
+    div.container
+      == yield
+    div.footer
+      div.container
+        p.text-mutted
+         a href="https://github.com/mamantoha/deployerb" target='_blank' Deployerb
+         |  © 2014
+    script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
+    script src="/bootstrap-3.2.0-dist/js/bootstrap.min.js"
