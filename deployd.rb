@@ -3,6 +3,7 @@ require 'pp'
 require 'active_support/core_ext/string'
 require 'sinatra/base'
 require 'sinatra/namespace'
+require 'sinatra/flash'
 require 'slim'
 require 'mongo_mapper'
 require 'logger'
@@ -32,6 +33,7 @@ module Deployd
       # enable the POST _method hack
       use Rack::MethodOverride
 
+
       use Rack::Static, urls: ['/bootstrap-3.2.0-dist'], root: 'public'
 
       $logger = Logger.new(STDOUT)
@@ -42,10 +44,14 @@ module Deployd
       { status: 'error', data: 'Page not found' }.to_json
     end
 
+    enable :sessions
+
     register Sinatra::Namespace
+    register Sinatra::Flash
   end
 end
 
+require_relative 'lib/sinatra-flash'
 require_relative 'lib/initializers/mongo'
 require_relative 'app/models/init'
 require_relative 'app/controllers/init'

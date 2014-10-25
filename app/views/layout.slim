@@ -18,6 +18,8 @@ html
             li
               a href='#' About
     div.container
+      - if flash
+        == styled_flash
       == yield
     div.footer
       div.container

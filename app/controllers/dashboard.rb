@@ -26,6 +26,7 @@ module Deployd
           f.write settings.config_file.to_yaml
         end
 
+        flash[:info] = 'New document successfully added.'
         redirect '/dashboard/resources'
       end
 
@@ -58,6 +59,7 @@ module Deployd
           File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
             f.write settings.config_file.to_yaml
           end
+          flash[:info] = 'Document successfully removed.'
           redirect '/dashboard/resources'
         else
           redirect '/dashboard/resources'
@@ -86,6 +88,7 @@ module Deployd
           end
 
           @resource = resource_name.classify.constantize
+          flash[:info] = 'New key successfully added.'
           redirect "/dashboard/resources/#{resource_name}"
         else
           redirect '/dashboard/resources'
@@ -109,6 +112,7 @@ module Deployd
           end
           @resource = resource_name.classify.constantize
 
+          flash[:info] = 'Key successfully removed.'
           redirect "/dashboard/resources/#{resource_name}"
         end
       end
@@ -155,6 +159,7 @@ module Deployd
           end
           @resource = resource_name.classify.constantize
 
+          flash[:info] = 'Key successfully changed.'
           redirect "/dashboard/resources/#{resource_name}"
         end
       end
