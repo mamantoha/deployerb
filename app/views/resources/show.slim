@@ -3,116 +3,123 @@ ol class='breadcrumb'
     a href='/dashboard/resources' Resources
   li class='active'= @resource_name
 
-div class='panel panel-primary'
-  div class='panel-heading'
-    h3 class='panel-title' Add new key
-  div class='panel-body'
-    form.form-inline role='form' action='#' method='post'
-      div.form-group
-        select.form-control name='type'
-          option value="Type" selected=true disabled=true Type
-          - Deployd::Models::AVAILABLE_TYPES.each do |type|
-            option value="#{type}"= type
-      div.form-group
-        input.form-control name='name' placeholder='Enter name'
-      div.checkbox
-        label
-          input type='checkbox' name='required' Required
-      div.checkbox
-        label
-          input type='checkbox' name='unique' Unique
-      div.form-group
-        button type='submit' class='btn btn-primary'
-          span class='glyphicon glyphicon-plus'
-          | Add
-        button type='reset' class='btn btn-default' Reset
 
-div class='panel-group' id='accordion'
-  div class='panel panel-default'
-    div class='panel-heading'
-      h4 class='panel-title'
-        a data-toggle='collapse' data-parent='#accordion' href='#collapseExample'
-          | Examples
-    div id='collapseExample' class='panel-collapse collapse'
+ul id='myTab' class='nav nav-tabs nav-justified' role='tablist'
+  li class='active'
+    a href='#keys' role='tab' data-toggle='tab' Keys
+  li
+    a href='#data' role='tab' data-toggle='tab' Data
+  li
+    a href='#examples' role='tab' data-toggle='tab' Examples
+
+div id='myTabContent' class='tab-content'
+  div class='tab-pane fade active in' id='keys'
+    div class='panel panel-default'
       div class='panel-body'
-        span class='label label-warning' INFO
-        | Here are some simple examples of using API methods
-        table.table
+        table class='table table-hover'
           thead
             tr
-              th Task
-              th Method
-              th URL
-              th Accepts
-              th Returns
+              th Name
+              th Type
+              th
           tbody
-            tr
-              td List of objects
-              td GET
-              td
-                | /#{@route_key}
-              td Nothing
-              td An array of objects
-            tr
-              td Create an object
-              td POST
-              td
-                | /#{@route_key}
-              td A single object
-              td The saved object
-            tr
-              td Get an object
-              td GET
-              td
-                | /#{@route_key}/:id
-              td Nothing
-              td A single object
-            tr
-              td Update an object
-              td PUT
-              td
-                | /#{@route_key}/:id
-              td A single object
-              td The saved object
-            tr
-              td Delete an object
-              td DELETE
-              td
-                | /#{@route_key}/:id
-              td Nothing
-              td The deleted object
+            - @resource.defined_keys.each do |key|
+              tr
+                td class='col-md-4'
+                  = key[1].name
+                  span class='options'
+                    - if key[1].options[:required]
+                      span class="label label-default" required
+                    - if key[1].options[:unique]
+                      span class="label label-default" unique
+                td class='col-md-2'
+                  = key[1].type
+                td class='col-md-1'
+                  span class='actions'
+                    - if key[1].name == '_id'
+                    - else
+                      form id='edit' style='display:inline!important;' method='get' action="/dashboard/resources/#{@resource.name.underscore}/#{key[1].name}"
+                        button type='submit' class='btn btn-primary btn-xs'
+                          span class='glyphicon glyphicon-edit'
+                      form onsubmit="return confirm('Are you sure you want to delete?');" id='delete' style='display:inline!important;' method='post' action="/dashboard/resources/#{@resource.name.underscore}/#{key[1].name}"
+                        input name='_method' value='delete' type='hidden'
+                        button type='submit' class='btn btn-danger btn-xs'
+                          span class='glyphicon glyphicon-remove'
 
-div class='panel panel-default'
-  div class='panel-heading'
-    h3 class='panel-title'
-      | Keys
+    div class='panel panel-default'
+      div class='panel-heading'
+        h3 class='panel-title' Add new key
+      div class='panel-body'
+        form.form-inline role='form' action='#' method='post'
+          div.form-group
+            select.form-control name='type'
+              option value="Type" selected=true disabled=true Type
+              - Deployd::Models::AVAILABLE_TYPES.each do |type|
+                option value="#{type}"= type
+          div.form-group
+            input.form-control name='name' placeholder='Enter name'
+          div.checkbox
+            label
+              input type='checkbox' name='required' Required
+          div.checkbox
+            label
+              input type='checkbox' name='unique' Unique
+          div.form-group style='float: right'
+            button type='submit' class='btn btn-primary'
+              span class='glyphicon glyphicon-plus'
+              | Add
 
-  table class='table table-hover'
-    thead
-      tr
-        th Name
-        th Type
-        th
-    tbody
-      - @resource.defined_keys.each do |key|
-        tr
-          td class='col-md-4'
-            = key[1].name
-            span class='options'
-              - if key[1].options[:required]
-                span class="label label-default" required
-              - if key[1].options[:unique]
-                span class="label label-default" unique
-          td class='col-md-2'
-            = key[1].type
-          td class='col-md-1'
-            span class='actions'
-              - if key[1].name == '_id'
-              - else
-                form id='edit' style='display:inline!important;' method='get' action="/dashboard/resources/#{@resource.name.underscore}/#{key[1].name}"
-                  button type='submit' class='btn btn-primary btn-xs'
-                    span class='glyphicon glyphicon-edit'
-                form onsubmit="return confirm('Are you sure you want to delete?');" id='delete' style='display:inline!important;' method='post' action="/dashboard/resources/#{@resource.name.underscore}/#{key[1].name}"
-                  input name='_method' value='delete' type='hidden'
-                  button type='submit' class='btn btn-danger btn-xs'
-                    span class='glyphicon glyphicon-remove'
+  div class='tab-pane fade' id='data'
+
+  div class='tab-pane fade' id='examples'
+    div class='panel-group' id='accordion'
+      div class='panel panel-default'
+        div id='examples' class='panel-default'
+          div class='panel-body'
+            span class='label label-warning' INFO
+            | Here are some simple examples of using API methods
+            table.table
+              thead
+                tr
+                  th Task
+                  th Method
+                  th URL
+                  th Accepts
+                  th Returns
+              tbody
+                tr
+                  td List of objects
+                  td GET
+                  td
+                    | /#{@route_key}
+                  td Nothing
+                  td An array of objects
+                tr
+                  td Create an object
+                  td POST
+                  td
+                    | /#{@route_key}
+                  td A single object
+                  td The saved object
+                tr
+                  td Get an object
+                  td GET
+                  td
+                    | /#{@route_key}/:id
+                  td Nothing
+                  td A single object
+                tr
+                  td Update an object
+                  td PUT
+                  td
+                    | /#{@route_key}/:id
+                  td A single object
+                  td The saved object
+                tr
+                  td Delete an object
+                  td DELETE
+                  td
+                    | /#{@route_key}/:id
+                  td Nothing
+                  td The deleted object
+
