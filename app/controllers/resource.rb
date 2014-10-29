@@ -118,7 +118,9 @@ module Deployd
         if instance_variable_get(:"@#{resource_name.pluralize}").empty?
           { status: 'error', data: "No #{resource_name.pluralize }" }.to_json
         else
-          { status: 'ok', data: instance_variable_get(:"@#{resource_name.pluralize}") }.to_json
+          # { status: 'ok', data: instance_variable_get(:"@#{resource_name.pluralize}") }.to_json
+          # FIXME Expected response should contain an array except an object ?
+          instance_variable_get(:"@#{resource_name.pluralize}").to_json
         end
       end
 
@@ -129,7 +131,8 @@ module Deployd
         set_resource(context.params[:id])
 
         if instance_variable_get(:"@#{resource_name}")
-          { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
+          # { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
+          instance_variable_get(:"@#{resource_name}").to_json
         else
           { status: 'error', data: "No #{resource_name.singularize}" }.to_json
         end
@@ -139,13 +142,19 @@ module Deployd
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def create(context)
+        # TODO parse JSON request body
+        context.request.body.rewind  # in case someone already read it
+        data = JSON.parse context.request.body.read
+
         permitted_params = resource_keys.map { |k| k[:name] }
-        permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
+        # permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
+        permitted_params = data.select { |k, _| permitted_params.include?(k) }
 
         begin
           instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.new(permitted_params))
           if instance_variable_get(:"@#{resource_name}").save
-            { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
+            # { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
+            instance_variable_get(:"@#{resource_name}").to_json
           else
             errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
             { status: 'error', data: errors }.to_json
@@ -159,16 +168,22 @@ module Deployd
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def update(context)
+        # TODO parse JSON request body
+        context.request.body.rewind  # in case someone already read it
+        data = JSON.parse context.request.body.read
+
         set_resource(context.params[:id])
 
         begin
           if instance_variable_get(:"@#{resource_name}")
             permitted_params = resource_keys.map { |k| k[:name] }
-            permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
+            # permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
+            permitted_params = data.select { |k, _| permitted_params.include?(k) }
 
             if instance_variable_get(:"@#{resource_name}").update_attributes(permitted_params)
               instance_variable_get(:"@#{resource_name}").reload
-              { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
+              # { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
+              instance_variable_get(:"@#{resource_name}").to_json
             else
               errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
               { status: 'error', data: errors }.to_json
