@@ -33,7 +33,6 @@ module Deployd
       # enable the POST _method hack
       use Rack::MethodOverride
 
-
       use Rack::Static, urls: ['/bootstrap-3.2.0-dist'], root: 'public'
 
       $logger = Logger.new(STDOUT)
@@ -42,6 +41,20 @@ module Deployd
     not_found do
       content_type :json
       { status: 'error', data: 'Page not found' }.to_json
+    end
+
+    # AngularJS sends option request before any other request.
+    # These lines properly manage that.
+    #
+    options "/*" do
+      allow_headers = ["*", "Content-Type", "Accept", "AUTHORIZATION", "Cache-Control"]
+      allow_methods = [:post, :get, :option, :delete, :put]
+      headers_list = {
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => allow_methods.map { |m| m.to_s.upcase! }.join(', '),
+        'Access-Control-Allow-Headers' => allow_headers.map(&:to_s).join(', ')
+      }
+      headers headers_list
     end
 
     enable :sessions

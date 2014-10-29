@@ -60,9 +60,12 @@ module Deployd
 
       def set_access_control_header
         Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
+          allow_headers = ["*", "Content-Type", "Accept", "AUTHORIZATION", "Cache-Control"]
+          allow_methods = [:post, :get, :option, :delete, :put]
           headers_list = {
             'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Request-Methods' => '*'
+            'Access-Control-Allow-Methods' => allow_methods.map { |m| m.to_s.upcase! }.join(', '),
+            'Access-Control-Allow-Headers' => allow_headers.map(&:to_s).join(', ')
           }
           headers headers_list
         end
@@ -70,6 +73,7 @@ module Deployd
 
       # return 404 if Deployd::Controlles::%ModelName%sController not found in application
       # TODO try to find better solution to remove routes in real time
+      #
       def require_resource!(resource_name)
         Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
           class_name = "#{resource_name.singularize.classify.pluralize}Controller"
