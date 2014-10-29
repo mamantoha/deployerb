@@ -33,6 +33,7 @@ module Deployd
         @member_route = "/#{route_key}/:id/?"
 
         set_content_type(:json)
+        set_access_control_header
         require_resource!(resource_name)
       end
 
@@ -54,6 +55,16 @@ module Deployd
       def set_content_type(type)
         Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
           content_type type
+        end
+      end
+
+      def set_access_control_header
+        Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
+          headers_list = {
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Request-Methods' => '*'
+          }
+          headers headers_list
         end
       end
 
