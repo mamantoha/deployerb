@@ -78,7 +78,7 @@ module Deployd
         Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
           class_name = "#{resource_name.singularize.classify.pluralize}Controller"
           unless Deployd::Controllers.constants.include?(class_name.to_sym)
-            halt(404, { status: 'error', data: 'Page not found' }.to_json)
+            halt 404
           end
         end
       end
@@ -86,9 +86,9 @@ module Deployd
       # mounts our default CRUD routes
       # Parameters:
       # actions - the list of actions to expose.
-      #           Acceptable actions are: :index, :show, :create, :update, :destroy
+      #           Acceptable actions are: :index, :create, :show, :update, :destroy
       #           Example:
-      #             mount_default_actions([:index, :show, :create])
+      #             mount_default_actions([:index, :create, :show, :update])
       #           Since :delete wasn't listed, a route for it will not be generated.
       #
       def mount_default_actions(actions)
@@ -114,13 +114,34 @@ module Deployd
       #
       def index(_context)
         instance_variable_set(:"@#{resource_name.pluralize}", resource_name.classify.constantize.all)
+        instance_variable_get(:"@#{resource_name.pluralize}").to_json
+      end
 
-        if instance_variable_get(:"@#{resource_name.pluralize}").empty?
-          { status: 'error', data: "No #{resource_name.pluralize }" }.to_json
-        else
-          # { status: 'ok', data: instance_variable_get(:"@#{resource_name.pluralize}") }.to_json
-          # FIXME Expected response should contain an array except an object ?
-          instance_variable_get(:"@#{resource_name.pluralize}").to_json
+      # params:
+      #   context - the instance (not the class of Deployd::Application for this controller)
+      #
+      def create(context)
+        context.request.body.rewind  # in case someone already read it
+        begin
+          data = JSON.parse(context.request.body.read)
+        rescue JSON::ParserError
+          context.halt(406, { status: 'error', message: 'Not acceptable JSON payload' }.to_json)
+        end
+
+        permitted_params = resource_keys.map { |k| k[:name] }
+        permitted_params = data.select { |k, _| permitted_params.include?(k) }
+
+        begin
+          instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.new(permitted_params))
+
+          if instance_variable_get(:"@#{resource_name}").save
+            instance_variable_get(:"@#{resource_name}").to_json
+          else
+            errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
+            context.halt(406, { status: 'error', message: errors }.to_json)
+          end
+        rescue StandardError => e
+          context.halt(500, { status: 'error', message: e.message }.to_json)
         end
       end
 
@@ -128,71 +149,38 @@ module Deployd
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def show(context)
-        set_resource(context.params[:id])
+        set_resource(context)
 
-        if instance_variable_get(:"@#{resource_name}")
-          # { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
-          instance_variable_get(:"@#{resource_name}").to_json
-        else
-          { status: 'error', data: "No #{resource_name.singularize}" }.to_json
-        end
-      end
-
-      # params:
-      #   context - the instance (not the class of Deployd::Application for this controller)
-      #
-      def create(context)
-        # TODO parse JSON request body
-        context.request.body.rewind  # in case someone already read it
-        data = JSON.parse context.request.body.read
-
-        permitted_params = resource_keys.map { |k| k[:name] }
-        # permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
-        permitted_params = data.select { |k, _| permitted_params.include?(k) }
-
-        begin
-          instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.new(permitted_params))
-          if instance_variable_get(:"@#{resource_name}").save
-            # { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
-            instance_variable_get(:"@#{resource_name}").to_json
-          else
-            errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
-            { status: 'error', data: errors }.to_json
-          end
-        rescue StandardError => e
-          { status: 'error', data: e.message }.to_json
-        end
+        instance_variable_get(:"@#{resource_name}").to_json
       end
 
       # params:
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def update(context)
-        # TODO parse JSON request body
         context.request.body.rewind  # in case someone already read it
-        data = JSON.parse context.request.body.read
-
-        set_resource(context.params[:id])
 
         begin
-          if instance_variable_get(:"@#{resource_name}")
-            permitted_params = resource_keys.map { |k| k[:name] }
-            # permitted_params = context.params.select { |k, _| permitted_params.include?(k) }
-            permitted_params = data.select { |k, _| permitted_params.include?(k) }
+          data = JSON.parse(context.request.body.read)
+        rescue JSON::ParserError
+          context.halt(406, { status: 'error', message: 'Not acceptable JSON payload' }.to_json)
+        end
 
-            if instance_variable_get(:"@#{resource_name}").update_attributes(permitted_params)
-              instance_variable_get(:"@#{resource_name}").reload
-              # { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
-              instance_variable_get(:"@#{resource_name}").to_json
-            else
-              errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
-              { status: 'error', data: errors }.to_json
-            end
+        set_resource(context)
+
+        begin
+          permitted_params = resource_keys.map { |k| k[:name] }
+          permitted_params = data.select { |k, _| permitted_params.include?(k) }
+
+          if instance_variable_get(:"@#{resource_name}").update_attributes(permitted_params)
+            instance_variable_get(:"@#{resource_name}").reload
+            instance_variable_get(:"@#{resource_name}").to_json
           else
-            { status: 'error', data: "No #{resource_name.singularize}" }.to_json
+            errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
+            context.halt(406, { status: 'error', message: errors }.to_json)
           end
         rescue StandardError => e
-          { status: 'error', data: e.message }.to_json
+          context.halt(500, { status: 'error', message: e.message }.to_json)
         end
       end
 
@@ -200,17 +188,13 @@ module Deployd
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def destroy(context)
-        set_resource(context.params[:id])
+        set_resource(context)
 
         begin
-          if instance_variable_get(:"@#{resource_name}")
-            instance_variable_get(:"@#{resource_name}").destroy
-            { status: 'ok', data: instance_variable_get(:"@#{resource_name}") }.to_json
-          else
-            { status: 'error', data: "No #{resource_name.singularize}" }.to_json
-          end
+          instance_variable_get(:"@#{resource_name}").destroy
+          instance_variable_get(:"@#{resource_name}").to_json
         rescue StandardError => e
-          { status: 'error', data: e.message }.to_json
+          context.halt(500, { status: 'error', message: e.message }.to_json)
         end
       end
 
@@ -218,8 +202,13 @@ module Deployd
 
       # Use callbacks to share common setup or constraints between actions.
       # on [:show, :update, :destroy]
-      def set_resource(id)
-        instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.find(id))
+      #
+      def set_resource(context)
+        instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.find(context.params[:id]))
+
+        unless instance_variable_get(:"@#{resource_name}")
+          context.halt(403, { status: 'error', message: "No #{resource_name.singularize}" }.to_json)
+        end
       end
     end
   end

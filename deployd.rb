@@ -40,7 +40,7 @@ module Deployd
 
     not_found do
       content_type :json
-      { status: 'error', data: 'Page not found' }.to_json
+      { status: 'error', data: 'The URI requested is invalid' }.to_json
     end
 
     # AngularJS sends option request before any other request.
