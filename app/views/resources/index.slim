@@ -1,21 +1,18 @@
+javascript:
+  $(function() {
+    $('body').on('hidden.bs.modal', '.modal', function () {
+      $(this).removeData('bs.modal');
+    });
+  });
+
 ol class='breadcrumb'
   li class='active' Resources
 
-div class='panel panel-primary'
-  div class='panel-heading'
-    h3 class='panel-title' Add resource
-  div class='panel-body'
-    form class='form-inline' role='form' action='#' method='post'
-      div.form-group
-        label class='sr-only' for='name' Name
-        input.form-control id='name' name='name' placeholder='Enter name of new resource'
-      div.form-group
-        button type='submit' class='btn btn-primary' Submit
-        button type='reset' class='btn btn-default' Reset
-
 div class='panel panel-default'
-  div class='panel-heading'
-    h3 class='panel-title' Resources
+  div class='panel-heading clearfix'
+    h3 class='panel-title pull-left' Resources
+    div class='btn-group pull-right'
+      button type='button' class='btn btn-primary btn-xs' data-toggle='modal' data-target="#addResource" href='/dashboard/resources/new' New
 
   table class='table table-hover'
     thead
@@ -33,3 +30,7 @@ div class='panel panel-default'
                 input name='_method' value='delete' type='hidden'
                 button type='submit' class='btn btn-danger btn-xs'
                   span class='glyphicon glyphicon-remove'
+
+div class='modal fade' id='addResource' tabindex='-1' role='dialog' aria-labelledby='addResourceLabel' aria-hidden='true'
+  div class='modal-dialog'
+    div class='modal-content'

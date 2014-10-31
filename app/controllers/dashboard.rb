@@ -14,6 +14,11 @@ module Deployd
       end
 
       # create new document
+      get '/resources/new' do
+        slim :'resources/new', layout: false
+      end
+
+      # save new document
       #
       post '/resources' do
         resource_name = params[:name].downcase.singularize
