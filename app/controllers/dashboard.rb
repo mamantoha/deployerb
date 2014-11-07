@@ -14,6 +14,7 @@ module Deployd
       end
 
       # create new document
+      #
       get '/resources/new' do
         slim :'resources/new', layout: false
       end
@@ -21,23 +22,33 @@ module Deployd
       # save new document
       #
       post '/resources' do
-        resource_name = params[:name].downcase.singularize
+        # validates :name presence
+        if params[:name] && !params[:name].empty?
+          resource_name = params[:name].downcase.singularize
 
-        Deployd::Models.new(resource_name)
-        Deployd::Controllers.new(resource_name)
+          # validates :name uniqueness
+          if Object.const_defined?(params[:name].classify)
+            flash[:danger] = 'name: has already been taken.'
+            redirect '/dashboard/resources'
+          end
 
-        @resources << { name: resource_name, keys: [] }
-        File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-          f.write settings.config_file.to_yaml
+          Deployd::Models.new(resource_name)
+          Deployd::Controllers.new(resource_name)
+
+          @resources << { name: resource_name, keys: [] }
+          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+            f.write settings.config_file.to_yaml
+          end
+
+          flash[:info] = 'New document successfully added.'
+          redirect '/dashboard/resources'
+        else
+          flash[:danger] = "name: can't be blank."
+          redirect '/dashboard/resources'
         end
-
-        flash[:info] = 'New document successfully added.'
-        redirect '/dashboard/resources'
       end
 
       # show resource
-      #
-      # get '/resource/user'
       #
       get '/resources/:resource_name' do
         @resource_name = params[:resource_name]
@@ -79,7 +90,7 @@ module Deployd
         key_type = params[:type]
         # Deployd::Models::AVAILABLE_KEYS.include?(key_type)
 
-        # Validations
+        # MongoMapper validations
         required = params[:required] ? true : false
         unique = params[:unique] ? true : false
         options = { required: required, unique: unique }
