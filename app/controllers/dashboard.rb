@@ -22,26 +22,9 @@ module Deployd
       # save new document
       #
       post '/resources' do
-        # validates :name presence
-        if params[:name] && !params[:name].empty?
-          # validates :name valid
-          if !params[:name].match(/\A[a-zA-Z_]*\z/)
-            flash[:danger] = 'name: allow only latin letters and underscore'
-            redirect '/dashboard/resources'
-          end
+        errors = validates_resource(params[:name])
+        if errors.empty?
           resource_name = params[:name].downcase.singularize
-
-          # validates :name uniqueness
-          if Object.const_defined?(params[:name].classify)
-            flash[:danger] = 'name: has already been taken.'
-            redirect '/dashboard/resources'
-          end
-
-          # validates :name acceptable
-          if params[:name].singularize != params[:name].singularize.pluralize.singularize
-            flash[:danger] = 'name: not acceptable.'
-            redirect '/dashboard/resources'
-          end
 
           Deployd::Models.new(resource_name)
           Deployd::Controllers.new(resource_name)
@@ -54,7 +37,7 @@ module Deployd
           flash[:info] = 'New document successfully added.'
           redirect '/dashboard/resources'
         else
-          flash[:danger] = "name: can't be blank."
+          flash[:danger] = errors.join('; ')
           redirect '/dashboard/resources'
         end
       end
@@ -100,28 +83,33 @@ module Deployd
       post '/resources/:resource_name' do
         check_model_availability!(params[:resource_name])
         resource_name = params[:resource_name].singularize
-        key_name = params[:name].downcase
+        key_name = params[:name]
         key_type = params[:type]
-        # Deployd::Models::AVAILABLE_KEYS.include?(key_type)
 
-        # MongoMapper validations
-        required = params[:required] ? true : false
-        unique = params[:unique] ? true : false
-        options = { required: required, unique: unique }
+        errors = validates_key(resource_name, key_name, key_type)
+        if errors.empty?
+          # MongoMapper validations
+          required = params[:required] ? true : false
+          unique = params[:unique] ? true : false
+          options = { required: required, unique: unique }
 
-        if @resources && @resources.find { |r| r[:name] == resource_name }
-          Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options)
+          if @resources && @resources.find { |r| r[:name] == resource_name }
+            Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options)
 
-          @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options }
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
+            @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options }
+            File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+              f.write settings.config_file.to_yaml
+            end
+
+            @resource = resource_name.classify.constantize
+            flash[:info] = 'New key successfully added.'
+            redirect "/dashboard/resources/#{resource_name.pluralize}"
+          else
+            redirect '/dashboard/resources'
           end
-
-          @resource = resource_name.classify.constantize
-          flash[:info] = 'New key successfully added.'
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
         else
-          redirect '/dashboard/resources'
+          flash[:danger] = errors.join('; ')
+          redirect "/dashboard/resources/#{resource_name.pluralize}"
         end
       end
 
@@ -171,8 +159,8 @@ module Deployd
         check_model_availability!(params[:resource_name])
         resource_name = params[:resource_name].singularize
         key_name = params[:key_name]
-
         key_type = params[:type]
+
         required = params[:required] ? true : false
         unique = params[:unique] ? true : false
         options = { required: required, unique: unique }
@@ -205,6 +193,55 @@ module Deployd
         flash[:warning] = 'No such resource.'
         redirect '/dashboard/resources'
       end
+    end
+
+    def validates_resource(name)
+      errors = []
+      # validates :name presence
+      if name && !name.empty?
+        # validates :name valid
+        if !name.match(/\A[a-zA-Z_]*\z/)
+            errors << 'name: allow only latin letters and underscore'
+        end
+
+        # validates :name acceptable
+        if name.singularize != name.singularize.pluralize.singularize
+          errors << 'name: not acceptable'
+        end
+
+        # validates :name uniqueness
+        if Object.const_defined?(name.downcase.singularize.classify)
+          errors << 'name: has already been taken'
+        end
+      else
+        errors << "name: can't be blank"
+      end
+
+      return errors
+    end
+
+    def validates_key(resource_name, name, type)
+      errors = []
+      # validates :name presence
+      if name && !name.empty?
+        # validates :name valid
+        if !name.match(/\A[a-zA-Z_]*\z/)
+          errors << 'name: allow only latin letters and underscore'
+        end
+        # validates :name uniqueness
+        if resource_name.classify.constantize.key?(name.downcase)
+          errors << 'name: has already been taken'
+        end
+      else
+        errors << "name: can't be blank"
+      end
+
+      # validates :type acceptable
+      unless Deployd::Models::AVAILABLE_TYPES.map(&:to_s).include?(type)
+        errors << 'type: not acceptable'
+      end
+
+      return errors
     end
   end # class Application < Sinatra::Base
 end # module Deployd

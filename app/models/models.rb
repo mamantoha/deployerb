@@ -58,14 +58,14 @@ module Deployd
     #
     def self.add_key(resource_name, key_name, key_type, options = { required: false, unique: false })
       class_name = resource_name.singularize.classify
-      class_name.constantize.key(key_name, key_type, options)
-      class_name.constantize.serializable_keys << key_name.to_sym
+      class_name.constantize.key(key_name.downcase, key_type, options)
+      class_name.constantize.serializable_keys << key_name.downcase.to_sym
     end
 
     def self.remove_key(resource_name, key_name)
       class_name = resource_name.singularize.classify
-      class_name.constantize.remove_key(key_name)
-      class_name.constantize.serializable_keys.delete(key_name.to_sym)
+      class_name.constantize.remove_key(key_name.downcase)
+      class_name.constantize.serializable_keys.delete(key_name.downcase.to_sym)
     end
 
     def self.initialize_from_config_file!
