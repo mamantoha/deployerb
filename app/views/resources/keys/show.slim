@@ -2,7 +2,7 @@ ol class='breadcrumb'
   li
     a href='/dashboard/resources' Resources
   li
-    a href="/dashboard/resources/#{@resource_name}"= @resource_name
+    a href="/dashboard/resources/#{@resource_name.pluralize}"= @resource_name.pluralize
   li class='active'= @key.name
 
 div class='panel panel-primary'

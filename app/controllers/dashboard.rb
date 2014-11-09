@@ -24,11 +24,22 @@ module Deployd
       post '/resources' do
         # validates :name presence
         if params[:name] && !params[:name].empty?
+          # validates :name valid
+          if !params[:name].match(/\A[a-zA-Z_]*\z/)
+            flash[:danger] = 'name: allow only latin letters and underscore'
+            redirect '/dashboard/resources'
+          end
           resource_name = params[:name].downcase.singularize
 
           # validates :name uniqueness
           if Object.const_defined?(params[:name].classify)
             flash[:danger] = 'name: has already been taken.'
+            redirect '/dashboard/resources'
+          end
+
+          # validates :name acceptable
+          if params[:name].singularize != params[:name].singularize.pluralize.singularize
+            flash[:danger] = 'name: not acceptable.'
             redirect '/dashboard/resources'
           end
 
@@ -51,7 +62,8 @@ module Deployd
       # show resource
       #
       get '/resources/:resource_name' do
-        @resource_name = params[:resource_name]
+        check_model_availability!(params[:resource_name])
+        @resource_name = params[:resource_name].singularize
         @route_key = @resource_name.pluralize
 
         if @resources && @resources.find { |r| r[:name] == @resource_name }
@@ -65,7 +77,8 @@ module Deployd
       # remove document
       #
       delete '/resources/:resource_name' do
-        resource_name = params[:resource_name]
+        check_model_availability!(params[:resource_name])
+        resource_name = params[:resource_name].singularize
 
         if @resources && @resources.find { |r| r[:name] == resource_name }
           Deployd::Models.remove(resource_name)
@@ -85,7 +98,8 @@ module Deployd
       # add new key to document
       #
       post '/resources/:resource_name' do
-        resource_name = params[:resource_name]
+        check_model_availability!(params[:resource_name])
+        resource_name = params[:resource_name].singularize
         key_name = params[:name].downcase
         key_type = params[:type]
         # Deployd::Models::AVAILABLE_KEYS.include?(key_type)
@@ -105,7 +119,7 @@ module Deployd
 
           @resource = resource_name.classify.constantize
           flash[:info] = 'New key successfully added.'
-          redirect "/dashboard/resources/#{resource_name}"
+          redirect "/dashboard/resources/#{resource_name.pluralize}"
         else
           redirect '/dashboard/resources'
         end
@@ -116,7 +130,8 @@ module Deployd
       # delete '/resource/user/name'
       #
       delete '/resources/:resource_name/:key_name' do
-        resource_name = params[:resource_name]
+        check_model_availability!(params[:resource_name])
+        resource_name = params[:resource_name].singularize
         key_name = params[:key_name]
 
         if @resources && @resources.find { |r| r[:name] == resource_name }
@@ -129,7 +144,7 @@ module Deployd
           @resource = resource_name.classify.constantize
 
           flash[:info] = 'Key successfully removed.'
-          redirect "/dashboard/resources/#{resource_name}"
+          redirect "/dashboard/resources/#{resource_name.pluralize}"
         end
       end
 
@@ -138,7 +153,8 @@ module Deployd
       # get '/resource/user/name'
       #
       get '/resources/:resource_name/:key_name' do
-        @resource_name = params[:resource_name]
+        check_model_availability!(params[:resource_name])
+        @resource_name = params[:resource_name].singularize
         @key_name = params[:key_name]
 
         if @resources && @resources.find { |r| r[:name] == @resource_name }
@@ -151,10 +167,9 @@ module Deployd
 
       # edit key
       #
-      # put '/resource/user/nemae'
-      #
       put '/resources/:resource_name/:key_name' do
-        resource_name = params[:resource_name]
+        check_model_availability!(params[:resource_name])
+        resource_name = params[:resource_name].singularize
         key_name = params[:key_name]
 
         key_type = params[:type]
@@ -176,9 +191,20 @@ module Deployd
           @resource = resource_name.classify.constantize
 
           flash[:info] = 'Key successfully changed.'
-          redirect "/dashboard/resources/#{resource_name}"
+          redirect "/dashboard/resources/#{resource_name.pluralize}"
         end
       end
+    end # namespace '/dashboard'
+
+    private
+
+    # check if resource_name is in plural form and model exists
+    #
+    def check_model_availability!(resource_name)
+      unless resource_name.singularize != resource_name && Object.const_defined?(resource_name.singularize.classify)
+        flash[:warning] = 'No such resource.'
+        redirect '/dashboard/resources'
+      end
     end
-  end
-end
+  end # class Application < Sinatra::Base
+end # module Deployd

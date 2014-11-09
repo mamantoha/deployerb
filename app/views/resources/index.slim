@@ -42,10 +42,10 @@ div class='panel panel-default'
       - @resources.each do |resource|
         tr
           td
-            a href="resources/#{resource[:name]}"= resource[:name]
+            a href="resources/#{resource[:name].pluralize}"= resource[:name].pluralize
           td class='col-md-1'
             span.actions
-              form onsubmit="return confirm('Are you sure you want to delete?');" id='delete' style='display:inline!important;' method='post' action="/dashboard/resources/#{resource[:name].underscore}"
+              form onsubmit="return confirm('Are you sure you want to delete?');" id='delete' style='display:inline!important;' method='post' action="/dashboard/resources/#{resource[:name].pluralize}"
                 input name='_method' value='delete' type='hidden'
                 button type='submit' class='btn btn-danger btn-xs'
                   span class='glyphicon glyphicon-remove'
