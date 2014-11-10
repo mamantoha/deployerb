@@ -1,5 +1,5 @@
 doctype html
-html
+html ng-app='deploydApp'
   head
     meta charset='utf-8'
     title Deployerb
@@ -7,8 +7,10 @@ html
     // link href='/bootstrap-3.2.0-dist/css/bootstrap-theme.min.css' media='screen' rel='stylesheet' type='text/css'
     link href='/deployd.css' media='screen' rel='stylesheet' type='text/css'
     script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"
+    script src="/angular-1.3.0/angular.js"
+    script src="/deployd.js"
     script src="/bootstrap-3.2.0-dist/js/bootstrap.min.js"link href='/deployd.css' media='screen' rel='stylesheet' type='text/css'
-  body
+  body ng-controller='defaultCtrl'
     div class='navbar navbar-default navbar-static-top' role='navigation'
       div.container
         div.navbar-header
