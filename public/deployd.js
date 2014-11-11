@@ -1,8 +1,8 @@
 angular.module("deploydApp", ["ngResource", "ui.bootstrap"])
-  .constant("baseUrl", "http://localhost:9292/")
-  .controller("resourceCtrl", function ($scope, $http, $resource, baseUrl) {
+  .controller("resourceCtrl", function ($scope, $http, $resource, $location) {
 
-    $scope.resourceUrl = baseUrl + $scope.routeKey + '/';
+    $scope.baseUrl = "http://" + $location.host() + ":" + $location.port() + "/"
+    $scope.resourceUrl = $scope.baseUrl + $scope.routeKey + '/';
     $scope.displayMode = "list";
     $scope.currentResource = null;
 
