@@ -4,6 +4,14 @@ module Deployd
       redirect '/dashboard/resources'
     end
 
+    get '/tableView' do
+      slim :'resources/_table_view', layout: false
+    end
+
+    get '/editorView' do
+      slim :'resources/_editor_view', layout: false
+    end
+
     namespace '/dashboard' do
       before do
         @resources = settings.config_file[:resources]
@@ -51,6 +59,7 @@ module Deployd
 
         if @resources && @resources.find { |r| r[:name] == @resource_name }
           @resource = @resource_name.classify.constantize
+          @defined_keys = @resource.defined_keys.map{ |k| k[1].name }.reject { |k| k == '_id' }
           slim :'/resources/show'
         else
           redirect '/dashboard/resources'

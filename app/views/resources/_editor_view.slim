@@ -1,0 +1,6 @@
+div class='form-group' ng-repeat='key in definedKeys'
+  label
+    | {{key}}
+  input class='form-control' ng-model='currentResource[key]'
+button class='btn btn-promary' ng-click='saveEdit(currentResource)' Save
+button class='btn btn-promary' ng-click='cancelEdit()' Cancel

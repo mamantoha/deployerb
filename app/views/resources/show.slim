@@ -3,19 +3,10 @@ ol class='breadcrumb'
     a href='/dashboard/resources' Resources
   li class='active'= @resource_name.pluralize
 
-ul id='myTab' class='nav nav-tabs nav-justified' role='tablist'
-  li class='active'
-    a href='#keys' role='tab' data-toggle='tab' Keys
-  li
-    a href='#data' role='tab' data-toggle='tab' Data
-  li
-    a href='#examples' role='tab' data-toggle='tab' Examples
-
-div id='resourceTabContent' class='tab-content'
-  div class='tab-pane fade active in' id='keys'
+tabset justified='true'
+  tab heading='Keys'
     == slim :'resources/_keys_tab'
-
-  div class='tab-pane fade' id='data'
-
-  div class='tab-pane fade' id='examples'
+  tab heading='Data'
+    == slim :'resources/_data_tab'
+  tab heading='Examples'
     == slim :'resources/_examples_tab'
