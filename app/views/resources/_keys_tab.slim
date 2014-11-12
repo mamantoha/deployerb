@@ -22,10 +22,10 @@ div class='panel panel-default'
               span class='actions'
                 - if key[1].name == '_id'
                 - else
-                  form id='edit' style='display:inline!important;' method='get' action="/dashboard/resources/#{@resource.name.pluralize.underscore}/#{key[1].name}"
+                  form id='edit' class='display-inline' method='get' action="/dashboard/resources/#{@resource.name.pluralize.underscore}/#{key[1].name}"
                     button type='submit' class='btn btn-primary btn-xs'
                       span class='glyphicon glyphicon-edit'
-                  form onsubmit="return confirm('Are you sure you want to delete?');" id='delete' style='display:inline!important;' method='post' action="/dashboard/resources/#{@resource.name.pluralize.underscore}/#{key[1].name}"
+                  form onsubmit="return confirm('Are you sure you want to delete?');" id='delete' class='display-inline' method='post' action="/dashboard/resources/#{@resource.name.pluralize.underscore}/#{key[1].name}"
                     input name='_method' value='delete' type='hidden'
                     button type='submit' class='btn btn-danger btn-xs'
                       span class='glyphicon glyphicon-remove'

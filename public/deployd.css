@@ -45,3 +45,7 @@ span.actions {
 .label {
   margin-left: 3px;
 }
+
+form.display-inline {
+  display:inline!important;
+}
