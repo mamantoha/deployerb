@@ -5,6 +5,7 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap"])
     $scope.resourceUrl = $scope.baseUrl + $scope.routeKey + '/';
     $scope.displayMode = "list";
     $scope.currentResource = null;
+    $scope.error = null;
 
     $scope.selfResource = $resource($scope.resourceUrl + ":id", { id: "@id" },
       { create: { method: "POST" }, save: { method: "PUT" }, query: { isArray: true } }
@@ -12,7 +13,6 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap"])
 
     $scope.listResources = function () {
       $scope.resources = $scope.selfResource.query();
-      console.log($scope.resources);
     }
 
     $scope.deleteResource = function (resource) {
@@ -26,17 +26,24 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap"])
       new $scope.selfResource(resource).$create().then(
         function (newResource) {
           $scope.resources.push(newResource);
+          $scope.clearError();
           $scope.displayMode = 'list';
         },
         function (error) {
-          console.log(error.data);
+          $scope.error = error.data;
         }
       );
     }
 
     $scope.updateResource = function (resource) {
-      resource.$save();
-      $scope.displayMode = "list";
+      resource.$save().then(
+        function (modifiedResource) {
+          $scope.clearError();
+          $scope.displayMode = "list";
+        }, function (error) {
+          $scope.error = error.data;
+        }
+      );
     }
 
     $scope.editOrCreateResource = function (resource) {
@@ -52,12 +59,18 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap"])
       }
     }
 
-    $scope.cancelEdit = function() {
+    $scope.cancelEdit = function () {
       if ($scope.currentResource && $scope.currentResource.$get) {
         $scope.currentResource.$get;
+      } else {
+        $scope.currentResource = {};
       }
-      $scope.currentResource = {};
+      $scope.clearError();
       $scope.displayMode = 'list';
+    }
+
+    $scope.clearError = function () {
+      $scope.error = null;
     }
 
     $scope.listResources();
