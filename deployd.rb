@@ -30,10 +30,8 @@ module Deployd
       set :views, 'app/views'
       set :public_folder, 'public'
       set :root, (settings.root || File.dirname(__FILE__))
+      set :method_override, true
       set :config_file, load_or_initialize_config_file
-
-      # enable the POST _method hack
-      use Rack::MethodOverride
 
       register Sinatra::AssetPack
 
