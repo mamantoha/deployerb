@@ -17,6 +17,16 @@ $ cd deployerb
 $ bundle install
 ```
 
+### Install Bower dependencies
+
+```
+$ bower install jquery
+$ bower install angular
+$ bower install angular-resource
+$ bower install angular-bootstrap
+$ bower install bootstrap
+```
+
 ### Run Deployerb server
 ```
 $ rackup

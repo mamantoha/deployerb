@@ -4,6 +4,7 @@ require 'active_support/core_ext/string'
 require 'sinatra/base'
 require 'sinatra/namespace'
 require 'sinatra/flash'
+require 'sinatra/assetpack'
 require 'slim'
 require 'mongo_mapper'
 require 'logger'
@@ -34,7 +35,39 @@ module Deployd
       # enable the POST _method hack
       use Rack::MethodOverride
 
-      use Rack::Static, urls: ['/bootstrap-3.2.0-dist', '/angular-1.3.0'], root: 'public'
+      register Sinatra::AssetPack
+
+      assets {
+        serve '/js', from: 'assets/js'
+        serve '/css', from: 'assets/css'
+        serve '/images', from: 'assets/images'
+        serve '/bower_components', from: 'bower_components'
+
+        js :app, '/js/app.js', [
+          '/js/deployd.js'
+        ]
+
+        css :application, '/css/application.css', [
+          '/css/deployd.css',
+        ]
+
+        css :libs, [
+          '/bower_components/bootstrap/dist/css/bootstrap.css',
+        ]
+
+        js :libs, [
+          '/bower_components/jquery/dist/jquery.js',
+          '/bower_components/bootstrap/dist/js/bootstrap.js',
+        ]
+
+        js :angular, [
+          '/bower_components/angular/angular.js',
+          '/bower_components/angular-resource/angular-resource.js',
+          '/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+        ]
+
+        js_compression :jsmin
+      }
 
       $logger = Logger.new(STDOUT)
     end
