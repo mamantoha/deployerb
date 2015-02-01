@@ -9,8 +9,8 @@ require 'slim'
 require 'mongo_mapper'
 require 'logger'
 
-Slim::Engine.set_default_options pretty: true,
-  attr_delims: {'(' => ')', '[' => ']'} # removed '{' => '}' from default
+Slim::Engine.set_options pretty: true,
+  attr_list_delims: {'(' => ')', '[' => ']'} # removed '{' => '}' from default
 
 module Deployd
   class Application < Sinatra::Base
