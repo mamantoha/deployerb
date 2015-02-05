@@ -15,6 +15,11 @@ gem 'sinatra-assetpack', :require => 'sinatra/assetpack'
 gem 'mongo_mapper', git: 'https://github.com/mamantoha/mongomapper.git'
 gem 'bson_ext'
 
+group :development do
+  gem 'pry'
+  gem 'racksh'
+end
+
 group :test do
   gem 'rspec'
   gem 'capybara'

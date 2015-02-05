@@ -3,6 +3,10 @@ module Deployd
     # http://mongomapper.com/documentation/documents/types.html
     AVAILABLE_TYPES = [Array, Float, Hash, Integer, NilClass, Object, String, Time, Binary, Boolean, Date, ObjectId, Set]
 
+    # keep a list of available models in a class variable
+    class << self; attr_reader :available_models; end
+    @available_models = []
+
     # create MongoMapper::Document class
     #
     # params:
@@ -11,6 +15,7 @@ module Deployd
     def self.new(resource_name)
       class_name = resource_name.singularize.classify
       klass = Object.const_set(class_name, Class.new)
+      @available_models << klass
       klass.class_eval do
         include MongoMapper::Document
 
@@ -32,6 +37,8 @@ module Deployd
     #
     def self.remove(resource_name)
       class_name = resource_name.singularize.classify
+      klass = class_name.constantize
+      @available_models.delete(klass)
       if Object.constants.include?(class_name.to_sym)
         Object.send(:remove_const, class_name.to_sym)
       end
