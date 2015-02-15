@@ -25,6 +25,7 @@ $ bower install angular
 $ bower install angular-resource
 $ bower install angular-bootstrap
 $ bower install bootstrap
+$ bower install checklist-model
 ```
 
 ### Run Deployerb server

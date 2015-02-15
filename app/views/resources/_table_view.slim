@@ -1,20 +1,25 @@
+button type='button' class='btn btn-default btn-xs' ng-click="checkAll()" Select All
+button type='button' class='btn btn-default btn-xs' ng-click="uncheckAll()" Select None
 table class='table table-hover'
   thead
+    th
+      input type='checkbox' ng-mode='selectedAll' ng-click='changeCheck()'
     th ng-repeat='key in definedKeys'
       | {{ key }}
     th
   tbody
     tr ng-repeat='resource in resources'
+      td
+        input type='checkbox' checklist-model='checkedResources' checklist-value='resource.id'
       td ng-repeat='key in definedKeys'
         | {{resource[key]}}
       td class='col-md-2'
-        span class='actions'
+        span class='actions' ng-hide='checkedSeveral'
           div class='btn-toolbar'
             button class="btn btn-xs btn-danger" style='display:inline!important;' ng-click="deleteResource(resource)"
               span class='glyphicon glyphicon-remove'
             button class="btn btn-xs btn-primary" ng-click="editOrCreateResource(resource)"
               span class='glyphicon glyphicon-edit'
-
 div class='btn-toolbar'
   button class="btn btn-primary" ng-click="editOrCreateResource()"
     | New

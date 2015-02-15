@@ -62,6 +62,7 @@ module Deployd
           '/bower_components/angular/angular.js',
           '/bower_components/angular-resource/angular-resource.js',
           '/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+          '/bower_components/checklist-model/checklist-model.js',
         ]
 
         js_compression :jsmin

@@ -1,4 +1,4 @@
-angular.module("deploydApp", ["ngResource", "ui.bootstrap"])
+angular.module("deploydApp", ["ngResource", "ui.bootstrap", "checklist-model"])
   .controller("resourceCtrl", function ($scope, $http, $resource, $location) {
 
     $scope.baseUrl = "http://" + $location.host() + ":" + $location.port() + "/"
@@ -6,6 +6,34 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap"])
     $scope.displayMode = "list";
     $scope.currentResource = null;
     $scope.error = null;
+    $scope.checkedResources = [];
+    $scope.checkedAll = false;
+    $scope.checkedSeveral = false;
+
+    $scope.checkAll = function() {
+      angular.copy($scope.resources.map(function(item) { return item.id; }), $scope.checkedResources);
+     };
+     $scope.uncheckAll = function() {
+       angular.copy([], $scope.checkedResources);
+     };
+
+     $scope.changeCheck = function() {
+       if ($scope.checkedAll) {
+         $scope.uncheckAll();
+         $scope.checkedAll = false;
+       } else {
+         $scope.checkAll();
+         $scope.checkedAll = true;
+       };
+     };
+
+     $scope.$watch('checkedResources.length', function() {
+       if ($scope.checkedResources.length > 1) {
+         $scope.checkedSeveral = true;
+       } else {
+         $scope.checkedSeveral = false;
+       };
+     });
 
     $scope.selfResource = $resource($scope.resourceUrl + ":id", { id: "@id" },
       { create: { method: "POST" }, save: { method: "PUT" }, query: { isArray: true } }
