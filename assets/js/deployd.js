@@ -12,28 +12,29 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap", "checklist-model"])
 
     $scope.checkAll = function() {
       angular.copy($scope.resources.map(function(item) { return item.id; }), $scope.checkedResources);
-     };
-     $scope.uncheckAll = function() {
-       angular.copy([], $scope.checkedResources);
-     };
+    };
 
-     $scope.changeCheck = function() {
-       if ($scope.checkedAll) {
-         $scope.uncheckAll();
-         $scope.checkedAll = false;
-       } else {
-         $scope.checkAll();
-         $scope.checkedAll = true;
-       };
-     };
+    $scope.uncheckAll = function() {
+      angular.copy([], $scope.checkedResources);
+    };
 
-     $scope.$watch('checkedResources.length', function() {
-       if ($scope.checkedResources.length > 1) {
-         $scope.checkedSeveral = true;
-       } else {
-         $scope.checkedSeveral = false;
-       };
-     });
+    $scope.changeCheck = function() {
+      if ($scope.checkedAll) {
+        $scope.uncheckAll();
+        $scope.checkedAll = false;
+      } else {
+        $scope.checkAll();
+        $scope.checkedAll = true;
+      };
+    };
+
+    $scope.$watch('checkedResources.length', function() {
+      if ($scope.checkedResources.length > 1) {
+        $scope.checkedSeveral = true;
+      } else {
+        $scope.checkedSeveral = false;
+      };
+    };
 
     $scope.selfResource = $resource($scope.resourceUrl + ":id", { id: "@id" },
       { create: { method: "POST" }, save: { method: "PUT" }, query: { isArray: true } }
