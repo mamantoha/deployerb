@@ -34,7 +34,7 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap", "checklist-model"])
       } else {
         $scope.checkedSeveral = false;
       };
-    };
+    });
 
     $scope.selfResource = $resource($scope.resourceUrl + ":id", { id: "@id" },
       { create: { method: "POST" }, save: { method: "PUT" }, query: { isArray: true } }
