@@ -19,13 +19,13 @@ div class='panel panel-primary'
               option value="#{type}" selected=true = type
             - else
               option value="#{type}"= type
-      div.checkbox
+      /div.checkbox
         label
           - if @key.options[:required]
             input type='checkbox' name='required' checked="checked" Required
           - else
             input type='checkbox' name='required' Required
-      div.checkbox
+      /div.checkbox
         label
           - if @key.options[:unique]
             input type='checkbox' name='unique' checked="checked" Unique

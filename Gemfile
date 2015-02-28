@@ -11,9 +11,7 @@ gem 'slim'
 
 gem 'sinatra-assetpack', :require => 'sinatra/assetpack'
 
-# TODO switch back when my changes will be in the main branch of Mongomapper https://github.com/mongomapper/mongomapper/pull/585
-gem 'mongo_mapper', git: 'https://github.com/mamantoha/mongomapper.git'
-gem 'bson_ext'
+gem 'mongoid', path: '../mongoid'
 
 group :development do
   gem 'pry'

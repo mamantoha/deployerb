@@ -6,7 +6,7 @@ require 'sinatra/namespace'
 require 'sinatra/flash'
 require 'sinatra/assetpack'
 require 'slim'
-require 'mongo_mapper'
+require 'mongoid'
 require 'logger'
 
 Slim::Engine.set_options pretty: true,
@@ -98,6 +98,6 @@ module Deployd
 end
 
 require_relative 'lib/sinatra-flash'
-require_relative 'lib/initializers/mongo'
+require_relative 'lib/initializers/mongoid'
 require_relative 'app/models/init'
 require_relative 'app/controllers/init'

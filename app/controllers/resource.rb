@@ -25,7 +25,7 @@ module Deployd
 
       def initialize(resource_name, resource_keys = [])
         @resource_class = resource_name.classify.constantize
-        fail TypeError, "wrong argument type #{@resource_class.name} (expected MongoMapper::Document)" unless @resource_class.include?(MongoMapper::Document)
+        fail TypeError, "wrong argument type #{@resource_class.name} (expected Mongoid::Document)" unless @resource_class.include?(Mongoid::Document)
 
         @resource_name = resource_name
         @resource_keys = resource_keys
@@ -39,8 +39,8 @@ module Deployd
 
       def resource_keys
         keys = []
-        resource_class.keys.each do |_, key|
-          if key.name != '_id' && !key.dynamic?
+        resource_class.fields.each do |_, key|
+          if key.name != '_id'# && !key.dynamic?
             keys << { name: key.name, type: key.type }
           end
         end

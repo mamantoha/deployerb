@@ -7,7 +7,7 @@ div class='panel panel-default'
           th Type
           th
       tbody
-        - @resource.defined_keys.each do |key|
+        - @resource.fields.each do |key|
           tr
             td class='col-md-4'
               = key[1].name
@@ -42,10 +42,10 @@ div class='panel panel-default'
             option value="#{type}"= type
       div.form-group
         input.form-control name='name' placeholder='Enter name'
-      div.checkbox
+      /div.checkbox
         label
           input type='checkbox' name='required' Required
-      div.checkbox
+      /div.checkbox
         label
           input type='checkbox' name='unique' Unique
       div.form-group style='float: right'
