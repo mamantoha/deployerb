@@ -43,7 +43,7 @@ module Deployd
           end
 
           flash[:info] = 'New document successfully added.'
-          redirect '/dashboard/resources'
+          redirect "/dashboard/resources/#{resource_name.pluralize}"
         else
           flash[:danger] = errors.join('; ')
           redirect '/dashboard/resources'
