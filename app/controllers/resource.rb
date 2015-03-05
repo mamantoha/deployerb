@@ -3,7 +3,7 @@ module Deployd
     module Resource
       extend ActiveSupport::Concern
 
-      attr_reader :resource_name, :resource_class
+      attr_reader :resource_name
 
       DEFAULT_ACTIONS = {
         index:   { method: :get,    type: :collection },
@@ -23,12 +23,11 @@ module Deployd
 
       module ClassMethods; end
 
-      def initialize(resource_name, resource_keys = [])
-        @resource_class = resource_name.classify.constantize
-        fail TypeError, "wrong argument type #{@resource_class.name} (expected Mongoid::Document)" unless @resource_class.include?(Mongoid::Document)
+      def initialize(resource_name)
+        resource_class = resource_name.classify.constantize
+        fail TypeError, "wrong argument type #{resource_class.name} (expected Mongoid::Document)" unless resource_class.include?(Mongoid::Document)
 
         @resource_name = resource_name
-        @resource_keys = resource_keys
         @collection_route = "/#{route_key}/?"
         @member_route = "/#{route_key}/:id/?"
 
@@ -37,15 +36,15 @@ module Deployd
         require_resource!(resource_name)
       end
 
-      def resource_keys
-        keys = []
-        resource_class.fields.each do |_, key|
-          if key.name != '_id'# && !key.dynamic?
-            keys << { name: key.name, type: key.type }
+      def resource_fields
+        fields = []
+        resource_name.classify.constantize.fields.each do |_, field|
+          if field.name != '_id'
+            fields << { name: field.name, type: field.type }
           end
         end
 
-        return keys
+        return fields
       end
 
       def route_key
@@ -128,7 +127,7 @@ module Deployd
           context.halt(406, { status: 'error', message: 'Not acceptable JSON payload' }.to_json)
         end
 
-        permitted_params = resource_keys.map { |k| k[:name] }
+        permitted_params = resource_fields.map { |k| k[:name] }
         permitted_params = data.select { |k, _| permitted_params.include?(k) }
 
         begin
@@ -169,7 +168,7 @@ module Deployd
         set_resource(context)
 
         begin
-          permitted_params = resource_keys.map { |k| k[:name] }
+          permitted_params = resource_fields.map { |k| k[:name] }
           permitted_params = data.select { |k, _| permitted_params.include?(k) }
 
           if instance_variable_get(:"@#{resource_name}").update_attributes(permitted_params)

@@ -10,9 +10,8 @@ module Deployd
 
     # params:
     #   resource_name - Sting
-    #   resource_keys - Array of keys { name: 'name', type: Type }
     #
-    def self.new(resource_name, resource_keys = [])
+    def self.new(resource_name)
       class_name = "#{resource_name.classify.pluralize}Controller"
       @generated_classes << klass = Deployd::Controllers.const_set(class_name, Class.new(Base))
 
@@ -22,7 +21,7 @@ module Deployd
         end
       end
 
-      instance_variable_set(:"@#{resource_name.pluralize}_controller", "Deployd::Controllers::#{resource_name.classify.pluralize}Controller".constantize.new(resource_name, resource_keys))
+      instance_variable_set(:"@#{resource_name.pluralize}_controller", "Deployd::Controllers::#{resource_name.classify.pluralize}Controller".constantize.new(resource_name))
       instance_variable_get(:"@#{resource_name.pluralize}_controller").mount_actions
     end
 
@@ -44,7 +43,7 @@ module Deployd
 
       # create classes for resources
       resources.each do |resource|
-        Deployd::Controllers.new(resource[:name], resource[:keys])
+        Deployd::Controllers.new(resource[:name])
       end
     end
   end

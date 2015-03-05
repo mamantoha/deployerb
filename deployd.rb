@@ -8,6 +8,7 @@ require 'sinatra/assetpack'
 require 'slim'
 require 'mongoid'
 require 'logger'
+require 'pry'
 
 Slim::Engine.set_options pretty: true,
   attr_list_delims: {'(' => ')', '[' => ']'} # removed '{' => '}' from default
