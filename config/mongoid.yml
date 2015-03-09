@@ -1,0 +1,9 @@
+base: &base
+  sessions:
+    default:
+      database: deployd
+      hosts:
+        - localhost:27017
+
+development:
+  <<: *base
