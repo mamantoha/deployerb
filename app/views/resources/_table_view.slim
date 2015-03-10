@@ -10,7 +10,7 @@ table class='table table-hover'
   tbody
     tr ng-repeat='resource in resources'
       td
-        input type='checkbox' checklist-model='checkedResources' checklist-value='resource.id'
+        input type='checkbox' checklist-model='checkedResources' checklist-value='resource._id'
       td ng-repeat='key in definedKeys'
         | {{resource[key]}}
       td class='col-md-2'

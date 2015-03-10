@@ -43,7 +43,7 @@ module Deployd
           end
 
           flash[:info] = 'New document successfully added.'
-          redirect '/dashboard/resources'
+          redirect "/dashboard/resources/#{resource_name.pluralize}"
         else
           flash[:danger] = errors.join('; ')
           redirect '/dashboard/resources'
@@ -59,7 +59,7 @@ module Deployd
 
         if @resources && @resources.find { |r| r[:name] == @resource_name }
           @resource = @resource_name.classify.constantize
-          @defined_keys = @resource.defined_keys.map{ |k| k[1].name }.reject { |k| k == '_id' }
+          @defined_keys = @resource.fields.map{ |k| k[1].name }.reject { |k| k == '_id' }
           slim :'/resources/show'
         else
           redirect '/dashboard/resources'
@@ -97,10 +97,7 @@ module Deployd
 
         errors = validates_key(resource_name, key_name, key_type)
         if errors.empty?
-          # MongoMapper validations
-          required = params[:required] ? true : false
-          unique = params[:unique] ? true : false
-          options = { required: required, unique: unique }
+          options = {}
 
           if @resources && @resources.find { |r| r[:name] == resource_name }
             Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options)
@@ -156,7 +153,7 @@ module Deployd
 
         if @resources && @resources.find { |r| r[:name] == @resource_name }
           @resource = @resource_name.classify.constantize
-          @key = @resource.keys.select { |k| k[@key_name] }[@key_name]
+          @key = @resource.fields.select { |k| k[@key_name] }[@key_name]
         end
 
         slim :'resources/keys/show'
@@ -170,9 +167,7 @@ module Deployd
         key_name = params[:key_name]
         key_type = params[:type]
 
-        required = params[:required] ? true : false
-        unique = params[:unique] ? true : false
-        options = { required: required, unique: unique }
+        options = {}
 
         if @resources && @resources.find { |r| r[:name] == resource_name }
           # change type and/or options, remove key and add new
@@ -238,7 +233,7 @@ module Deployd
           errors << 'name: allow only latin letters and underscore'
         end
         # validates :name uniqueness
-        if resource_name.classify.constantize.key?(name.downcase)
+        if resource_name.classify.constantize.fields.include?(name.downcase)
           errors << 'name: has already been taken'
         end
       else

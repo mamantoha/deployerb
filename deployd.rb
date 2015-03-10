@@ -6,8 +6,9 @@ require 'sinatra/namespace'
 require 'sinatra/flash'
 require 'sinatra/assetpack'
 require 'slim'
-require 'mongo_mapper'
+require 'mongoid'
 require 'logger'
+require 'pry'
 
 Slim::Engine.set_options pretty: true,
   attr_list_delims: {'(' => ')', '[' => ']'} # removed '{' => '}' from default
@@ -98,6 +99,6 @@ module Deployd
 end
 
 require_relative 'lib/sinatra-flash'
-require_relative 'lib/initializers/mongo'
+require_relative 'lib/initializers/mongoid'
 require_relative 'app/models/init'
 require_relative 'app/controllers/init'

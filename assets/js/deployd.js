@@ -36,7 +36,7 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap", "checklist-model"])
       };
     });
 
-    $scope.selfResource = $resource($scope.resourceUrl + ":id", { id: "@id" },
+    $scope.selfResource = $resource($scope.resourceUrl + ":id", { id: "@_id" },
       { create: { method: "POST" }, save: { method: "PUT" }, query: { isArray: true } }
     );
 
@@ -45,6 +45,7 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap", "checklist-model"])
     }
 
     $scope.deleteResource = function (resource) {
+      console.log($scope.resources);
       resource.$delete().then(function() {
         $scope.resources.splice($scope.resources.indexOf(resource), 1);
       });
@@ -81,7 +82,7 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap", "checklist-model"])
     }
 
     $scope.saveEdit = function (resource) {
-      if (angular.isDefined(resource.id)) {
+      if (angular.isDefined(resource._id)) {
         $scope.updateResource(resource);
       } else {
         $scope.createResource(resource);
