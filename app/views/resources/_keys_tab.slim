@@ -12,9 +12,9 @@ div class='panel panel-default'
             td class='col-md-4'
               = key[1].name
               span class='options'
-                - if key[1].options[:required]
+                - if Deployd::Models.key_required?(@resource.name, key[1].name)
                   span class="label label-default" required
-                - if key[1].options[:unique]
+                - if Deployd::Models.key_uniqueness?(@resource.name, key[1].name)
                   span class="label label-default" unique
             td class='col-md-2'
               = key[1].type
@@ -42,12 +42,12 @@ div class='panel panel-default'
             option value="#{type}"= type
       div.form-group
         input.form-control name='name' placeholder='Enter name'
-      /div.checkbox
+      div.checkbox
         label
-          input type='checkbox' name='required' Required
-      /div.checkbox
+          input type='checkbox' name='validations[presence]' Required
+      div.checkbox
         label
-          input type='checkbox' name='unique' Unique
+          input type='checkbox' name='validations[uniqueness]' Unique
       div.form-group style='float: right'
         button type='submit' class='btn btn-primary'
           span class='glyphicon glyphicon-plus'

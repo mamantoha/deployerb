@@ -89,20 +89,30 @@ module Deployd
 
       # add new key to document
       #
+      # Example of params:
+      # { "type"=>"String", "name"=>"firstname", "validations"=>{"presence"=>"on"}, "splat"=>[], "captures"=>["people"], "resource_name"=>"people" }
+      #
       post '/resources/:resource_name' do
         check_model_availability!(params[:resource_name])
         resource_name = params[:resource_name].singularize
         key_name = params[:name]
         key_type = params[:type]
 
+        validations = []
+        if params[:validations]
+          Deployd::Models::AVAILABLE_VALIDATIONS.each do |validation|
+            validations << validation if params[:validations][validation]
+          end
+        end
+
         errors = validates_key(resource_name, key_name, key_type)
         if errors.empty?
           options = {}
 
           if @resources && @resources.find { |r| r[:name] == resource_name }
-            Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options)
+            Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
 
-            @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options }
+            @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
             File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
               f.write settings.config_file.to_yaml
             end
@@ -118,6 +128,42 @@ module Deployd
           redirect "/dashboard/resources/#{resource_name.pluralize}"
         end
       end
+
+      # edit key
+      #
+      put '/resources/:resource_name/:key_name' do
+        check_model_availability!(params[:resource_name])
+        resource_name = params[:resource_name].singularize
+        key_name = params[:key_name]
+        key_type = params[:type]
+
+        validations = []
+        if params[:validations]
+          Deployd::Models::AVAILABLE_VALIDATIONS.each do |validation|
+            validations << validation if params[:validations][validation]
+          end
+        end
+
+        options = {}
+
+        if @resources && @resources.find { |r| r[:name] == resource_name }
+          # change type and/or options/validations, remove key and add new
+          Deployd::Models.remove_key(resource_name, key_name.to_sym)
+          Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
+
+          @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
+          @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
+
+          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+            f.write settings.config_file.to_yaml
+          end
+          @resource = resource_name.classify.constantize
+
+          flash[:info] = 'Key successfully changed.'
+          redirect "/dashboard/resources/#{resource_name.pluralize}"
+        end
+      end
+
 
       # remove key from document
       #
@@ -159,33 +205,7 @@ module Deployd
         slim :'resources/keys/show'
       end
 
-      # edit key
-      #
-      put '/resources/:resource_name/:key_name' do
-        check_model_availability!(params[:resource_name])
-        resource_name = params[:resource_name].singularize
-        key_name = params[:key_name]
-        key_type = params[:type]
 
-        options = {}
-
-        if @resources && @resources.find { |r| r[:name] == resource_name }
-          # change type and/or options, remove key and add new
-          Deployd::Models.remove_key(resource_name, key_name.to_sym)
-          Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options)
-
-          @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
-          @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options }
-
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
-          end
-          @resource = resource_name.classify.constantize
-
-          flash[:info] = 'Key successfully changed.'
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
-        end
-      end
     end # namespace '/dashboard'
 
     private

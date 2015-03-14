@@ -3,6 +3,9 @@ module Deployd
     # http://mongoid.org/en/mongoid/docs/documents.html#fields
     AVAILABLE_TYPES = [Array, BigDecimal, Boolean, Date, DateTime, Float, Hash, Integer, BSON::ObjectId, BSON::Binary, Range, Regexp, String, Symbol, Time]
 
+    # http://mongoid.org/en/mongoid/v3/validation.html
+    AVAILABLE_VALIDATIONS = [:uniqueness, :presence]
+
 
     # keep a list of available models in a class variable
     class << self; attr_reader :available_models; end
@@ -53,11 +56,19 @@ module Deployd
     # @param [ Symbol ] key_name Key name.
     # @param [ Object ] key_type Key type.
     # @param [ Hash ] options Options.
+    # @param [ Array ] validations Validations.
     #
-    def self.add_key(resource_name, key_name, key_type, options = {})
+    def self.add_key(resource_name, key_name, key_type, options: {}, validations: [])
       class_name = resource_name.singularize.classify
       class_name.constantize.field(key_name.downcase, options.merge({ type: key_type }))
       class_name.constantize.serializable_keys << key_name.downcase.to_sym
+
+      # add validations for model
+      validations.each do |validation|
+        if AVAILABLE_VALIDATIONS.include?(validation)
+          class_name.constantize.validates key_name, validation => true
+        end
+      end
     end
 
     # Remove key and validations from Mongoid::Document.
@@ -68,14 +79,6 @@ module Deployd
     def self.remove_key(resource_name, key_name)
       class_name = resource_name.singularize.classify
       class_name.constantize.remove_field(key_name.downcase) # from patched Mongoid
-
-      # TODO: This will remove all validators for :field
-      # http://stackoverflow.com/questions/7545938/how-to-remove-validation-using-instance-eval-clause-in-rails
-      #
-      # E.g:
-      # Person._validators.reject!{ |key, _| key == :field }
-      # Person._validate_callbacks.each { |callback| callback.raw_filter.attributes.delete(:field) }
-
       class_name.constantize.serializable_keys.delete(key_name.downcase.to_sym)
     end
 
@@ -86,9 +89,32 @@ module Deployd
         Deployd::Models.new(res[:name])
 
         res[:keys].each do |key|
-          Deployd::Models.add_key(res[:name], key[:name].to_sym, key[:type], key[:options])
+          options = key[:options] || {}
+          validations = key[:validations] || []
+          Deployd::Models.add_key(res[:name], key[:name].to_sym, key[:type], options: options, validations: validations)
         end
       end
     end
-  end
-end
+
+    # Check if key is required
+    #
+    # @params [ String ] resource_name Resource name.
+    # @params [ String ] key_name Key name.
+    #
+    def self.key_required?(resource_name, key_name)
+      class_name = resource_name.singularize.classify
+      class_name.constantize.validators.detect { |v| v.is_a?(Mongoid::Validatable::PresenceValidator) and v.attributes.include?(key_name.to_sym) }
+    end
+
+    # Check if key is uniqueness
+    #
+    # @params [ String ] resource_name Resource name.
+    # @params [ String ] key_name Key name.
+    #
+    def self.key_uniqueness?(resource_name, key_name)
+      class_name = resource_name.singularize.classify
+      class_name.constantize.validators.detect { |v| v.is_a?(Mongoid::Validatable::UniquenessValidator) and v.attributes.include?(key_name.to_sym) }
+    end
+
+  end # Models
+end # Deployd
