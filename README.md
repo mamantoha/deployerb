@@ -36,12 +36,7 @@ $ bundle install
 ### Install Bower dependencies
 
 ```
-$ bower install jquery
-$ bower install angular
-$ bower install angular-resource
-$ bower install angular-bootstrap
-$ bower install bootstrap
-$ bower install checklist-model
+$ bower install
 ```
 
 ### Run Deployerb server
