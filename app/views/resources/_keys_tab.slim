@@ -34,21 +34,26 @@ div class='panel panel-default'
   div class='panel-heading'
     h3 class='panel-title' Add new key
   div class='panel-body'
-    form.form-inline role='form' action='' method='post'
+    form.form-horizontal role='form' action='' method='post'
       div.form-group
-        select.form-control name='type'
-          option value="Type" selected=true disabled=true Type
-          - Deployd::Models::AVAILABLE_TYPES.each do |type|
-            option value="#{type}"= type
-      div.form-group
-        input.form-control name='name' placeholder='Enter name'
-      div.checkbox
-        label
-          input type='checkbox' name='validations[presence]' Required
-      div.checkbox
-        label
-          input type='checkbox' name='validations[uniqueness]' Unique
-      div.form-group style='float: right'
-        button type='submit' class='btn btn-primary'
-          span class='glyphicon glyphicon-plus'
-          | Add
+        div.col-sm-2
+          select.form-control name='type'
+            option value="" selected=true disabled=true Type
+            - Deployd::Models::AVAILABLE_TYPES.each do |type|
+              option value="#{type}"= type
+        div.col-sm-10
+          input.form-control name='name' placeholder='Enter name'
+      div class='panel panel-default'
+        div.panel-heading Validations
+        div.panel-body
+          div.checkbox
+            label
+              input type='checkbox' name='validations[presence]' Required
+          div.checkbox
+            label
+              input type='checkbox' name='validations[uniqueness]' Unique
+      div class='col-sm-offset-2 col-sm-10'
+        div.form-group style='float: right'
+          button type='submit' class='btn btn-primary'
+            span class='glyphicon glyphicon-plus'
+            | Add
