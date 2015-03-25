@@ -12,7 +12,7 @@ gem 'slim'
 gem 'sinatra-assetpack', :require => 'sinatra/assetpack'
 
 gem 'mongoid'
-gem 'mongoid-suicide', git: 'https://github.com/mamantoha/mongoid-suicide.git'
+gem 'mongoid-suicide'
 
 group :development do
   gem 'pry'
