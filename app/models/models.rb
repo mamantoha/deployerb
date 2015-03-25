@@ -21,6 +21,7 @@ module Deployd
       @available_models << klass
       klass.class_eval do
         include Mongoid::Document
+        include Mongoid::Suicide
 
         class << self; attr_accessor :serializable_keys end
 

@@ -11,7 +11,8 @@ gem 'slim'
 
 gem 'sinatra-assetpack', :require => 'sinatra/assetpack'
 
-gem 'mongoid', path: '../mongoid'
+gem 'mongoid'
+gem 'mongoid-suicide', git: 'https://github.com/mamantoha/mongoid-suicide.git'
 
 group :development do
   gem 'pry'
