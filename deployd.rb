@@ -79,6 +79,16 @@ module Deployd
       $logger = Logger.new(STDOUT)
     end
 
+    not_found do
+      if subdomain && subdomain == 'api'
+        content_type :json
+        { status: 'error', data: 'The URI requested is invalid' }.to_json
+      else
+        status 404
+        slim :'404'
+      end
+    end
+
     # AngularJS sends option request before any other request.
     # These lines properly manage that.
     #

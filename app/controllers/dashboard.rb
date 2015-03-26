@@ -202,7 +202,12 @@ module Deployd
           @key = @resource.fields.select { |k| k[@key_name] }[@key_name]
         end
 
-        slim :'resources/keys/show'
+        if @key
+          slim :'resources/keys/show'
+        else
+          flash[:warning] = "Key `#{@key_name}` not found."
+          redirect "/dashboard/resources/#{@resource_name.pluralize}"
+        end
       end
 
 
@@ -214,7 +219,7 @@ module Deployd
     #
     def check_model_availability!(resource_name)
       unless resource_name.singularize != resource_name && Object.const_defined?(resource_name.singularize.classify)
-        flash[:warning] = 'No such resource.'
+        flash[:warning] = "Resource `#{resource_name}` not found."
         redirect '/dashboard/resources'
       end
     end
