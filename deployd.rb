@@ -77,20 +77,6 @@ module Deployd
       { status: 'error', data: 'The URI requested is invalid' }.to_json
     end
 
-    # AngularJS sends option request before any other request.
-    # These lines properly manage that.
-    #
-    options "/*" do
-      allow_headers = ["*", "Content-Type", "Accept", "AUTHORIZATION", "Cache-Control"]
-      allow_methods = [:post, :get, :option, :delete, :put]
-      headers_list = {
-        'Access-Control-Allow-Origin' => '*',
-        'Access-Control-Allow-Methods' => allow_methods.map { |m| m.to_s.upcase! }.join(', '),
-        'Access-Control-Allow-Headers' => allow_headers.map(&:to_s).join(', ')
-      }
-      headers headers_list
-    end
-
     enable :sessions
 
     register Sinatra::Namespace
