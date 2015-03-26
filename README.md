@@ -39,7 +39,26 @@ $ bundle install
 $ bower install
 ```
 
+### Using subdomains in development
+
+Network configuration for supporting subdomains in development:
+
+/etc/hosts
+
+```
+127.0.0.1 deployerb-dev.com
+127.0.0.1 api.deployerb-dev.com
+```
+
+On Windows, look for `C:\WINDOWS\system32\drivers\etc\hosts`
+
+The following URLs now available on local machine:
+
+* http://deployerb-dev.com:9292
+* http://api.deployerb-dev.com:9292
+
 ### Run Deployerb server
+
 ```
 $ rackup
 ```

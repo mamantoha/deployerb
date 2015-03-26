@@ -6,6 +6,7 @@ gem 'rack'
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'sinatra-flash'
+gem 'sinatra-subdomain'
 
 gem 'slim'
 

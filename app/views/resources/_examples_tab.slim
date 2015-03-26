@@ -2,6 +2,10 @@ div class='panel-group' id='accordion'
   div class='panel panel-default'
     div id='examples' class='panel-default'
       div class='panel-body'
+        div.well
+          | You might use the following URL to make API requests:
+          br
+          | http://api.#{settings.bind}:#{settings.port}/#{@route_key}
         table.table
           thead
             tr

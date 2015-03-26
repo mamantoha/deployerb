@@ -32,6 +32,7 @@ module Deployd
         @member_route = "/#{route_key}/:id/?"
 
         set_content_type(:json)
+        set_access_control_header
         require_resource!(resource_name)
       end
 
@@ -56,14 +57,30 @@ module Deployd
         end
       end
 
+      def set_access_control_header
+        Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
+          allow_headers = ["*", "Content-Type", "Accept", "AUTHORIZATION", "Cache-Control"]
+          allow_methods = [:post, :get, :option, :delete, :put]
+          headers_list = {
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => allow_methods.map { |m| m.to_s.upcase! }.join(', '),
+            'Access-Control-Allow-Headers' => allow_headers.map(&:to_s).join(', ')
+          }
+
+          headers headers_list
+        end
+      end
+
       # return 404 if Deployd::Controlles::%ModelName%sController not found in application
       # TODO try to find better solution to remove routes in real time
       #
       def require_resource!(resource_name)
         Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
           class_name = "#{resource_name.singularize.classify.pluralize}Controller"
+
           unless Deployd::Controllers.constants.include?(class_name.to_sym)
-            halt 404
+            content_type :json
+            halt 404, { status: 'error', data: 'The URI requested is invalid' }.to_json
           end
         end
       end
@@ -89,8 +106,10 @@ module Deployd
         controller = self
         route = controller.instance_variable_get("@#{opts[:type].to_s}_route")
 
-        Deployd::Application.send opts[:method], route do
-          controller.send action, self
+        Deployd::Application.send :subdomain, :api do
+          Deployd::Application.send opts[:method], route do
+            controller.send action, self
+          end
         end
       end
 

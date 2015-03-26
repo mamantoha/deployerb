@@ -1,7 +1,8 @@
 angular.module("deploydApp", ["ngResource", "ui.bootstrap", "checklist-model"])
   .controller("resourceCtrl", function ($scope, $http, $resource, $location) {
 
-    $scope.baseUrl = "http://" + $location.host() + ":" + $location.port() + "/"
+    $scope.apiSubdomain = "api"
+    $scope.baseUrl = "http://" + $scope.apiSubdomain + "." + $location.host() + ":" + $location.port() + "/"
     $scope.resourceUrl = $scope.baseUrl + $scope.routeKey + '/';
     $scope.displayMode = "list";
     $scope.currentResource = null;
