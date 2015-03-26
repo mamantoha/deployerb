@@ -1,217 +1,218 @@
 module Deployd
   class Application < Sinatra::Base
-    get '/' do
-      redirect '/dashboard/resources'
-    end
-
-    get '/tableView' do
-      slim :'resources/_table_view', layout: false
-    end
-
-    get '/editorView' do
-      slim :'resources/_editor_view', layout: false
-    end
-
-    namespace '/dashboard' do
-      before do
-        @resources = settings.config_file[:resources]
+    subdomain '' do
+      get '/' do
+        redirect '/dashboard/resources'
       end
 
-      get '/resources/?' do
-        slim :'resources/index'
+      get '/tableView' do
+        slim :'resources/_table_view', layout: false
       end
 
-      # create new document
-      #
-      get '/resources/new' do
-        slim :'resources/new', layout: false
+      get '/editorView' do
+        slim :'resources/_editor_view', layout: false
       end
 
-      # save new document
-      #
-      post '/resources' do
-        errors = validates_resource(params[:name])
-        if errors.empty?
-          resource_name = params[:name].downcase.singularize
-
-          Deployd::Models.new(resource_name)
-          Deployd::Controllers.new(resource_name)
-
-          @resources << { name: resource_name, keys: [] }
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
-          end
-
-          flash[:info] = 'New document successfully added.'
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
-        else
-          flash[:danger] = errors.join('; ')
-          redirect '/dashboard/resources'
-        end
-      end
-
-      # show resource
-      #
-      get '/resources/:resource_name' do
-        check_model_availability!(params[:resource_name])
-        @resource_name = params[:resource_name].singularize
-        @route_key = @resource_name.pluralize
-
-        if @resources && @resources.find { |r| r[:name] == @resource_name }
-          @resource = @resource_name.classify.constantize
-          @defined_keys = @resource.fields.map{ |k| k[1].name }.reject { |k| k == '_id' }
-          slim :'/resources/show'
-        else
-          redirect '/dashboard/resources'
-        end
-      end
-
-      # remove document
-      #
-      delete '/resources/:resource_name' do
-        check_model_availability!(params[:resource_name])
-        resource_name = params[:resource_name].singularize
-
-        if @resources && @resources.find { |r| r[:name] == resource_name }
-          Deployd::Models.remove(resource_name)
-          Deployd::Controllers.remove(resource_name)
-
-          @resources.delete_if { |r| r[:name] == resource_name }
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
-          end
-          flash[:info] = 'Document successfully removed.'
-          redirect '/dashboard/resources'
-        else
-          redirect '/dashboard/resources'
-        end
-      end
-
-      # add new key to document
-      #
-      # Example of params:
-      # { "type"=>"String", "name"=>"firstname", "validations"=>{"presence"=>"on"}, "splat"=>[], "captures"=>["people"], "resource_name"=>"people" }
-      #
-      post '/resources/:resource_name' do
-        check_model_availability!(params[:resource_name])
-        resource_name = params[:resource_name].singularize
-        key_name = params[:name]
-        key_type = params[:type]
-
-        validations = []
-        if params[:validations]
-          Deployd::Models::AVAILABLE_VALIDATIONS.each do |validation|
-            validations << validation if params[:validations][validation]
-          end
+      namespace '/dashboard' do
+        before do
+          @resources = settings.config_file[:resources]
         end
 
-        errors = validates_key(resource_name, key_name, key_type)
-        if errors.empty?
-          options = {}
+        get '/resources/?' do
+          slim :'resources/index'
+        end
 
-          if @resources && @resources.find { |r| r[:name] == resource_name }
-            Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
+        # create new document
+        #
+        get '/resources/new' do
+          slim :'resources/new', layout: false
+        end
 
-            @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
+        # save new document
+        #
+        post '/resources' do
+          errors = validates_resource(params[:name])
+          if errors.empty?
+            resource_name = params[:name].downcase.singularize
+
+            Deployd::Models.new(resource_name)
+            Deployd::Controllers.new(resource_name)
+
+            @resources << { name: resource_name, keys: [] }
             File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
               f.write settings.config_file.to_yaml
             end
 
-            @resource = resource_name.classify.constantize
-            flash[:info] = 'New key successfully added.'
+            flash[:info] = 'New document successfully added.'
             redirect "/dashboard/resources/#{resource_name.pluralize}"
+          else
+            flash[:danger] = errors.join('; ')
+            redirect '/dashboard/resources'
+          end
+        end
+
+        # show resource
+        #
+        get '/resources/:resource_name' do
+          check_model_availability!(params[:resource_name])
+          @resource_name = params[:resource_name].singularize
+          @route_key = @resource_name.pluralize
+
+          if @resources && @resources.find { |r| r[:name] == @resource_name }
+            @resource = @resource_name.classify.constantize
+            @defined_keys = @resource.fields.map{ |k| k[1].name }.reject { |k| k == '_id' }
+            slim :'/resources/show'
           else
             redirect '/dashboard/resources'
           end
-        else
-          flash[:danger] = errors.join('; ')
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
         end
-      end
 
-      # edit key
-      #
-      put '/resources/:resource_name/:key_name' do
-        check_model_availability!(params[:resource_name])
-        resource_name = params[:resource_name].singularize
-        key_name = params[:key_name]
-        key_type = params[:type]
+        # remove document
+        #
+        delete '/resources/:resource_name' do
+          check_model_availability!(params[:resource_name])
+          resource_name = params[:resource_name].singularize
 
-        validations = []
-        if params[:validations]
-          Deployd::Models::AVAILABLE_VALIDATIONS.each do |validation|
-            validations << validation if params[:validations][validation]
+          if @resources && @resources.find { |r| r[:name] == resource_name }
+            Deployd::Models.remove(resource_name)
+            Deployd::Controllers.remove(resource_name)
+
+            @resources.delete_if { |r| r[:name] == resource_name }
+            File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+              f.write settings.config_file.to_yaml
+            end
+            flash[:info] = 'Document successfully removed.'
+            redirect '/dashboard/resources'
+          else
+            redirect '/dashboard/resources'
           end
         end
 
-        options = {}
+        # add new key to document
+        #
+        # Example of params:
+        # { "type"=>"String", "name"=>"firstname", "validations"=>{"presence"=>"on"}, "splat"=>[], "captures"=>["people"], "resource_name"=>"people" }
+        #
+        post '/resources/:resource_name' do
+          check_model_availability!(params[:resource_name])
+          resource_name = params[:resource_name].singularize
+          key_name = params[:name]
+          key_type = params[:type]
 
-        if @resources && @resources.find { |r| r[:name] == resource_name }
-          # change type and/or options/validations, remove key and add new
-          Deployd::Models.remove_key(resource_name, key_name.to_sym)
-          Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
-
-          @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
-          @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
-
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
+          validations = []
+          if params[:validations]
+            Deployd::Models::AVAILABLE_VALIDATIONS.each do |validation|
+              validations << validation if params[:validations][validation]
+            end
           end
-          @resource = resource_name.classify.constantize
 
-          flash[:info] = 'Key successfully changed.'
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
-        end
-      end
+          errors = validates_key(resource_name, key_name, key_type)
+          if errors.empty?
+            options = {}
 
+            if @resources && @resources.find { |r| r[:name] == resource_name }
+              Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
 
-      # remove key from document
-      #
-      # delete '/resource/user/name'
-      #
-      delete '/resources/:resource_name/:key_name' do
-        check_model_availability!(params[:resource_name])
-        resource_name = params[:resource_name].singularize
-        key_name = params[:key_name]
+              @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
+              File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+                f.write settings.config_file.to_yaml
+              end
 
-        if @resources && @resources.find { |r| r[:name] == resource_name }
-          Deployd::Models.remove_key(resource_name, key_name.to_sym)
-
-          @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
+              @resource = resource_name.classify.constantize
+              flash[:info] = 'New key successfully added.'
+              redirect "/dashboard/resources/#{resource_name.pluralize}"
+            else
+              redirect '/dashboard/resources'
+            end
+          else
+            flash[:danger] = errors.join('; ')
+            redirect "/dashboard/resources/#{resource_name.pluralize}"
           end
-          @resource = resource_name.classify.constantize
-
-          flash[:info] = 'Key successfully removed.'
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
-        end
-      end
-
-      # show key
-      #
-      # get '/resource/user/name'
-      #
-      get '/resources/:resource_name/:key_name' do
-        check_model_availability!(params[:resource_name])
-        @resource_name = params[:resource_name].singularize
-        @key_name = params[:key_name]
-
-        if @resources && @resources.find { |r| r[:name] == @resource_name }
-          @resource = @resource_name.classify.constantize
-          @key = @resource.fields.select { |k| k[@key_name] }[@key_name]
         end
 
-        if @key
-          slim :'resources/keys/show'
-        else
-          flash[:warning] = "Key `#{@key_name}` not found."
-          redirect "/dashboard/resources/#{@resource_name.pluralize}"
+        # edit key
+        #
+        put '/resources/:resource_name/:key_name' do
+          check_model_availability!(params[:resource_name])
+          resource_name = params[:resource_name].singularize
+          key_name = params[:key_name]
+          key_type = params[:type]
+
+          validations = []
+          if params[:validations]
+            Deployd::Models::AVAILABLE_VALIDATIONS.each do |validation|
+              validations << validation if params[:validations][validation]
+            end
+          end
+
+          options = {}
+
+          if @resources && @resources.find { |r| r[:name] == resource_name }
+            # change type and/or options/validations, remove key and add new
+            Deployd::Models.remove_key(resource_name, key_name.to_sym)
+            Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
+
+            @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
+            @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
+
+            File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+              f.write settings.config_file.to_yaml
+            end
+            @resource = resource_name.classify.constantize
+
+            flash[:info] = 'Key successfully changed.'
+            redirect "/dashboard/resources/#{resource_name.pluralize}"
+          end
         end
-      end
 
 
-    end # namespace '/dashboard'
+        # remove key from document
+        #
+        # delete '/resource/user/name'
+        #
+        delete '/resources/:resource_name/:key_name' do
+          check_model_availability!(params[:resource_name])
+          resource_name = params[:resource_name].singularize
+          key_name = params[:key_name]
+
+          if @resources && @resources.find { |r| r[:name] == resource_name }
+            Deployd::Models.remove_key(resource_name, key_name.to_sym)
+
+            @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
+            File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+              f.write settings.config_file.to_yaml
+            end
+            @resource = resource_name.classify.constantize
+
+            flash[:info] = 'Key successfully removed.'
+            redirect "/dashboard/resources/#{resource_name.pluralize}"
+          end
+        end
+
+        # show key
+        #
+        # get '/resource/user/name'
+        #
+        get '/resources/:resource_name/:key_name' do
+          check_model_availability!(params[:resource_name])
+          @resource_name = params[:resource_name].singularize
+          @key_name = params[:key_name]
+
+          if @resources && @resources.find { |r| r[:name] == @resource_name }
+            @resource = @resource_name.classify.constantize
+            @key = @resource.fields.select { |k| k[@key_name] }[@key_name]
+          end
+
+          if @key
+            slim :'resources/keys/show'
+          else
+            flash[:warning] = "Key `#{@key_name}` not found."
+            redirect "/dashboard/resources/#{@resource_name.pluralize}"
+          end
+        end
+
+      end # namespace '/dashboard'
+    end # subdomain
 
     private
 

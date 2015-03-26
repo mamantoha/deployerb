@@ -84,6 +84,7 @@ module Deployd
         content_type :json
         { status: 'error', data: 'The URI requested is invalid' }.to_json
       else
+        content_type :html
         status 404
         slim :'404'
       end
