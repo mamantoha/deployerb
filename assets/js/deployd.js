@@ -12,7 +12,7 @@ angular.module("deploydApp", ["ngResource", "ui.bootstrap", "checklist-model"])
     $scope.checkedSeveral = false;
 
     $scope.checkAll = function() {
-      angular.copy($scope.resources.map(function(item) { return item.id; }), $scope.checkedResources);
+      angular.copy($scope.resources.map(function(item) { return item._id; }), $scope.checkedResources);
     };
 
     $scope.uncheckAll = function() {
