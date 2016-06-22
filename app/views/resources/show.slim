@@ -3,10 +3,10 @@ ol class='breadcrumb'
     a href='/dashboard/resources' Resources
   li class='active'= @resource_name.pluralize
 
-tabset justified='true'
-  tab heading='Keys'
+uib-tabset justified='true'
+  uib-tab heading='Keys'
     == slim :'resources/_keys_tab'
-  tab heading='Data'
+  uib-tab heading='Data'
     == slim :'resources/_data_tab'
-  tab heading='Examples'
+  uib-tab heading='Examples'
     == slim :'resources/_examples_tab'

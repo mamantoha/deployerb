@@ -12,8 +12,8 @@ gem 'slim'
 
 gem 'sinatra-assetpack', :require => 'sinatra/assetpack'
 
-gem 'mongoid'
-gem 'mongoid-suicide'
+gem 'mongoid', '~> 5.0'
+gem 'mongoid-suicide', '~> 0.1.0'
 
 group :development do
   gem 'pry'
