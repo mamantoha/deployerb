@@ -60,5 +60,5 @@ The following URLs now available on local machine:
 ### Run Deployerb server
 
 ```
-$ rackup
+$ bundle exec rackup
 ```
