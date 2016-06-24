@@ -1,8 +1,17 @@
 module Deployd
   class Application < Sinatra::Base
     subdomain '' do
+      before /^\/dashboard\/resources\/?.*/  do
+        check_mongodb_server
+      end
+
       get '/' do
         redirect '/dashboard/resources'
+      end
+
+      get '/mongodb_error' do
+        content_type :html
+        slim :mongodb_error
       end
 
       get '/tableView' do
@@ -272,6 +281,14 @@ module Deployd
       end
 
       return errors
+    end
+
+    def check_mongodb_server
+      Timeout.timeout(5) do
+        Mongoid.default_client.database_names
+      end
+    rescue Timeout::Error
+      redirect '/mongodb_error'
     end
   end # class Application < Sinatra::Base
 end # module Deployd
