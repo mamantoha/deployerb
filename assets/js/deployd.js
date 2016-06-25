@@ -115,11 +115,7 @@ angular.module("deploydApp", ["ngResource", 'ui.bootstrap', "checklist-model"])
     };
 
     $scope.cancelEdit = function () {
-      if ($scope.currentResource && $scope.currentResource.$get) {
-        $scope.currentResource.$get;
-      } else {
-        $scope.currentResource = {};
-      }
+      $scope.currentResource = {};
       $scope.clearError();
       $scope.displayMode = 'list';
     };

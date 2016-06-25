@@ -1,11 +1,12 @@
 uib-alert type='danger' ng-show='error' close='clearError()'
   | {{ error.message }}
 
-div class='form-group' ng-repeat='key in definedKeys'
-  label
-    | {{key}}
-  input class='form-control' ng-model='currentResource[key]'
+form ng-submit='saveEdit(currentResource)'
+  div class='form-group' ng-repeat='key in definedKeys'
+    label
+      | {{key}}
+    input class='form-control' ng-model='currentResource[key]' ng-model-options="{ updateOn: 'submit' }"
 
-div class='btn-toolbar'
-  button class='btn btn-primary' ng-click='saveEdit(currentResource)' Save
-  button class='btn btn-default' ng-click='cancelEdit()' Cancel
+  div class='btn-toolbar'
+    button type='submit' class='btn btn-primary' Save
+    button type='button' class='btn btn-default' ng-click='cancelEdit()' Cancel
