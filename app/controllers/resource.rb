@@ -116,7 +116,9 @@ module Deployd
       # params:
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
-      def index(_context)
+      def index(context)
+        # context.request is an instance of Sinatra::Request
+        params = context.request.params
         instance_variable_set(:"@#{resource_name.pluralize}", resource_name.classify.constantize.all)
         instance_variable_get(:"@#{resource_name.pluralize}").to_json
       end
