@@ -4,7 +4,7 @@ uib-alert type='danger' ng-show='error' close='clearError()'
 div class='form-group' ng-repeat='key in definedKeys'
   label
     | {{key}}
-  input class='form-control' ng-model='currentResource[key]'
+  input class='form-control' ng-model='currentResource[key]' ng-model-options="{ updateOn: 'submit' }"
 
 div class='btn-toolbar'
   button class='btn btn-primary' ng-click='saveEdit(currentResource)' Save
