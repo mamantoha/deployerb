@@ -1,4 +1,4 @@
-div ng-init="routeKey='#{@route_key}'; definedKeys=#{@defined_keys}"
+div ng-init="routeKey='#{@route_key}'; definedKeys=#{@defined_keys.to_json}"
   div ng-controller='resourceCtrl'
     div class='panel-group' id='accordion'
       div class='panel panel-default'

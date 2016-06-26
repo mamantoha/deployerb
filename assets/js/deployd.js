@@ -124,5 +124,16 @@ angular.module("deploydApp", ["ngResource", 'ui.bootstrap', "checklist-model"])
       $scope.error = null;
     };
 
+    $scope.inputType = function (inputType) {
+      switch(inputType) {
+        case 'String':
+          return 'text';
+        case 'Integer':
+          return 'number';
+        default:
+          return 'text';
+      }
+    };
+
     $scope.listResources();
   });
