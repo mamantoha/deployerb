@@ -69,7 +69,7 @@ module Deployd
 
           if @resources && @resources.find { |r| r[:name] == @resource_name }
             @resource = @resource_name.classify.constantize
-            @defined_keys = @resource.fields.map{ |k| k[1].name }.reject { |k| k == '_id' }
+            @defined_keys = @resource.fields.map{ |k| { name: k[1].name, type: k[1].type.to_s } }.reject { |k| k[:name] == '_id' }
             slim :'/resources/show'
           else
             redirect '/dashboard/resources'

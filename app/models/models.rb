@@ -1,6 +1,7 @@
 module Deployd
   module Models
-    # http://mongoid.org/en/mongoid/docs/documents.html#fields
+    # Mongoid 5.1
+    # https://docs.mongodb.com/ecosystem/tutorial/mongoid-documents/#fields
     AVAILABLE_TYPES = [Array, BigDecimal, Boolean, Date, DateTime, Float, Hash, Integer, BSON::ObjectId, BSON::Binary, Range, Regexp, String, Symbol, Time]
 
     # http://mongoid.org/en/mongoid/v3/validation.html
