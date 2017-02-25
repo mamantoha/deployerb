@@ -1,0 +1,27 @@
+{
+  "name": "deployerb",
+  "version": "1.0.0",
+  "description": "``` $ sudo apt-get install mongodb ```",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mamantoha/deployerb.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mamantoha/deployerb/issues"
+  },
+  "homepage": "https://github.com/mamantoha/deployerb#readme",
+  "dependencies": {
+    "angular": "~1.6.2",
+    "angular-resource": "^1.6.2",
+    "angular-ui-bootstrap": "~2.5.0",
+    "bootstrap": "~3.3.7",
+    "checklist-model": "~0.11.0",
+    "jquery": "~3.1.1"
+  }
+}

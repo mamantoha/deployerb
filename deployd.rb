@@ -47,7 +47,7 @@ module Deployd
         serve '/js', from: 'assets/js'
         serve '/css', from: 'assets/css'
         serve '/images', from: 'assets/images'
-        serve '/bower_components', from: 'bower_components'
+        serve '/node_modules', from: 'node_modules'
 
         js :app, '/js/app.js', [
           '/js/deployd.js'
@@ -58,19 +58,19 @@ module Deployd
         ]
 
         css :libs, [
-          '/bower_components/bootstrap/dist/css/bootstrap.css',
+          '/node_modules/bootstrap/dist/css/bootstrap.css',
         ]
 
         js :libs, [
-          '/bower_components/jquery/dist/jquery.js',
-          '/bower_components/bootstrap/dist/js/bootstrap.js',
+          '/node_modules/jquery/dist/jquery.js',
+          '/node_modules/bootstrap/dist/js/bootstrap.js',
         ]
 
         js :angular, [
-          '/bower_components/angular/angular.js',
-          '/bower_components/angular-resource/angular-resource.js',
-          '/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
-          '/bower_components/checklist-model/checklist-model.js',
+          '/node_modules/angular/angular.js',
+          '/node_modules/angular-resource/angular-resource.js',
+          '/node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
+          '/node_modules/checklist-model/checklist-model.js',
         ]
 
         js_compression :jsmin

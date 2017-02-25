@@ -10,16 +10,6 @@ $ sudo apt-get install mongodb
 $ sudo apt-get install nodejs-legacy npm
 ```
 
-### Install Bower
-
-```
-sudo chown -R $USER /usr/local
-```
-
-```
-$ npm install -g bower
-```
-
 ### Clone Deployerb from GiHub
 
 ```
@@ -33,10 +23,10 @@ $ cd deployerb
 $ bundle install
 ```
 
-### Install Bower dependencies
+### Install NPM dependencies
 
 ```
-$ bower install
+$ npm install
 ```
 
 ### Using subdomains in development

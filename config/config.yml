@@ -1,0 +1,20 @@
+---
+:resources:
+- :name: person
+  :keys:
+  - :name: name
+    :type: !ruby/class 'String'
+    :options: {}
+    :validations:
+    - :uniqueness
+    - :presence
+  - :name: age
+    :type: !ruby/class 'Integer'
+    :options: {}
+    :validations:
+    - :presence
+  - :name: datetime
+    :type: !ruby/class 'DateTime'
+    :options: {}
+    :validations:
+    - :presence
