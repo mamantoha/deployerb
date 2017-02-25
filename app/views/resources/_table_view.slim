@@ -31,7 +31,7 @@ table class='table table-hover'
               span class='glyphicon glyphicon-edit'
 
 #pagination.text-center ng-hide="pagination.numPages <= 1"
-  uib-pagination[total-items="totalResources" ng-change="pageChanged()" ng-model="pagination.currentPage"
+  ul[uib-pagination="" total-items="totalResources" ng-change="pageChanged()" ng-model="pagination.currentPage"
     items-per-page="pagination.resourcesPerPage" num-pages="pagination.numPages"]
   pre
     | Page: {{pagination.currentPage}} / {{pagination.numPages}}
