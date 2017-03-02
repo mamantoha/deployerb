@@ -10,8 +10,6 @@ gem 'sinatra-subdomain'
 
 gem 'slim'
 
-gem 'sinatra-assetpack', :require => 'sinatra/assetpack'
-
 gem 'mongoid', '~> 6.0'
 gem 'mongoid-suicide', '~> 0.2.0'
 
