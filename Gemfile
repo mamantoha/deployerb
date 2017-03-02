@@ -3,10 +3,11 @@ source 'https://rubygems.org'
 gem 'activesupport'
 
 gem 'rack'
-gem 'sinatra'
-gem 'sinatra-contrib'
+gem 'sinatra', '~> 2.0.0.beta2'
+gem 'sinatra-contrib', '~> 2.0.0.beta2'
 gem 'sinatra-flash'
-gem 'sinatra-subdomain'
+# gem 'sinatra-subdomain'
+gem 'sinatra-subdomain', path: 'gems/sinatra-subdomain'
 
 gem 'slim'
 
