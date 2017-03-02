@@ -5,7 +5,6 @@ require 'sinatra/base'
 require 'sinatra/namespace'
 require 'sinatra/flash'
 require 'sinatra/subdomain'
-require 'sinatra/assetpack'
 require 'slim'
 require 'mongoid'
 require 'logger'
@@ -40,41 +39,6 @@ module Deployd
       set :config_file, load_or_initialize_config_file
       set :bind, 'deployerb-dev.com'
       set :port, 9292
-
-      register Sinatra::AssetPack
-
-      assets {
-        serve '/js', from: 'assets/js'
-        serve '/css', from: 'assets/css'
-        serve '/images', from: 'assets/images'
-        serve '/node_modules', from: 'node_modules'
-
-        js :app, '/js/app.js', [
-          '/js/deployd.js'
-        ]
-
-        css :application, '/css/application.css', [
-          '/css/deployd.css',
-        ]
-
-        css :libs, [
-          '/node_modules/bootstrap/dist/css/bootstrap.css',
-        ]
-
-        js :libs, [
-          '/node_modules/jquery/dist/jquery.js',
-          '/node_modules/bootstrap/dist/js/bootstrap.js',
-        ]
-
-        js :angular, [
-          '/node_modules/angular/angular.js',
-          '/node_modules/angular-resource/angular-resource.js',
-          '/node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
-          '/node_modules/checklist-model/checklist-model.js',
-        ]
-
-        js_compression :jsmin
-      }
 
       $logger = Logger.new(STDOUT)
     end

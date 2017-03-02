@@ -4,12 +4,9 @@ html ng-app='deploydApp'
     meta charset='utf-8'
     title Deployerb
 
-    == js :libs
-    == js :angular
-    == js :app
+    script src="/javascripts/application.js"
+    link rel="stylesheet" type="text/css" href="/stylesheets/application.css"
 
-    == css :libs, media: 'screen'
-    == css :application, media: 'screen'
   body
     div class='navbar navbar-default navbar-static-top' role='navigation'
       div.container

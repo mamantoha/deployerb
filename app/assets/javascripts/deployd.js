@@ -1,5 +1,9 @@
-angular.module("deploydApp", ["ngResource", 'ui.bootstrap', "checklist-model"])
-  .controller("resourceCtrl", function ($scope, $http, $resource, $location, $log) {
+import tabs from 'angular-ui-bootstrap/src/tabs'
+import pagination from 'angular-ui-bootstrap/src/pagination'
+import ChecklistDirective from 'checklist-model'
+
+angular.module("deploydApp", ["ngResource", ChecklistDirective, tabs, pagination])
+  .controller("ResourceController", function ($scope, $http, $resource, $location, $log) {
 
     $scope.apiSubdomain = "api";
     $scope.baseUrl = "http://" + $scope.apiSubdomain + "." + $location.host() + ":" + $location.port() + "/";
@@ -13,7 +17,7 @@ angular.module("deploydApp", ["ngResource", 'ui.bootstrap', "checklist-model"])
 
     $scope.pagination = {
       currentPage: 1,
-      resourcesPerPage: 25,
+      resourcesPerPage: 2,
       resources: []
     };
     $scope.totalResources = 1;
