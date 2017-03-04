@@ -1,8 +1,9 @@
 import tabs from 'angular-ui-bootstrap/src/tabs'
 import pagination from 'angular-ui-bootstrap/src/pagination'
+import alert from 'angular-ui-bootstrap/src/alert'
 import ChecklistDirective from 'checklist-model'
 
-angular.module("deploydApp", ["ngResource", ChecklistDirective, tabs, pagination])
+angular.module("deploydApp", ["ngResource", ChecklistDirective, tabs, pagination, alert])
   .controller("ResourceController", function ($scope, $http, $resource, $location, $log) {
 
     $scope.apiSubdomain = "api";
