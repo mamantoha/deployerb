@@ -9,11 +9,6 @@ module Deployd
         redirect '/dashboard/resources'
       end
 
-      get '/mongodb_error' do
-        content_type :html
-        slim :mongodb_error
-      end
-
       get '/tableView' do
         slim :'resources/_table_view', layout: false
       end
@@ -288,7 +283,8 @@ module Deployd
         Mongoid.default_client.database_names
       end
     rescue Timeout::Error
-      redirect '/mongodb_error'
+      content_type :html
+      halt slim :mongodb_error
     end
   end # class Application < Sinatra::Base
 end # module Deployd
