@@ -1,5 +1,7 @@
-PATH
-  remote: gems/sinatra-subdomain
+GIT
+  remote: git://github.com/mamantoha/sinatra-subdomain.git
+  revision: e4da43fb33fdaa2f5fd01f96c3da5473248a4312
+  branch: sinatra2
   specs:
     sinatra-subdomain (0.2.0)
       sinatra
@@ -16,7 +18,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
-    backports (3.6.8)
+    backports (3.8.0)
     bson (4.2.1)
     capybara (2.12.1)
       addressable
@@ -54,7 +56,7 @@ GEM
       slop (~> 3.4)
     public_suffix (2.0.5)
     rack (2.0.1)
-    rack-protection (2.0.0.rc1)
+    rack-protection (2.0.0)
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -79,17 +81,17 @@ GEM
       childprocess (~> 0.5)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
-    sinatra (2.0.0.rc1)
-      mustermann (= 1.0.0)
+    sinatra (2.0.0)
+      mustermann (~> 1.0)
       rack (~> 2.0)
-      rack-protection (= 2.0.0.rc1)
+      rack-protection (= 2.0.0)
       tilt (~> 2.0)
-    sinatra-contrib (2.0.0.rc1)
+    sinatra-contrib (2.0.0)
       backports (>= 2.0)
       multi_json
-      mustermann (= 1.0.0)
-      rack-protection (= 2.0.0.rc1)
-      sinatra (= 2.0.0.rc1)
+      mustermann (~> 1.0)
+      rack-protection (= 2.0.0)
+      sinatra (= 2.0.0)
       tilt (>= 1.3, < 3)
     sinatra-flash (0.3.0)
       sinatra (>= 1.0.0)
@@ -99,7 +101,7 @@ GEM
     slop (3.6.0)
     temple (0.7.7)
     thread_safe (0.3.6)
-    tilt (2.0.6)
+    tilt (2.0.7)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     websocket (1.2.4)
@@ -119,11 +121,11 @@ DEPENDENCIES
   racksh
   rspec
   selenium-webdriver
-  sinatra (~> 2.0.0.rc1)
-  sinatra-contrib (~> 2.0.0.rc1)
+  sinatra (~> 2.0.0)
+  sinatra-contrib (~> 2.0.0)
   sinatra-flash
   sinatra-subdomain!
   slim
 
 BUNDLED WITH
-   1.13.6
+   1.14.6
