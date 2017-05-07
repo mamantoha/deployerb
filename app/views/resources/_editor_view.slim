@@ -1,4 +1,4 @@
-uib-alert type='danger' ng-show='error' close='clearError()'
+div uib-alert='' ng-class="'alert-' + 'danger'" ng-show='error' close='clearError()'
   | {{ error.message }}
 
 form ng-submit='saveEdit(currentResource)'

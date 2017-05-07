@@ -8,6 +8,7 @@ gem 'sinatra-contrib', '~> 2.0.0'
 gem 'sinatra-flash'
 # gem 'sinatra-subdomain'
 gem 'sinatra-subdomain', github: 'mamantoha/sinatra-subdomain', branch: 'sinatra2'
+gem 'puma'
 
 gem 'slim'
 

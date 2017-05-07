@@ -1,14 +1,9 @@
-### Install MongoDB on Ubuntu
+## Installation
 
-```
-$ sudo apt-get install mongodb
-```
-
-### Install Node.js and npm on Ubuntu
-
-```
-$ sudo apt-get install nodejs-legacy npm
-```
+* Install MongoDB
+* Install Ruby
+* Install Node.js
+* Install Yarn
 
 ### Clone Deployerb from GiHub
 
@@ -17,16 +12,16 @@ $ git clone https://github.com/mamantoha/deployerb.git
 $ cd deployerb
 ```
 
-### Install missing dependencies
+### Install Ruby dependencies
 
 ```
 $ bundle install
 ```
 
-### Install NPM dependencies
+### Install Yarn dependencies
 
 ```
-$ npm install
+$ yarn install
 ```
 
 ### Using subdomains in development
@@ -47,8 +42,12 @@ The following URLs now available on local machine:
 * http://deployerb-dev.com:9292
 * http://api.deployerb-dev.com:9292
 
-### Run Deployerb server
+### Run Deployerb development server
 
 ```
 $ bundle exec rackup
+```
+
+```
+$ webpack -w
 ```
