@@ -1,7 +1,7 @@
 module Deployd
   class Application < Sinatra::Base
     subdomain '' do
-      before /^\/dashboard\/resources\/?.*/  do
+      before /\/dashboard\/resources\/?.*/  do
         check_mongodb_server
       end
 

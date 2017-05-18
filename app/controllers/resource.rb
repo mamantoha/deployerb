@@ -52,13 +52,13 @@ module Deployd
       end
 
       def set_content_type(type)
-        Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
+        Deployd::Application.send :before, %r{/#{route_key}(/)?(.)*} do
           content_type type
         end
       end
 
       def set_access_control_header
-        Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
+        Deployd::Application.send :before, %r{/#{route_key}(/)?(.)*} do
           allow_headers = ["*", "Content-Type", "Accept", "AUTHORIZATION", "Cache-Control"]
           allow_methods = [:post, :get, :option, :delete, :put]
           headers_list = {
@@ -75,7 +75,7 @@ module Deployd
       # TODO try to find better solution to remove routes in real time
       #
       def require_resource!(resource_name)
-        Deployd::Application.send :before, %r{^/#{route_key}(/)?(.)*} do
+        Deployd::Application.send :before, %r{/#{route_key}(/)?(.)*} do
           class_name = "#{resource_name.singularize.classify.pluralize}Controller"
 
           unless Deployd::Controllers.constants.include?(class_name.to_sym)
