@@ -7,7 +7,7 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const jsOutputTemplate = 'javascripts/application.js'
 const cssOutputTemplate = 'stylesheets/application.css'
 
-module.exports = {
+var config = {
   // Remove this if you are not using Docker
   watchOptions: {
     aggregateTimeout: 300,
@@ -54,4 +54,6 @@ module.exports = {
       'window.jQuery': 'jquery'
     })
   ]
-}
+};
+
+module.exports = config;
