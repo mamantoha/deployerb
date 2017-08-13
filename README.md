@@ -49,5 +49,5 @@ $ bundle exec rackup
 ```
 
 ```
-$ webpack -w
+$ npm run watch
 ```
