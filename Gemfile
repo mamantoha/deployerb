@@ -3,16 +3,16 @@ source 'https://rubygems.org'
 gem 'activesupport'
 
 gem 'rack'
-gem 'sinatra', '~> 2.0.0'
-gem 'sinatra-contrib', '~> 2.0.0'
+gem 'sinatra'
+gem 'sinatra-contrib'
 gem 'sinatra-flash'
-gem 'sinatra-subdomain', '~> 0.2.1'
+gem 'sinatra-subdomain'
 gem 'puma'
 
 gem 'slim'
 
-gem 'mongoid', '~> 6.0'
-gem 'mongoid-suicide', '~> 0.2.0'
+gem 'mongoid'
+gem 'mongoid-suicide'
 
 group :development do
   gem 'pry'
