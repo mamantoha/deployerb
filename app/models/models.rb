@@ -2,11 +2,10 @@ module Deployd
   module Models
     # Mongoid 5.1
     # https://docs.mongodb.com/ecosystem/tutorial/mongoid-documents/#fields
-    AVAILABLE_TYPES = [Array, BigDecimal, Boolean, Date, DateTime, Float, Hash, Integer, BSON::ObjectId, BSON::Binary, Range, Regexp, String, Symbol, Time]
+    AVAILABLE_TYPES = [Array, BigDecimal, Boolean, Date, DateTime, Float, Hash, Integer, BSON::ObjectId, BSON::Binary, Range, Regexp, String, Symbol, Time].freeze
 
     # http://mongoid.org/en/mongoid/v3/validation.html
-    AVAILABLE_VALIDATIONS = [:uniqueness, :presence]
-
+    AVAILABLE_VALIDATIONS = %i[uniqueness presence].freeze
 
     # keep a list of available models in a class variable
     class << self; attr_reader :available_models; end
@@ -43,9 +42,7 @@ module Deployd
       class_name = resource_name.singularize.classify
       klass = class_name.constantize
       @available_models.delete(klass)
-      if Object.constants.include?(class_name.to_sym)
-        Object.send(:remove_const, class_name.to_sym)
-      end
+      Object.send(:remove_const, class_name.to_sym) if Object.constants.include?(class_name.to_sym)
     end
 
     # Add key and validations to Mongoid::Document
@@ -117,6 +114,5 @@ module Deployd
       class_name = resource_name.singularize.classify
       class_name.constantize.validators.detect { |v| v.is_a?(Mongoid::Validatable::UniquenessValidator) and v.attributes.include?(key_name.to_sym) }
     end
-
   end # Models
 end # Deployd

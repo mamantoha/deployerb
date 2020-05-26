@@ -11,7 +11,7 @@ require 'logger'
 require 'pry'
 
 Slim::Engine.set_options pretty: true,
-  attr_list_delims: {'(' => ')', '[' => ']'} # removed '{' => '}' from default
+                         attr_list_delims: { '(' => ')', '[' => ']' } # removed '{' => '}' from default
 
 module Deployd
   class Application < Sinatra::Base
@@ -57,9 +57,9 @@ module Deployd
     # AngularJS sends option request before any other request.
     # These lines properly manage that.
     #
-    options "/*" do
-      allow_headers = ["*", "Content-Type", "Accept", "AUTHORIZATION", "Cache-Control"]
-      allow_methods = [:post, :get, :option, :delete, :put]
+    options '/*' do
+      allow_headers = ['*', 'Content-Type', 'Accept', 'AUTHORIZATION', 'Cache-Control']
+      allow_methods = %i[post get option delete put]
       headers_list = {
         'Access-Control-Allow-Origin' => '*',
         'Access-Control-Allow-Methods' => allow_methods.map { |m| m.to_s.upcase! }.join(', '),
@@ -69,7 +69,6 @@ module Deployd
     end
 
     enable :sessions
-
   end
 end
 

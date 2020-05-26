@@ -6,12 +6,12 @@ module Deployd
       attr_reader :resource_name
 
       DEFAULT_ACTIONS = {
-        index:   { method: :get,    type: :collection },
-        show:    { method: :get,    type: :member     },
-        create:  { method: :post,   type: :collection },
-        update:  { method: :put,    type: :member     },
-        destroy: { method: :delete, type: :member     }
-      }
+        index: { method: :get, type: :collection },
+        show: { method: :get, type: :member },
+        create: { method: :post,   type: :collection },
+        update: { method: :put,    type: :member     },
+        destroy: { method: :delete, type: :member }
+      }.freeze
 
       included do
         class_eval do
@@ -25,7 +25,9 @@ module Deployd
 
       def initialize(resource_name)
         resource_class = resource_name.classify.constantize
-        fail TypeError, "wrong argument type #{resource_class.name} (expected Mongoid::Document)" unless resource_class.include?(Mongoid::Document)
+        unless resource_class.include?(Mongoid::Document)
+          raise TypeError, "wrong argument type #{resource_class.name} (expected Mongoid::Document)"
+        end
 
         @resource_name = resource_name
         @collection_route = "/#{route_key}/?"
@@ -39,12 +41,10 @@ module Deployd
       def resource_fields
         fields = []
         resource_name.classify.constantize.fields.each do |_, field|
-          if field.name != '_id'
-            fields << { name: field.name, type: field.type }
-          end
+          fields << { name: field.name, type: field.type } if field.name != '_id'
         end
 
-        return fields
+        fields
       end
 
       def route_key
@@ -59,8 +59,8 @@ module Deployd
 
       def set_access_control_header
         Deployd::Application.send :before, %r{/#{route_key}(/)?(.)*} do
-          allow_headers = ["*", "Content-Type", "Accept", "AUTHORIZATION", "Cache-Control"]
-          allow_methods = [:post, :get, :option, :delete, :put]
+          allow_headers = ['*', 'Content-Type', 'Accept', 'AUTHORIZATION', 'Cache-Control']
+          allow_methods = %i[post get option delete put]
           headers_list = {
             'Access-Control-Allow-Origin' => '*',
             'Access-Control-Allow-Methods' => allow_methods.map { |m| m.to_s.upcase! }.join(', '),
@@ -94,7 +94,9 @@ module Deployd
       #           Since :delete wasn't listed, a route for it will not be generated.
       #
       def mount_default_actions(actions)
-        fail TypeError, "wrong argument type #{actions.class.name} (expected Array)" unless actions.is_a?(Array)
+        unless actions.is_a?(Array)
+          raise TypeError, "wrong argument type #{actions.class.name} (expected Array)"
+        end
 
         actions.each do |action|
           create_route_for(action)
@@ -104,7 +106,7 @@ module Deployd
       def create_route_for(action)
         opts = DEFAULT_ACTIONS[action]
         controller = self
-        route = controller.instance_variable_get("@#{opts[:type].to_s}_route")
+        route = controller.instance_variable_get("@#{opts[:type]}_route")
 
         Deployd::Application.send :subdomain, :api do
           Deployd::Application.send opts[:method], route do
@@ -127,7 +129,7 @@ module Deployd
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def create(context)
-        context.request.body.rewind  # in case someone already read it
+        context.request.body.rewind # in case someone already read it
         begin
           data = JSON.parse(context.request.body.read)
         rescue JSON::ParserError
@@ -164,7 +166,7 @@ module Deployd
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def update(context)
-        context.request.body.rewind  # in case someone already read it
+        context.request.body.rewind # in case someone already read it
 
         begin
           data = JSON.parse(context.request.body.read)

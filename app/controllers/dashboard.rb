@@ -1,6 +1,6 @@
 module Deployd
   class Application < Sinatra::Base
-    before /\/dashboard\/resources\/?.*/  do
+    before(%r{/dashboard/resources/?.*}) do
       check_mongodb_server
     end
 
@@ -61,9 +61,9 @@ module Deployd
         @resource_name = params[:resource_name].singularize
         @route_key = @resource_name.pluralize
 
-        if @resources && @resources.find { |r| r[:name] == @resource_name }
+        if @resources&.find { |r| r[:name] == @resource_name }
           @resource = @resource_name.classify.constantize
-          @defined_keys = @resource.fields.map{ |k| { name: k[1].name, type: k[1].type.to_s } }.reject { |k| k[:name] == '_id' }
+          @defined_keys = @resource.fields.map { |k| { name: k[1].name, type: k[1].type.to_s } }.reject { |k| k[:name] == '_id' }
           slim :'/resources/show'
         else
           redirect '/dashboard/resources'
@@ -76,7 +76,7 @@ module Deployd
         check_model_availability!(params[:resource_name])
         resource_name = params[:resource_name].singularize
 
-        if @resources && @resources.find { |r| r[:name] == resource_name }
+        if @resources&.find { |r| r[:name] == resource_name }
           Deployd::Models.remove(resource_name)
           Deployd::Controllers.remove(resource_name)
 
@@ -113,7 +113,7 @@ module Deployd
         if errors.empty?
           options = {}
 
-          if @resources && @resources.find { |r| r[:name] == resource_name }
+          if @resources&.find { |r| r[:name] == resource_name }
             Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
 
             @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
@@ -150,12 +150,14 @@ module Deployd
 
         options = {}
 
-        if @resources && @resources.find { |r| r[:name] == resource_name }
+        if @resources&.find { |r| r[:name] == resource_name }
           # change type and/or options/validations, remove key and add new
           Deployd::Models.remove_key(resource_name, key_name.to_sym)
           Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
 
-          @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
+          @resources.map do |r|
+            r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name
+          end
           @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
 
           File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
@@ -168,7 +170,6 @@ module Deployd
         end
       end
 
-
       # remove key from document
       #
       # delete '/resource/user/name'
@@ -178,10 +179,12 @@ module Deployd
         resource_name = params[:resource_name].singularize
         key_name = params[:key_name]
 
-        if @resources && @resources.find { |r| r[:name] == resource_name }
+        if @resources&.find { |r| r[:name] == resource_name }
           Deployd::Models.remove_key(resource_name, key_name.to_sym)
 
-          @resources.map { |r| r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name }
+          @resources.map do |r|
+            r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name
+          end
           File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
             f.write settings.config_file.to_yaml
           end
@@ -201,7 +204,7 @@ module Deployd
         @resource_name = params[:resource_name].singularize
         @key_name = params[:key_name]
 
-        if @resources && @resources.find { |r| r[:name] == @resource_name }
+        if @resources&.find { |r| r[:name] == @resource_name }
           @resource = @resource_name.classify.constantize
           @key = @resource.fields.select { |k| k[@key_name] }[@key_name]
         end
@@ -213,7 +216,6 @@ module Deployd
           redirect "/dashboard/resources/#{@resource_name.pluralize}"
         end
       end
-
     end # namespace '/dashboard'
 
     private
@@ -232,8 +234,8 @@ module Deployd
       # validates :name presence
       if name && !name.empty?
         # validates :name valid
-        if !name.match(/\A[a-zA-Z_]*\z/)
-            errors << 'name: allow only latin letters and underscore'
+        unless name.match(/\A[a-zA-Z_]*\z/)
+          errors << 'name: allow only latin letters and underscore'
         end
 
         # validates :name acceptable
@@ -249,7 +251,7 @@ module Deployd
         errors << "name: can't be blank"
       end
 
-      return errors
+      errors
     end
 
     def validates_key(resource_name, name, type)
@@ -257,7 +259,7 @@ module Deployd
       # validates :name presence
       if name && !name.empty?
         # validates :name valid
-        if !name.match(/\A[a-zA-Z_]*\z/)
+        unless name.match(/\A[a-zA-Z_]*\z/)
           errors << 'name: allow only latin letters and underscore'
         end
         # validates :name uniqueness
@@ -273,7 +275,7 @@ module Deployd
         errors << 'type: not acceptable'
       end
 
-      return errors
+      errors
     end
 
     def check_mongodb_server

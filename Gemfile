@@ -2,12 +2,12 @@ source 'https://rubygems.org'
 
 gem 'activesupport'
 
+gem 'puma'
 gem 'rack'
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'sinatra-flash'
 gem 'sinatra-subdomain'
-gem 'puma'
 
 gem 'slim'
 
@@ -20,7 +20,7 @@ group :development do
 end
 
 group :test do
-  gem 'rspec'
   gem 'capybara'
+  gem 'rspec'
   gem 'selenium-webdriver'
 end

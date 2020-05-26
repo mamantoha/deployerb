@@ -17,7 +17,7 @@ module Deployd
 
       klass.module_eval do
         def mount_actions
-          mount_default_actions [:index, :create, :show, :update, :destroy]
+          mount_default_actions %i[index create show update destroy]
         end
       end
 
