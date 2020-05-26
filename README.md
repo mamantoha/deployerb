@@ -1,3 +1,5 @@
+# Deployerb
+
 ## Installation
 
 * Install MongoDB
@@ -7,21 +9,21 @@
 
 ### Clone Deployerb from GiHub
 
-```
-$ git clone https://github.com/mamantoha/deployerb.git
-$ cd deployerb
+```console
+git clone https://github.com/mamantoha/deployerb.git
+cd deployerb
 ```
 
 ### Install Ruby dependencies
 
-```
-$ bundle install
+```console
+bundle install
 ```
 
 ### Install Yarn dependencies
 
-```
-$ yarn install
+```console
+yarn install
 ```
 
 ### Using subdomains in development
@@ -30,7 +32,7 @@ Network configuration for supporting subdomains in development:
 
 /etc/hosts
 
-```
+```text
 127.0.0.1 deployerb-dev.com
 127.0.0.1 api.deployerb-dev.com
 ```
@@ -39,15 +41,15 @@ On Windows, look for `C:\WINDOWS\system32\drivers\etc\hosts`
 
 The following URLs now available on local machine:
 
-* http://deployerb-dev.com:9292
-* http://api.deployerb-dev.com:9292
+* <http://web.deployerb-dev.com:9292>
+* <http://api.deployerb-dev.com:9292>
 
 ### Run Deployerb development server
 
-```
-$ bundle exec rackup
+```console
+bundle exec rackup
 ```
 
-```
-$ npm run watch
+```console
+npm run watch
 ```
