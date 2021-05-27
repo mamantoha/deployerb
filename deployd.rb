@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'yaml'
 require 'pp'
 require 'active_support/core_ext/string'
@@ -40,7 +42,7 @@ module Deployd
       set :bind, 'deployerb-dev.com'
       set :port, 9292
 
-      $logger = Logger.new(STDOUT)
+      $logger = Logger.new($stdout)
     end
 
     not_found do

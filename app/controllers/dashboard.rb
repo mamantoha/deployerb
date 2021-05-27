@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Deployd
   class Application < Sinatra::Base
     before(%r{/dashboard/resources/?.*}) do

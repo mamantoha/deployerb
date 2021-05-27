@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Sinatra
   module Flash
     module Style
@@ -10,7 +12,7 @@ module Sinatra
           "  <div class='alert alert-#{message[0]} fade in' role='alert'>#{close}\n <p>#{message[1]}</p></div>\n"
         end
 
-        "<div id='#{id}'>\n" + messages.join + '</div>'
+        "<div id='#{id}'>\n#{messages.join}</div>"
       end
     end
   end

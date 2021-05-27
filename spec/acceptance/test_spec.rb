@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'acceptance_helper'
 
 describe 'should open page' do

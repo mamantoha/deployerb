@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Deployd
   module Models
     # Mongoid 7.3

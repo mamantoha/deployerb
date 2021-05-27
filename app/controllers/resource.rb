@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Deployd
   module Controllers
     module Resource

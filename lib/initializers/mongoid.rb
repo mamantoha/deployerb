@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Configuration
 Mongoid.load!(File.expand_path('../../config/mongoid.yml', File.dirname(__FILE__)), :development)
 
