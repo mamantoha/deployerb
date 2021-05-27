@@ -16,6 +16,7 @@ module Deployd
       included do
         class_eval do
           attr_reader :collection_route, :member_route
+
           class << self
           end
         end
@@ -94,9 +95,7 @@ module Deployd
       #           Since :delete wasn't listed, a route for it will not be generated.
       #
       def mount_default_actions(actions)
-        unless actions.is_a?(Array)
-          raise TypeError, "wrong argument type #{actions.class.name} (expected Array)"
-        end
+        raise TypeError, "wrong argument type #{actions.class.name} (expected Array)" unless actions.is_a?(Array)
 
         actions.each do |action|
           create_route_for(action)

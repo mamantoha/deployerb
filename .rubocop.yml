@@ -1,5 +1,8 @@
+AllCops:
+  NewCops: enable
+
 Style/Encoding:
   Enabled: false
 
 Metrics/LineLength:
-  Max: 99
+  Max: 120

@@ -2,6 +2,6 @@ require 'bundler'
 
 Bundler.require
 
-require './deployd.rb'
+require './deployd'
 
 run Deployd::Application

@@ -21,7 +21,8 @@ module Deployd
         end
       end
 
-      instance_variable_set(:"@#{resource_name.pluralize}_controller", "Deployd::Controllers::#{resource_name.classify.pluralize}Controller".constantize.new(resource_name))
+      instance_variable_set(:"@#{resource_name.pluralize}_controller",
+                            "Deployd::Controllers::#{resource_name.classify.pluralize}Controller".constantize.new(resource_name))
       instance_variable_get(:"@#{resource_name.pluralize}_controller").mount_actions
     end
 

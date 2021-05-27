@@ -6,7 +6,9 @@ module Sinatra
 
         id = (key == :flash ? 'flash' : "flash_#{key}")
         close = '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>'
-        messages = flash(key).collect { |message| "  <div class='alert alert-#{message[0]} fade in' role='alert'>#{close}\n <p>#{message[1]}</p></div>\n" }
+        messages = flash(key).collect do |message|
+          "  <div class='alert alert-#{message[0]} fade in' role='alert'>#{close}\n <p>#{message[1]}</p></div>\n"
+        end
 
         "<div id='#{id}'>\n" + messages.join + '</div>'
       end

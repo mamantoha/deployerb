@@ -63,7 +63,9 @@ module Deployd
 
         if @resources&.find { |r| r[:name] == @resource_name }
           @resource = @resource_name.classify.constantize
-          @defined_keys = @resource.fields.map { |k| { name: k[1].name, type: k[1].type.to_s } }.reject { |k| k[:name] == '_id' }
+          @defined_keys = @resource.fields.map do |k|
+                            { name: k[1].name, type: k[1].type.to_s }
+                          end.reject { |k| k[:name] == '_id' }
           slim :'/resources/show'
         else
           redirect '/dashboard/resources'
@@ -114,9 +116,13 @@ module Deployd
           options = {}
 
           if @resources&.find { |r| r[:name] == resource_name }
-            Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
+            Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options,
+                                                                                          validations: validations)
 
-            @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
+            @resources.find do |r|
+              r[:name] == resource_name
+            end [:keys] << { name: key_name, type: key_type.constantize, options: options,
+                             validations: validations }
             File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
               f.write settings.config_file.to_yaml
             end
@@ -153,12 +159,16 @@ module Deployd
         if @resources&.find { |r| r[:name] == resource_name }
           # change type and/or options/validations, remove key and add new
           Deployd::Models.remove_key(resource_name, key_name.to_sym)
-          Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
+          Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options,
+                                                                                        validations: validations)
 
           @resources.map do |r|
             r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name
           end
-          @resources.find { |r| r[:name] == resource_name }[:keys] << { name: key_name, type: key_type.constantize, options: options, validations: validations }
+          @resources.find do |r|
+            r[:name] == resource_name
+          end [:keys] << { name: key_name, type: key_type.constantize, options: options,
+                           validations: validations }
 
           File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
             f.write settings.config_file.to_yaml
@@ -216,7 +226,7 @@ module Deployd
           redirect "/dashboard/resources/#{@resource_name.pluralize}"
         end
       end
-    end # namespace '/dashboard'
+    end
 
     private
 
@@ -234,19 +244,13 @@ module Deployd
       # validates :name presence
       if name && !name.empty?
         # validates :name valid
-        unless name.match(/\A[a-zA-Z_]*\z/)
-          errors << 'name: allow only latin letters and underscore'
-        end
+        errors << 'name: allow only latin letters and underscore' unless name.match(/\A[a-zA-Z_]*\z/)
 
         # validates :name acceptable
-        if name.singularize != name.singularize.pluralize.singularize
-          errors << 'name: not acceptable'
-        end
+        errors << 'name: not acceptable' if name.singularize != name.singularize.pluralize.singularize
 
         # validates :name uniqueness
-        if Object.const_defined?(name.downcase.singularize.classify)
-          errors << 'name: has already been taken'
-        end
+        errors << 'name: has already been taken' if Object.const_defined?(name.downcase.singularize.classify)
       else
         errors << "name: can't be blank"
       end
@@ -259,21 +263,15 @@ module Deployd
       # validates :name presence
       if name && !name.empty?
         # validates :name valid
-        unless name.match(/\A[a-zA-Z_]*\z/)
-          errors << 'name: allow only latin letters and underscore'
-        end
+        errors << 'name: allow only latin letters and underscore' unless name.match(/\A[a-zA-Z_]*\z/)
         # validates :name uniqueness
-        if resource_name.classify.constantize.fields.include?(name.downcase)
-          errors << 'name: has already been taken'
-        end
+        errors << 'name: has already been taken' if resource_name.classify.constantize.fields.include?(name.downcase)
       else
         errors << "name: can't be blank"
       end
 
       # validates :type acceptable
-      unless Deployd::Models::AVAILABLE_TYPES.map(&:to_s).include?(type)
-        errors << 'type: not acceptable'
-      end
+      errors << 'type: not acceptable' unless Deployd::Models::AVAILABLE_TYPES.map(&:to_s).include?(type)
 
       errors
     end
@@ -286,5 +284,5 @@ module Deployd
       content_type :html
       halt slim :mongodb_error
     end
-  end # class Application < Sinatra::Base
-end # module Deployd
+  end
+end

@@ -2,7 +2,8 @@ module Deployd
   module Models
     # Mongoid 7.3
     # https://docs.mongodb.com/ecosystem/tutorial/mongoid-documents/#fields
-    AVAILABLE_TYPES = [Array, BigDecimal, Mongoid::Boolean, Date, DateTime, Float, Hash, Integer, BSON::ObjectId, BSON::Binary, Range, Regexp, String, Symbol, Time].freeze
+    AVAILABLE_TYPES = [Array, BigDecimal, Mongoid::Boolean, Date, DateTime, Float, Hash, Integer, BSON::ObjectId,
+                       BSON::Binary, Range, Regexp, String, Symbol, Time].freeze
 
     # http://mongoid.org/en/mongoid/v3/validation.html
     AVAILABLE_VALIDATIONS = %i[uniqueness presence].freeze
@@ -64,9 +65,7 @@ module Deployd
 
       # add validations for model
       validations.each do |validation|
-        if AVAILABLE_VALIDATIONS.include?(validation)
-          class_name.constantize.validates key_name, validation => true
-        end
+        class_name.constantize.validates key_name, validation => true if AVAILABLE_VALIDATIONS.include?(validation)
       end
     end
 
@@ -102,7 +101,9 @@ module Deployd
     #
     def self.key_required?(resource_name, key_name)
       class_name = resource_name.singularize.classify
-      class_name.constantize.validators.detect { |v| v.is_a?(Mongoid::Validatable::PresenceValidator) and v.attributes.include?(key_name.to_sym) }
+      class_name.constantize.validators.detect do |v|
+        v.is_a?(Mongoid::Validatable::PresenceValidator) and v.attributes.include?(key_name.to_sym)
+      end
     end
 
     # Check if key is uniqueness
@@ -112,7 +113,9 @@ module Deployd
     #
     def self.key_uniqueness?(resource_name, key_name)
       class_name = resource_name.singularize.classify
-      class_name.constantize.validators.detect { |v| v.is_a?(Mongoid::Validatable::UniquenessValidator) and v.attributes.include?(key_name.to_sym) }
+      class_name.constantize.validators.detect do |v|
+        v.is_a?(Mongoid::Validatable::UniquenessValidator) and v.attributes.include?(key_name.to_sym)
+      end
     end
-  end # Models
-end # Deployd
+  end
+end
