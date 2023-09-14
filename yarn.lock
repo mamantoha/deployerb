@@ -135,11 +135,6 @@ angular-ui-bootstrap@^2.5.0:
   resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.5.6.tgz#23937322ec641a6fbee16498cc32452aa199e7c5"
   integrity sha512-yzcHpPMLQl0232nDzm5P4iAFTFQ9dMw0QgFLuKYbDj9M0xJ62z0oudYD/Lvh1pWfRsukiytP4Xj6BHOSrSXP8A==
 
-angular@>=1.0.8:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.0.tgz#b1ec179887869215cab6dfd0df2e42caa65b1b51"
-  integrity sha512-VdaMx+Qk0Skla7B5gw77a8hzlcOakwF8mjlW13DpIWIDlfqwAbSSLfd8N/qZnzEmQF4jC4iofInd3gE7vL8ZZg==
-
 angular@^1.8.0:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.3.tgz#851ad75d5163c105a7e329555ef70c90aa706894"
@@ -1208,12 +1203,10 @@ chalk@^4.1.2:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-checklist-model@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/checklist-model/-/checklist-model-0.11.0.tgz#5f57b34a21b59ffd7a0c351efb9fe9d7fa92d3e0"
-  integrity sha1-X1ezSiG1n/16DDUe+5/p1/qS0+A=
-  dependencies:
-    angular ">=1.0.8"
+checklist-model@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/checklist-model/-/checklist-model-1.0.0.tgz#13f693af393e929b082fa29681a1597449fd4dd8"
+  integrity sha512-ZDaTrfKeUSleZjyNqTjD1+QKU6iK1qlXH1GwixX59xEKPiRFu4anDh0U8brNjjEef+SM6vyQb87YWhI5CU8eNg==
 
 chokidar@^2.0.0, chokidar@^2.1.8:
   version "2.1.8"
