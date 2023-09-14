@@ -22,10 +22,16 @@ module Deployd
     register Sinatra::Subdomain
 
     def self.load_or_initialize_config_file
+      yaml_column_pemitted_classes = [
+        String,
+        Symbol,
+        Date,
+      ]
+
       File.open(File.expand_path('config/config.yml', settings.root), 'a+') do |f|
         config = YAML.load_file(
           f,
-          permitted_classes: [String, Symbol],
+          permitted_classes: yaml_column_pemitted_classes,
           aliases: true
         )
 
@@ -36,7 +42,7 @@ module Deployd
       end
       YAML.load_file(
         File.open(File.expand_path('config/config.yml', settings.root)),
-        permitted_classes: [String, Symbol],
+        permitted_classes: yaml_column_pemitted_classes,
         aliases: true
       )
     end
