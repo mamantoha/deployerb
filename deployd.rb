@@ -17,7 +17,7 @@ Slim::Engine.set_options pretty: true,
 
 module Deployd
   # Mongoid 7.3
-  # https://docs.mongodb.com/ecosystem/tutorial/mongoid-documents/#fields
+  # https://www.mongodb.com/docs/mongoid/current/reference/fields/
   AVAILABLE_TYPES = [Array, BigDecimal, Mongoid::Boolean, Date, DateTime, Float, Hash, Integer, BSON::ObjectId,
     BSON::Binary, Range, Regexp, String, Symbol, Time].freeze
 
