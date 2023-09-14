@@ -14,7 +14,7 @@ div class='panel panel-primary'
       div.form-group
         select.form-control name='type'
           option value="Type" disabled=true Type
-          - Deployd::Models::AVAILABLE_TYPES.each do |type|
+          - Deployd::AVAILABLE_TYPES.each do |type|
             - if type == @key.type
               option value="#{type}" selected=true = type
             - else
@@ -40,4 +40,3 @@ div class='panel panel-primary'
           | Save
         button type='reset' class='btn btn-default'
           | Reset
-

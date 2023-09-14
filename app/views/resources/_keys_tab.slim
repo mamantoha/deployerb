@@ -39,7 +39,7 @@ div class='panel panel-default'
         div.col-sm-2
           select.form-control name='type'
             option value="" selected=true disabled=true Type
-            - Deployd::Models::AVAILABLE_TYPES.each do |type|
+            - Deployd::AVAILABLE_TYPES.each do |type|
               option value="#{type}"= type
         div.col-sm-10
           input.form-control name='name' placeholder='Enter name'

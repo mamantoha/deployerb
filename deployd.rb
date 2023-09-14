@@ -16,17 +16,18 @@ Slim::Engine.set_options pretty: true,
                          attr_list_delims: { '(' => ')', '[' => ']' } # removed '{' => '}' from default
 
 module Deployd
+  # Mongoid 7.3
+  # https://docs.mongodb.com/ecosystem/tutorial/mongoid-documents/#fields
+  AVAILABLE_TYPES = [Array, BigDecimal, Mongoid::Boolean, Date, DateTime, Float, Hash, Integer, BSON::ObjectId,
+    BSON::Binary, Range, Regexp, String, Symbol, Time].freeze
+
   class Application < Sinatra::Base
     register Sinatra::Namespace
     register Sinatra::Flash
     register Sinatra::Subdomain
 
     def self.load_or_initialize_config_file
-      yaml_column_pemitted_classes = [
-        String,
-        Symbol,
-        Date,
-      ]
+      yaml_column_pemitted_classes = Deployd::AVAILABLE_TYPES
 
       File.open(File.expand_path('config/config.yml', settings.root), 'a+') do |f|
         config = YAML.load_file(

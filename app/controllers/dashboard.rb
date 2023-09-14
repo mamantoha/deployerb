@@ -273,7 +273,7 @@ module Deployd
       end
 
       # validates :type acceptable
-      errors << 'type: not acceptable' unless Deployd::Models::AVAILABLE_TYPES.map(&:to_s).include?(type)
+      errors << 'type: not acceptable' unless Deployd::AVAILABLE_TYPES.map(&:to_s).include?(type)
 
       errors
     end
