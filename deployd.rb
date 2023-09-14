@@ -23,13 +23,22 @@ module Deployd
 
     def self.load_or_initialize_config_file
       File.open(File.expand_path('config/config.yml', settings.root), 'a+') do |f|
-        config = YAML.load(f)
+        config = YAML.load_file(
+          f,
+          permitted_classes: [String, Symbol],
+          aliases: true
+        )
+
         unless config # config file empty
           config = { resources: [] }.to_yaml
           f.write config
         end
       end
-      YAML.load(File.open(File.expand_path('config/config.yml', settings.root)))
+      YAML.load_file(
+        File.open(File.expand_path('config/config.yml', settings.root)),
+        permitted_classes: [String, Symbol],
+        aliases: true
+      )
     end
 
     configure do
