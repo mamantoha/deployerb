@@ -16,10 +16,28 @@ Slim::Engine.set_options pretty: true,
                          attr_list_delims: { '(' => ')', '[' => ']' } # removed '{' => '}' from default
 
 module Deployd
-  # Mongoid 7.3
   # https://www.mongodb.com/docs/mongoid/current/reference/fields/
-  AVAILABLE_TYPES = [Array, BigDecimal, Mongoid::Boolean, Date, DateTime, Float, Hash, Integer, BSON::ObjectId,
-    BSON::Binary, Range, Regexp, String, Symbol, Time].freeze
+  AVAILABLE_TYPES = [
+    Array,
+    BSON::Binary,
+    BigDecimal,
+    Mongoid::Boolean,
+    Date,
+    DateTime,
+    Float,
+    Hash,
+    Integer,
+    Object,
+    BSON::ObjectId,
+    Range,
+    Set,
+    Regexp,
+    String,
+    Mongoid::StringifiedSymbol,
+    Symbol,
+    Time,
+    ActiveSupport::TimeWithZone,
+  ].freeze
 
   class Application < Sinatra::Base
     register Sinatra::Namespace
