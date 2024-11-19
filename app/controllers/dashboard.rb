@@ -51,6 +51,7 @@ module Deployd
           flash[:info] = 'New document successfully added.'
           redirect "/dashboard/resources/#{resource_name.pluralize}"
         else
+          puts errors.first.class
           flash[:danger] = errors.join('; ')
           redirect '/dashboard/resources'
         end
@@ -136,6 +137,7 @@ module Deployd
             redirect '/dashboard/resources'
           end
         else
+          puts errors.first.class
           flash[:danger] = errors.join('; ')
           redirect "/dashboard/resources/#{resource_name.pluralize}"
         end

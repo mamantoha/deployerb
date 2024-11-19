@@ -2,7 +2,7 @@
 
 module Deployd
   module Models
-    # http://mongoid.org/en/mongoid/v3/validation.html
+    # https://www.mongodb.com/docs/mongoid/8.1/reference/validation/
     AVAILABLE_VALIDATIONS = %i[uniqueness presence].freeze
 
     # keep a list of available models in a class variable
