@@ -2,7 +2,8 @@
   "name": "deployerb",
   "scripts": {
     "webpack": "./node_modules/.bin/webpack",
-    "watch": "./node_modules/.bin/webpack -w"
+    "watch": "./node_modules/.bin/webpack -w",
+    "build": "webpack"
   },
   "devDependencies": {
     "angular": "^1.8.0",
