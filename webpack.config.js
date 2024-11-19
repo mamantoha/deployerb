@@ -1,59 +1,95 @@
-// Import external libraries
-const path = require('path')
-const webpack = require("webpack")
-const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const path = require('path');
+const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-// Define our compiled asset files
-const jsOutputTemplate = 'javascripts/application.js'
-const cssOutputTemplate = 'stylesheets/application.css'
+const jsOutputTemplate = 'javascripts/[name].js';
+const cssOutputTemplate = 'stylesheets/[name].css';
 
-var config = {
-  // Remove this if you are not using Docker
+const config = {
   watchOptions: {
     aggregateTimeout: 300,
     poll: 1000,
-    ignored: /node_modules/
+    ignored: /node_modules/,
   },
 
-  // Define our asset directory
   context: path.join(__dirname, '/app/assets'),
 
-  // What js / CSS files should we read from and generate
   entry: {
-    application: ['bootstrap-loader', './javascripts/application.js', './stylesheets/application.sass']
+    application: ['./javascripts/application.js', './stylesheets/application.sass'],
   },
 
-  // Define where to save assets to
   output: {
-    path: path.join(__dirname, '/public'),
-    filename: jsOutputTemplate
+    path: path.resolve(__dirname, 'public'),
+    filename: jsOutputTemplate,
+    clean: true,
   },
 
-  // Define how different file types should be transpiled
   module: {
-    loaders: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: 'babel-loader',
-      query: {
-        presets: ['es2015']
-      }
-    },
-    { test: /\.css$/, loaders: ExtractTextPlugin.extract('css-loader') },
-    { test: /\.sass$/, loader: ExtractTextPlugin.extract(['css-loader', 'sass-loader']) },
-    { test: /bootstrap-sass\/assets\/javascripts\//, loader: 'imports-loader?jQuery=jquery' },
-    { test: /\.(woff2?|svg)$/, loader: 'url-loader?limit=10000&name=/fonts/[name].[ext]' },
-    { test: /\.(ttf|eot)$/, loader: 'file-loader?name=/fonts/[name].[ext]' },
-    ]
+    rules: [
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
+        test: /\.sass$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+      },
+      {
+        test: /bootstrap-sass\/assets\/javascripts\//,
+        use: {
+          loader: 'imports-loader',
+          options: {
+            additionalCode: 'var jQuery = require("jquery");',
+          },
+        },
+      },
+      {
+        test: /\.(woff2?|svg)$/,
+        type: 'asset',
+        generator: {
+          filename: 'fonts/[name][ext][query]',
+        },
+        parser: {
+          dataUrlCondition: {
+            maxSize: 10000,
+          },
+        },
+      },
+      {
+        test: /\.(ttf|eot)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext][query]',
+        },
+      },
+    ],
   },
+
   plugins: [
-    new ExtractTextPlugin({ filename: cssOutputTemplate, allChunks: true }), // Define where to save the CSS file
+    new MiniCssExtractPlugin({
+      filename: cssOutputTemplate,
+    }),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      'window.jQuery': 'jquery'
-    })
-  ]
+      'window.jQuery': 'jquery',
+    }),
+  ],
+
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
+  },
+
+  mode: process.env.NODE_ENV || 'development',
 };
 
 module.exports = config;
