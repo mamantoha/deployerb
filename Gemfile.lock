@@ -65,6 +65,8 @@ GEM
     racksh (1.0.1)
       rack (>= 1.0)
       rack-test (>= 0.5)
+    rackup (2.2.1)
+      rack (>= 3)
     regexp_parser (2.8.1)
     rexml (3.3.9)
     rspec (3.12.0)
@@ -126,6 +128,7 @@ DEPENDENCIES
   puma
   rack
   racksh
+  rackup
   rspec
   selenium-webdriver
   sinatra

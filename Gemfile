@@ -6,6 +6,7 @@ gem 'activesupport'
 
 gem 'puma'
 gem 'rack'
+gem 'rackup'
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'sinatra-flash'

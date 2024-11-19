@@ -1,59 +1,104 @@
-// Import external libraries
-const path = require('path')
-const webpack = require("webpack")
-const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 
-// Define our compiled asset files
-const jsOutputTemplate = 'javascripts/application.js'
-const cssOutputTemplate = 'stylesheets/application.css'
-
-var config = {
-  // Remove this if you are not using Docker
-  watchOptions: {
-    aggregateTimeout: 300,
-    poll: 1000,
-    ignored: /node_modules/
-  },
-
-  // Define our asset directory
-  context: path.join(__dirname, '/app/assets'),
-
-  // What js / CSS files should we read from and generate
+module.exports = {
+  // Entry point for JavaScript and Sass
   entry: {
-    application: ['bootstrap-loader', './javascripts/application.js', './stylesheets/application.sass']
+    application: ['./app/assets/javascripts/application.js', './app/assets/stylesheets/application.sass'],
   },
 
-  // Define where to save assets to
+  // Output configuration
   output: {
-    path: path.join(__dirname, '/public'),
-    filename: jsOutputTemplate
+    path: path.resolve(__dirname, 'public'),
+    filename: 'javascripts/[name].js', // Output JavaScript files
+    clean: true, // Clean output directory before building
   },
 
-  // Define how different file types should be transpiled
+  // Module rules for processing files
   module: {
-    loaders: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: 'babel-loader',
-      query: {
-        presets: ['es2015']
-      }
-    },
-    { test: /\.css$/, loaders: ExtractTextPlugin.extract('css-loader') },
-    { test: /\.sass$/, loader: ExtractTextPlugin.extract(['css-loader', 'sass-loader']) },
-    { test: /bootstrap-sass\/assets\/javascripts\//, loader: 'imports-loader?jQuery=jquery' },
-    { test: /\.(woff2?|svg)$/, loader: 'url-loader?limit=10000&name=/fonts/[name].[ext]' },
-    { test: /\.(ttf|eot)$/, loader: 'file-loader?name=/fonts/[name].[ext]' },
-    ]
+    rules: [
+      // JavaScript loader
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
+        },
+      },
+
+      // CSS loader
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+
+      // Sass loader with resolve-url-loader for correct font paths
+      {
+        test: /\.(sass|scss)$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'resolve-url-loader', // Resolves relative paths
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                includePaths: [path.resolve(__dirname, 'node_modules')],
+              },
+              sourceMap: true, // Required for resolve-url-loader
+            },
+          },
+        ],
+      },
+
+      // Fonts and assets loader
+      {
+        test: /\.(woff2?|ttf|eot|svg)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext][query]', // Output fonts to fonts/ directory
+        },
+      },
+    ],
   },
+
+  // Plugins
   plugins: [
-    new ExtractTextPlugin({ filename: cssOutputTemplate, allChunks: true }), // Define where to save the CSS file
+    // Extract CSS into separate files
+    new MiniCssExtractPlugin({
+      filename: 'stylesheets/[name].css', // Output CSS to stylesheets/ directory
+    }),
+
+    // Provide jQuery globally for Bootstrap compatibility
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      'window.jQuery': 'jquery'
-    })
-  ]
-};
+      'window.jQuery': 'jquery',
+    }),
+  ],
 
-module.exports = config;
+  // Resolve paths and extensions
+  resolve: {
+    modules: [
+      path.resolve(__dirname, 'app/assets/stylesheets'), // Resolve custom styles
+      'node_modules', // Resolve dependencies from node_modules
+    ],
+    extensions: ['.js', '.css', '.sass', '.scss'], // Supported extensions
+  },
+
+  // Development mode
+  mode: 'development',
+
+  // Watch options for live development
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000,
+    ignored: /node_modules/,
+  },
+};
