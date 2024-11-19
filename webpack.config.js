@@ -1,74 +1,81 @@
 const path = require('path');
-const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 
-const jsOutputTemplate = 'javascripts/[name].js';
-const cssOutputTemplate = 'stylesheets/[name].css';
-
-const config = {
-  watchOptions: {
-    aggregateTimeout: 300,
-    poll: 1000,
-    ignored: /node_modules/,
-  },
-
-  context: path.join(__dirname, '/app/assets'),
-
+module.exports = {
+  // Entry point for JavaScript and Sass
   entry: {
-    application: ['./javascripts/application.js', './stylesheets/application.sass'],
+    application: ['./app/assets/javascripts/application.js', './app/assets/stylesheets/application.sass'],
   },
 
+  // Output configuration
   output: {
     path: path.resolve(__dirname, 'public'),
-    filename: jsOutputTemplate,
-    clean: true,
+    filename: 'javascripts/[name].js', // Output JavaScript files
+    clean: true, // Clean output directory before building
   },
 
+  // Module rules for processing files
   module: {
     rules: [
+      // JavaScript loader
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
+        },
+      },
+
+      // CSS loader
       {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
+
+      // Sass loader with resolve-url-loader for correct font paths
       {
-        test: /\.sass$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
-      },
-      {
-        test: /bootstrap-sass\/assets\/javascripts\//,
-        use: {
-          loader: 'imports-loader',
-          options: {
-            additionalCode: 'var jQuery = require("jquery");',
+        test: /\.(sass|scss)$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'resolve-url-loader', // Resolves relative paths
           },
-        },
-      },
-      {
-        test: /\.(woff2?|svg)$/,
-        type: 'asset',
-        generator: {
-          filename: 'fonts/[name][ext][query]',
-        },
-        parser: {
-          dataUrlCondition: {
-            maxSize: 10000,
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                includePaths: [path.resolve(__dirname, 'node_modules')],
+              },
+              sourceMap: true, // Required for resolve-url-loader
+            },
           },
-        },
+        ],
       },
+
+      // Fonts and assets loader
       {
-        test: /\.(ttf|eot)$/,
+        test: /\.(woff2?|ttf|eot|svg)$/,
         type: 'asset/resource',
         generator: {
-          filename: 'fonts/[name][ext][query]',
+          filename: 'fonts/[name][ext][query]', // Output fonts to fonts/ directory
         },
       },
     ],
   },
 
+  // Plugins
   plugins: [
+    // Extract CSS into separate files
     new MiniCssExtractPlugin({
-      filename: cssOutputTemplate,
+      filename: 'stylesheets/[name].css', // Output CSS to stylesheets/ directory
     }),
+
+    // Provide jQuery globally for Bootstrap compatibility
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
@@ -76,20 +83,22 @@ const config = {
     }),
   ],
 
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      cacheGroups: {
-        vendors: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
-    },
+  // Resolve paths and extensions
+  resolve: {
+    modules: [
+      path.resolve(__dirname, 'app/assets/stylesheets'), // Resolve custom styles
+      'node_modules', // Resolve dependencies from node_modules
+    ],
+    extensions: ['.js', '.css', '.sass', '.scss'], // Supported extensions
   },
 
-  mode: process.env.NODE_ENV || 'development',
-};
+  // Development mode
+  mode: 'development',
 
-module.exports = config;
+  // Watch options for live development
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000,
+    ignored: /node_modules/,
+  },
+};
