@@ -79,22 +79,18 @@ module Deployd
       # remove document
       #
       delete '/resources/:resource_name' do
-        check_model_availability!(params[:resource_name])
         resource_name = params[:resource_name].singularize
 
-        if @resources&.find { |r| r[:name] == resource_name }
-          Deployd::Models.remove(resource_name)
-          Deployd::Controllers.remove(resource_name)
+        # Find and remove the resource
+        resource = settings.config_file[:resources].find { |r| r[:name] == resource_name }
+        halt 404, { error: "Resource not found" }.to_json unless resource
 
-          @resources.delete_if { |r| r[:name] == resource_name }
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
-          end
-          flash[:info] = 'Document successfully removed.'
-          redirect '/dashboard/resources'
-        else
-          redirect '/dashboard/resources'
+        settings.config_file[:resources].delete(resource)
+        File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+          f.write settings.config_file.to_yaml
         end
+
+        { message: "Resource deleted", resource: resource_name }.to_json
       end
 
       # add new key to document
