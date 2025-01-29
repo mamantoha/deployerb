@@ -10,7 +10,7 @@
       <div class="panel-heading clearfix">
         <h3 class="panel-title pull-left">Resources</h3>
         <div class="btn-group pull-right">
-          <button class="btn btn-primary btn-xs" @click="showModal = true">
+          <button class="btn btn-primary btn-xs" @click="showNewModal">
             New
           </button>
         </div>
@@ -47,14 +47,12 @@
     </div>
 
     <!-- New Resource Modal -->
-    <div class="modal fade" v-if="showModal">
+    <div class="modal fade" ref="newResourceModal" v-show="false" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">New Resource</h5>
-            <button type="button" class="close" @click="showModal = false">
-              &times;
-            </button>
+            <button type="button" class="btn-close" @click="hideNewModal"></button>
           </div>
           <div class="modal-body">
             <input
@@ -65,91 +63,108 @@
             />
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" @click="showModal = false">
-              Cancel
-            </button>
-            <button class="btn btn-primary" @click="createResource">
-              Create
-            </button>
+            <button class="btn btn-secondary" @click="hideNewModal">Cancel</button>
+            <button class="btn btn-primary" @click="createResource">Create</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div class="modal fade" v-if="showDeleteModal">
+    <div class="modal fade" ref="deleteResourceModal" v-show="false" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Confirm Deletion</h5>
-            <button type="button" class="close" @click="showDeleteModal = false">
-              &times;
-            </button>
+            <button type="button" class="btn-close" @click="hideDeleteModal"></button>
           </div>
           <div class="modal-body">
             Are you sure you want to delete <strong>{{ resourceToDelete }}</strong>?
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" @click="showDeleteModal = false">
-              Cancel
-            </button>
-            <button class="btn btn-danger" @click="deleteResource">
-              Delete
-            </button>
+            <button class="btn btn-secondary" @click="hideDeleteModal">Cancel</button>
+            <button class="btn btn-danger" @click="deleteResource">Delete</button>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import axios from "axios";
+import { Modal } from "bootstrap"; // Import Bootstrap modal handling
 
 const resources = ref([]);
-const showModal = ref(false);
 const newResourceName = ref("");
-const showDeleteModal = ref(false);
 const resourceToDelete = ref(null);
+const newResourceModal = ref(null);
+const deleteResourceModal = ref(null);
+let newResourceBootstrapModal = null;
+let deleteResourceBootstrapModal = null;
 
-// Update API calls to use /dashboard/resources
+// Fetch resources from backend
 const fetchResources = async () => {
   try {
     const response = await axios.get("/api/dashboard/resources");
-    resources.value = response.data.resources; // Adjusted for the new JSON structure
+    resources.value = response.data.resources;
   } catch (error) {
     console.error("Error fetching resources:", error);
   }
 };
 
-const createResource = async () => {
-  try {
-    await axios.post("/api/dashboard/resources", { name: newResourceName.value });
-    newResourceName.value = "";
-    showModal.value = false;
-    fetchResources(); // Refresh the list
-  } catch (error) {
-    console.error("Error creating resource:", error);
+// Show "New Resource" modal
+const showNewModal = async () => {
+  await nextTick(); // Ensure DOM updates before initializing modal
+  if (newResourceBootstrapModal) {
+    newResourceBootstrapModal.show();
   }
 };
 
-const confirmDelete = (name) => {
-  resourceToDelete.value = name;
-  showDeleteModal.value = true;
+// Hide "New Resource" modal
+const hideNewModal = () => {
+  if (newResourceBootstrapModal) {
+    newResourceBootstrapModal.hide();
+  }
 };
 
+// Show "Delete Resource" modal
+const confirmDelete = async (name) => {
+  resourceToDelete.value = name;
+  await nextTick(); // Ensure DOM updates before showing modal
+  if (deleteResourceBootstrapModal) {
+    deleteResourceBootstrapModal.show();
+  }
+};
+
+// Hide "Delete Resource" modal
+const hideDeleteModal = () => {
+  if (deleteResourceBootstrapModal) {
+    deleteResourceBootstrapModal.hide();
+  }
+};
+
+// Delete resource
 const deleteResource = async () => {
   try {
     await axios.delete(`/api/dashboard/resources/${resourceToDelete.value}`);
-    showDeleteModal.value = false;
+    hideDeleteModal(); // Close the modal after deletion
     fetchResources(); // Refresh the list
   } catch (error) {
     console.error("Error deleting resource:", error);
   }
 };
 
-onMounted(fetchResources);
+// Initialize Bootstrap modals on component mount
+onMounted(async () => {
+  await nextTick(); // Ensure DOM updates before initializing Bootstrap
+  newResourceBootstrapModal = new Modal(newResourceModal.value);
+  deleteResourceBootstrapModal = new Modal(deleteResourceModal.value);
+  fetchResources();
+});
+
 </script>
 
 <style>
