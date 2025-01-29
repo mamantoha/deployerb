@@ -113,10 +113,11 @@ const newResourceName = ref("");
 const showDeleteModal = ref(false);
 const resourceToDelete = ref(null);
 
+// Update API calls to use /dashboard/resources
 const fetchResources = async () => {
   try {
     const response = await axios.get("/api/dashboard/resources");
-    resources.value = response.data;
+    resources.value = response.data.resources; // Adjusted for the new JSON structure
   } catch (error) {
     console.error("Error fetching resources:", error);
   }
