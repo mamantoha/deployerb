@@ -115,6 +115,31 @@ const fetchResources = async () => {
   }
 };
 
+const createResource = async () => {
+  if (!newResourceName.value.trim()) {
+    console.error("Resource name cannot be empty");
+    return;
+  }
+
+  try {
+    // Send a POST request to create a new resource
+    const response = await axios.post("/api/dashboard/resources", {
+      name: newResourceName.value.trim(),
+    });
+
+    console.log("Resource created:", response.data);
+
+    // Clear input field and close modal
+    newResourceName.value = "";
+    hideNewModal();
+
+    // Refresh the list
+    fetchResources();
+  } catch (error) {
+    console.error("Error creating resource:", error.response?.data || error.message);
+  }
+};
+
 // Show "New Resource" modal
 const showNewModal = async () => {
   await nextTick(); // Ensure DOM updates before initializing modal
