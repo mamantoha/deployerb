@@ -24,7 +24,8 @@ module Deployd
       end
 
       get '/resources/?' do
-        slim :'resources/index'
+        content_type :json
+        { resources: @resources }.to_json
       end
 
       # create new document
