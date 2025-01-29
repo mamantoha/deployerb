@@ -37,25 +37,25 @@ module Deployd
       # save new document
       #
       post '/resources' do
-        errors = validates_resource(params[:name])
-        if errors.empty?
-          resource_name = params[:name].downcase.singularize
+        request_body = request.body.read
+        data = JSON.parse(request_body) rescue {}
 
-          Deployd::Models.new(resource_name)
-          Deployd::Controllers.new(resource_name)
+        resource_name = data["name"]&.downcase&.singularize
+        halt 400, { error: "Invalid resource name" }.to_json if resource_name.nil? || resource_name.empty?
 
-          @resources << { name: resource_name, keys: [] }
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
-          end
-
-          flash[:info] = 'New document successfully added.'
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
-        else
-          puts errors.first.class
-          flash[:danger] = errors.join('; ')
-          redirect '/dashboard/resources'
+        # Check if the resource already exists
+        if settings.config_file[:resources].any? { |r| r[:name] == resource_name }
+          halt 400, { error: "Resource already exists" }.to_json
         end
+
+        # Add new resource
+        settings.config_file[:resources] << { name: resource_name, keys: [] }
+        File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+          f.write settings.config_file.to_yaml
+        end
+
+        status 201
+        { message: "Resource created", resource: resource_name }.to_json
       end
 
       # show resource
