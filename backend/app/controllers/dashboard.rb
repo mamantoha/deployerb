@@ -55,18 +55,15 @@ module Deployd
       # show resource
       #
       get '/resources/:resource_name' do
-        check_model_availability!(params[:resource_name])
-        @resource_name = params[:resource_name].singularize
-        @route_key = @resource_name.pluralize
+        resource_name = params[:resource_name].singularize
+        resource = settings.config_file[:resources].find { |r| r[:name] == resource_name }
 
-        if @resources&.find { |r| r[:name] == @resource_name }
-          @resource = @resource_name.classify.constantize
-          @defined_keys = @resource.fields.map do |k|
-                            { name: k[1].name, type: k[1].type.to_s }
-                          end.reject { |k| k[:name] == '_id' }
-          slim :'/resources/show'
+        if resource
+          content_type :json
+          resource.to_json
         else
-          redirect '/dashboard/resources'
+          content_type :json
+          halt 404, { error: "Resource not found" }.to_json
         end
       end
 
