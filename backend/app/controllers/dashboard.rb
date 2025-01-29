@@ -28,12 +28,6 @@ module Deployd
         { resources: @resources }.to_json
       end
 
-      # create new document
-      #
-      get '/resources/new' do
-        slim :'resources/new', layout: false
-      end
-
       # save new document
       #
       post '/resources' do
