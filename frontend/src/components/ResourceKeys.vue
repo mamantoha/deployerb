@@ -6,6 +6,7 @@
           <tr>
             <th>Name</th>
             <th>Type</th>
+            <th>Validations</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -13,12 +14,14 @@
           <tr v-for="key in keys" :key="key.name">
             <td class="col-md-4">
               {{ key.name }}
+            </td>
+            <td class="col-md-2">{{ key.type }}</td>
+            <td class="col-md-2">
               <span class="options">
                 <span v-if="key.required" class="label label-default">Required</span>
                 <span v-if="key.unique" class="label label-default">Unique</span>
               </span>
             </td>
-            <td class="col-md-2">{{ key.type }}</td>
             <td class="col-md-1">
               <span class="actions">
                 <button class="btn btn-primary btn-xs" @click="editKey(key)">
