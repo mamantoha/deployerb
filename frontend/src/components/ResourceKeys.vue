@@ -151,7 +151,7 @@ const addKey = async () => {
     const response = await axios.post(`/api/dashboard/resources/${route.params.name}`, {
       name: newKey.value.name.trim(),
       type: newKey.value.type,
-      validations, // ✅ Now properly formatted
+      validations,
     });
 
     console.log("New key added:", response.data);

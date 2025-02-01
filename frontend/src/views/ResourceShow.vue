@@ -37,7 +37,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
-import ResourceKeys from "@/components/ResourceKeys.vue"; // ✅ Import the new component
+import ResourceKeys from "@/components/ResourceKeys.vue";
 
 const route = useRoute();
 const resource = ref(null);
