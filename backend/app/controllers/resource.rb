@@ -109,11 +109,11 @@ module Deployd
         controller = self
         route = controller.instance_variable_get("@#{opts[:type]}_route")
 
-        Deployd::Application.send :subdomain, :api do
+        # Deployd::Application.send :subdomain, :api do
           Deployd::Application.send opts[:method], route do
             controller.send action, self
           end
-        end
+        # end
       end
 
       # params:
@@ -130,7 +130,6 @@ module Deployd
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def create(context)
-        context.request.body.rewind # in case someone already read it
         begin
           data = JSON.parse(context.request.body.read)
         rescue JSON::ParserError
@@ -167,8 +166,6 @@ module Deployd
       #   context - the instance (not the class of Deployd::Application for this controller)
       #
       def update(context)
-        context.request.body.rewind # in case someone already read it
-
         begin
           data = JSON.parse(context.request.body.read)
         rescue JSON::ParserError
