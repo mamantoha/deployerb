@@ -24,6 +24,7 @@
                 <button class="btn btn-primary btn-xs" @click="editKey(key)">
                   <span class="glyphicon glyphicon-edit"></span> Edit
                 </button>
+
                 <button class="btn btn-danger btn-xs" @click="confirmDeleteKey(key.name)">
                   <span class="glyphicon glyphicon-remove"></span> Delete
                 </button>
@@ -87,8 +88,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import { useRoute } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
+const router = useRouter();
 const route = useRoute();
 const keys = ref([]);
 const availableTypes = ref([
@@ -167,9 +169,8 @@ const addKey = async () => {
   }
 };
 
-// Edit a key (redirect to edit page)
 const editKey = (key) => {
-  window.location.href = `/dashboard/resources/${route.params.name}/${key.name}`;
+  router.push(`/resources/${route.params.name}/${key.name}/edit`);
 };
 
 // Delete a key

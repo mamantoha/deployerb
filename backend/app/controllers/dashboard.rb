@@ -129,45 +129,38 @@ module Deployd
       end
 
 
-      # edit key
+      # update key
       #
       put '/resources/:resource_name/:key_name' do
-        check_model_availability!(params[:resource_name])
         resource_name = params[:resource_name].singularize
         key_name = params[:key_name]
-        key_type = params[:type]
 
-        validations = []
-        if params[:validations]
-          Deployd::Models::AVAILABLE_VALIDATIONS.each do |validation|
-            validations << validation if params[:validations][validation]
-          end
+        request_body = request.body.read
+        data = JSON.parse(request_body) rescue {}
+
+        key_type = data["type"]
+        validations = data["validations"] || []
+
+        # Find the resource
+        resource = @resources.find { |r| r[:name] == resource_name }
+        halt 404, { error: "Resource not found" }.to_json unless resource
+
+        # Find the key
+        key = resource[:keys].find { |k| k[:name] == key_name }
+        halt 404, { error: "Key not found" }.to_json unless key
+
+        # Update key properties
+        key[:type] = key_type.constantize
+        key[:validations] = validations
+
+        # Save updated config
+        File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+          f.write settings.config_file.to_yaml
         end
 
-        options = {}
-
-        if @resources&.find { |r| r[:name] == resource_name }
-          # change type and/or options/validations, remove key and add new
-          Deployd::Models.remove_key(resource_name, key_name.to_sym)
-          Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options,
-                                                                                        validations: validations)
-
-          @resources.map do |r|
-            r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name
-          end
-          @resources.find do |r|
-            r[:name] == resource_name
-          end [:keys] << { name: key_name, type: key_type.constantize, options: options,
-                           validations: validations }
-
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
-          end
-          @resource = resource_name.classify.constantize
-
-          flash[:info] = 'Key successfully changed.'
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
-        end
+        content_type :json
+        status 200
+        { message: "Key updated successfully", key: key_name }.to_json
       end
 
       # remove key from document
@@ -201,26 +194,22 @@ module Deployd
       end
 
 
-      # show key
-      #
-      # get '/resource/user/name'
-      #
+      # Fetch a single key from a resource
       get '/resources/:resource_name/:key_name' do
-        check_model_availability!(params[:resource_name])
-        @resource_name = params[:resource_name].singularize
-        @key_name = params[:key_name]
+        resource_name = params[:resource_name].singularize
+        key_name = params[:key_name]
 
-        if @resources&.find { |r| r[:name] == @resource_name }
-          @resource = @resource_name.classify.constantize
-          @key = @resource.fields.select { |k| k[@key_name] }[@key_name]
-        end
+        # Find the resource
+        resource = @resources.find { |r| r[:name] == resource_name }
+        halt 404, { error: "Resource not found" }.to_json unless resource
 
-        if @key
-          slim :'resources/keys/show'
-        else
-          flash[:warning] = "Key `#{@key_name}` not found."
-          redirect "/dashboard/resources/#{@resource_name.pluralize}"
-        end
+        # Find the key
+        key = resource[:keys].find { |k| k[:name] == key_name }
+        halt 404, { error: "Key not found" }.to_json unless key
+
+        # Return key details
+        content_type :json
+        { name: key[:name], type: key[:type].to_s, validations: key[:validations] || [] }.to_json
       end
     end
 
