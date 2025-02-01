@@ -3,7 +3,7 @@
 module Deployd
   class Application < Sinatra::Base
     before(%r{/dashboard/resources/?.*}) do
-      check_mongodb_server
+      # check_mongodb_server
     end
 
     get '/' do
@@ -86,20 +86,20 @@ module Deployd
 
       # add new key to document
       #
-      # Example of params:
-      # { "type"=>"String", "name"=>"firstname", "validations"=>{"presence"=>"on"}, "splat"=>[], "captures"=>["people"], "resource_name"=>"people" }
-      #
       post '/resources/:resource_name' do
-        check_model_availability!(params[:resource_name])
         resource_name = params[:resource_name].singularize
-        key_name = params[:name]
-        key_type = params[:type]
 
+        request_body = request.body.read
+        data = JSON.parse(request_body) rescue {}
+
+        key_name = data["name"]
+        key_type = data["type"]
+
+
+        # Parse validations correctly from an array (instead of a hash)
         validations = []
-        if params[:validations]
-          Deployd::Models::AVAILABLE_VALIDATIONS.each do |validation|
-            validations << validation if params[:validations][validation]
-          end
+        if data["validations"].is_a?(Array)
+          validations = data["validations"].select { |v| Deployd::Models::AVAILABLE_VALIDATIONS.include?(v) }
         end
 
         errors = validates_key(resource_name, key_name, key_type)
@@ -107,29 +107,27 @@ module Deployd
           options = {}
 
           if @resources&.find { |r| r[:name] == resource_name }
-            Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options,
-                                                                                          validations: validations)
+            Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
 
-            @resources.find do |r|
-              r[:name] == resource_name
-            end [:keys] << { name: key_name, type: key_type.constantize, options: options,
-                             validations: validations }
+            @resources.find { |r| r[:name] == resource_name }[:keys] << {
+              name: key_name, type: key_type.constantize, options: options, validations: validations
+            }
+
             File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
               f.write settings.config_file.to_yaml
             end
 
-            @resource = resource_name.classify.constantize
-            flash[:info] = 'New key successfully added.'
-            redirect "/dashboard/resources/#{resource_name.pluralize}"
+            content_type :json
+            status 201
+            { message: "Key added", key: key_name }.to_json
           else
-            redirect '/dashboard/resources'
+            halt 400, { error: "Resource not found" }.to_json
           end
         else
-          puts errors.first.class
-          flash[:danger] = errors.join('; ')
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
+          halt 400, { error: errors.join('; ') }.to_json
         end
       end
+
 
       # edit key
       #
@@ -177,25 +175,31 @@ module Deployd
       # delete '/resource/user/name'
       #
       delete '/resources/:resource_name/:key_name' do
-        check_model_availability!(params[:resource_name])
         resource_name = params[:resource_name].singularize
         key_name = params[:key_name]
 
-        if @resources&.find { |r| r[:name] == resource_name }
-          Deployd::Models.remove_key(resource_name, key_name.to_sym)
+        # Find the resource
+        resource = @resources.find { |r| r[:name] == resource_name }
+        halt 404, { error: "Resource not found" }.to_json unless resource
 
-          @resources.map do |r|
-            r[:keys].delete_if { |k| k[:name] == key_name } if r[:name] == resource_name
-          end
-          File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
-            f.write settings.config_file.to_yaml
-          end
-          @resource = resource_name.classify.constantize
+        # Find the key
+        key = resource[:keys].find { |k| k[:name] == key_name }
+        halt 404, { error: "Key not found" }.to_json unless key
 
-          flash[:info] = 'Key successfully removed.'
-          redirect "/dashboard/resources/#{resource_name.pluralize}"
+        # Remove the key
+        Deployd::Models.remove_key(resource_name, key_name.to_sym)
+        resource[:keys].delete_if { |k| k[:name] == key_name }
+
+        # Save updated config
+        File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+          f.write settings.config_file.to_yaml
         end
+
+        content_type :json
+        status 200
+        { message: "Key '#{key_name}' successfully removed.", key: key_name }.to_json
       end
+
 
       # show key
       #
