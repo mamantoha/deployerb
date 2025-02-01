@@ -145,7 +145,7 @@ module Deployd
           if instance_variable_get(:"@#{resource_name}").save
             instance_variable_get(:"@#{resource_name}").to_json
           else
-            errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
+            errors = instance_variable_get(:"@#{resource_name}").errors.messages
             context.halt(406, { status: 'error', message: errors }.to_json)
           end
         rescue StandardError => e
@@ -182,7 +182,7 @@ module Deployd
             instance_variable_get(:"@#{resource_name}").reload
             instance_variable_get(:"@#{resource_name}").to_json
           else
-            errors = instance_variable_get(:"@#{resource_name}").errors.map { |k, v| "#{k}: #{v}" }.join('; ')
+            errors = instance_variable_get(:"@#{resource_name}").errors.messages
             context.halt(406, { status: 'error', message: errors }.to_json)
           end
         rescue StandardError => e

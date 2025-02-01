@@ -62,7 +62,10 @@ module Deployd
 
       # add validations for model
       validations.each do |validation|
-        class_name.constantize.validates key_name, validation => true if AVAILABLE_VALIDATIONS.include?(validation)
+        if AVAILABLE_VALIDATIONS.include?(validation.to_sym)
+
+          class_name.constantize.validates key_name, validation => true
+        end
       end
     end
 
