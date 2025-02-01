@@ -69,6 +69,18 @@ module Deployd
       end
     end
 
+    def self.update_key(resource_name, key_name, validations: [])
+      class_name = resource_name.singularize.classify
+
+      class_name.constantize.remove_validations_for(key_name)
+
+      validations.each do |validation|
+        if AVAILABLE_VALIDATIONS.include?(validation.to_sym)
+          class_name.constantize.validates key_name, validation => true
+        end
+      end
+    end
+
     # Remove key and validations from Mongoid::Document.
     #
     # @params [ String ] resource_name Resource name.

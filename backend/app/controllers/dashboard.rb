@@ -148,6 +148,8 @@ module Deployd
         key[:type] = key_type.constantize
         key[:validations] = validations
 
+        Deployd::Models.update_key(resource_name, key_name.to_sym, validations: validations)
+
         # Save updated config
         File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
           f.write settings.config_file.to_yaml
