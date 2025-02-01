@@ -95,12 +95,7 @@ module Deployd
         key_name = data["name"]
         key_type = data["type"]
 
-
-        # Parse validations correctly from an array (instead of a hash)
-        validations = []
-        if data["validations"].is_a?(Array)
-          validations = data["validations"].select { |v| Deployd::Models::AVAILABLE_VALIDATIONS.include?(v) }
-        end
+        validations = data["validations"] || []
 
         errors = validates_key(resource_name, key_name, key_type)
         if errors.empty?
