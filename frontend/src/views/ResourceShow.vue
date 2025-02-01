@@ -42,15 +42,4 @@ import ResourceKeys from "@/components/ResourceKeys.vue";
 const route = useRoute();
 const resource = ref(null);
 const activeTab = ref("keys");
-
-const fetchResource = async () => {
-  try {
-    const response = await axios.get(`/api/dashboard/resources/${route.params.name}`);
-    resource.value = response.data;
-  } catch (error) {
-    console.error("Error fetching resource:", error);
-  }
-};
-
-onMounted(fetchResource);
 </script>
