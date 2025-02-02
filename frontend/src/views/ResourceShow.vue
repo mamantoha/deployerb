@@ -33,7 +33,7 @@
         <ResourceData />
       </div>
       <div v-if="activeTab === 'examples'">
-        <p>Examples tab coming soon...</p>
+        <ResourceExamples />
       </div>
     </div>
   </div>
@@ -46,6 +46,7 @@ import axios from "axios";
 import { store } from "@/store";
 import ResourceKeys from "@/components/ResourceKeys.vue";
 import ResourceData from "@/components/ResourceData.vue";
+import ResourceExamples from "@/components/ResourceExamples.vue";
 
 const route = useRoute();
 const resource = ref(null);
