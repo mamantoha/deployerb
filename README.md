@@ -5,7 +5,6 @@
 * Install MongoDB
 * Install Ruby
 * Install Node.js
-* Install Yarn
 
 ### Clone Deployerb from GiHub
 
@@ -17,13 +16,15 @@ cd deployerb
 ### Install Ruby dependencies
 
 ```console
+cd ./backend
 bundle install
 ```
 
 ### Install Yarn dependencies
 
 ```console
-yarn install
+cd ./frontend
+npm install
 ```
 
 ### Using subdomains in development
@@ -47,9 +48,11 @@ The following URLs now available on local machine:
 ### Run Deployerb development server
 
 ```console
+cd ./backend
 bundle exec rackup
 ```
 
 ```console
-npm run watch
+cd ./frontend
+npm run dev
 ```
