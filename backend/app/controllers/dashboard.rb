@@ -60,13 +60,17 @@ module Deployd
 
         keys = model_class.fields.keys
 
+        # Fetch correct key order from config file
+        resource = @resources.find { |r| r[:name] == resource_name }
+        ordered_keys = resource[:keys].map { |k| k[:name] } rescue keys
+
         required_fields =
           model_class.validators
             .select { |v| v.is_a?(Mongoid::Validatable::PresenceValidator) }
             .flat_map(&:attributes)
             .map(&:to_s)
 
-        attributes = keys.map do |key|
+        attributes = ordered_keys.map do |key|
           { name: key, required: required_fields.include?(key) }
         end
 
