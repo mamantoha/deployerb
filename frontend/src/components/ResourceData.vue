@@ -17,15 +17,17 @@
           <td v-for="key in columns" :key="key">{{ record[key] }}</td>
 
           <td>
-            <button class="btn btn-info btn-xs" @click="showRecord(record)">
-              Show
-            </button>
-            <button class="btn btn-primary btn-xs" @click="editRecord(record)">
-              Edit
-            </button>
-            <button class="btn btn-danger btn-xs" @click="deleteRecord(record._id)">
-              Delete
-            </button>
+            <div class="btn-group btn-group-xs" role="group">
+              <button class="btn btn-info" @click="showRecord(record)">
+                Show
+              </button>
+              <button class="btn btn-primary" @click="editRecord(record)">
+                Edit
+              </button>
+              <button class="btn btn-danger" @click="deleteRecord(record._id)">
+                Delete
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
