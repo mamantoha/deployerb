@@ -24,9 +24,14 @@ module Deployd
 
         # Find the resource model dynamically
         model_class = Object.const_get(resource_name.classify) rescue nil
+
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
-        model_class.all.to_json
+        {
+          attributes: model_class.attribute_names,
+          records: model_class.all,
+
+        }.to_json
       end
 
       # Fetch a single record

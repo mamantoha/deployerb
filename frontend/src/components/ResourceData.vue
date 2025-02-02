@@ -66,11 +66,9 @@ const validationErrors = ref([]);
 const fetchData = async () => {
   try {
     const response = await axios.get(`/api/dashboard/resources/${resourceName}/data`);
-    data.value = response.data;
 
-    if (data.value.length > 0) {
-      columns.value = Object.keys(data.value[0]); // Get field names dynamically
-    }
+    columns.value = response.data.attributes;
+    data.value = response.data.records;
   } catch (error) {
     console.error("Error fetching data:", error);
   }
