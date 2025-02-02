@@ -24,7 +24,7 @@
               <button class="btn btn-primary" @click="editRecord(record)">
                 Edit
               </button>
-              <button class="btn btn-danger" @click="deleteRecord(record._id)">
+              <button class="btn btn-danger" @click="deleteRecord(record)">
                 Delete
               </button>
             </div>
@@ -115,21 +115,17 @@ const editRecord = (record) => {
 };
 
 // Delete a record
-const deleteRecord = async (id) => {
+const deleteRecord = async (record) => {
   if (!confirm("Are you sure you want to delete this record?")) return;
 
   try {
-    await axios.delete(`/api/dashboard/resources/${resourceName}/data/${id}`);
+    await axios.delete(`/api/dashboard/resources/${resourceName}/data/${record._id}`);
 
     store.successMessage = "Record deleted successfully!";
     fetchData();
   } catch (error) {
     console.error("Error deleting record:", error);
   }
-};
-
-const isRequiredField = (key) => {
-  return attributes.value.some(attr => attr.name === key && attr.required);
 };
 
 onMounted(fetchData);
