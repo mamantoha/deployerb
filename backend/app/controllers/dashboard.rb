@@ -62,11 +62,17 @@ module Deployd
         model_class = Object.const_get(resource_name.classify) rescue nil
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
-        record = model_class.create(data)
+        record = model_class.new(data)
 
-        content_type :json
-        status 201
-        record.to_json
+        if record.save
+          content_type :json
+          status 201
+          record.to_json
+        else
+          content_type :json
+          status 422
+          { error: "Validation failed", messages: record.errors.full_messages }.to_json
+        end
       end
 
       # Update an existing record

@@ -28,6 +28,12 @@
     <!-- Form to add new data -->
     <h4>Add New Record</h4>
     <form @submit.prevent="createRecord">
+      <div v-if="validationErrors.length" class="alert alert-danger">
+        <ul>
+          <li v-for="error in validationErrors" :key="error">{{ error }}</li>
+        </ul>
+      </div>
+
       <div v-for="key in columns" :key="key">
         <label>{{ key }}</label>
         <input v-model="newRecord[key]" type="text" class="form-control" />
@@ -51,6 +57,8 @@ const data = ref([]);
 const columns = ref([]);
 const newRecord = ref({});
 
+const validationErrors = ref([]);
+
 // Fetch resource data
 const fetchData = async () => {
   try {
@@ -70,9 +78,14 @@ const createRecord = async () => {
   try {
     await axios.post(`/api/dashboard/resources/${resourceName}/data`, newRecord.value);
     newRecord.value = {};
+    validationErrors.value = [];
     fetchData();
   } catch (error) {
-    console.error("Error creating record:", error);
+    if (error.response && error.response.status === 422) {
+      validationErrors.value = error.response.data.messages;
+    } else {
+      console.error("Error creating record:", error);
+    }
   }
 };
 
