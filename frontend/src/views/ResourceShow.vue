@@ -15,26 +15,36 @@
       </div>
 
       <ul class="nav nav-tabs">
-        <li :class="{ active: activeTab === 'keys' }">
-          <a href="#" @click="activeTab = 'keys'">Keys</a>
+        <li class="nav-item">
+          <a class="nav-link" :class="{ active: activeTab === 'keys' }" href="#" @click.prevent="activeTab = 'keys'">
+            Keys
+          </a>
         </li>
-        <li :class="{ active: activeTab === 'data' }">
-          <a href="#" @click="activeTab = 'data'">Data</a>
+        <li class="nav-item">
+          <a class="nav-link" :class="{ active: activeTab === 'data' }" href="#" @click.prevent="activeTab = 'data'">
+            Data
+          </a>
         </li>
-        <li :class="{ active: activeTab === 'examples' }">
-          <a href="#" @click="activeTab = 'examples'">Examples</a>
+        <li class="nav-item">
+          <a class="nav-link" :class="{ active: activeTab === 'examples' }" href="#" @click.prevent="activeTab = 'examples'">
+            Examples
+          </a>
         </li>
       </ul>
 
-      <div v-if="activeTab === 'keys'">
-        <ResourceKeys />
+      <!-- Tab Content -->
+      <div class="tab-content mt-3">
+        <div v-if="activeTab === 'keys'" class="tab-pane fade show active">
+          <ResourceKeys />
+        </div>
+        <div v-if="activeTab === 'data'" class="tab-pane fade show active">
+          <ResourceData />
+        </div>
+        <div v-if="activeTab === 'examples'" class="tab-pane fade show active">
+          <ResourceExamples />
+        </div>
       </div>
-      <div v-if="activeTab === 'data'">
-        <ResourceData />
-      </div>
-      <div v-if="activeTab === 'examples'">
-        <ResourceExamples />
-      </div>
+
     </div>
   </div>
 </template>
