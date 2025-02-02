@@ -27,7 +27,6 @@ module Deployd
 
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
-        records = model_class.all
         keys = model_class.fields.keys
 
         required_fields =
@@ -39,6 +38,8 @@ module Deployd
         attributes = keys.map do |key|
           { name: key, required: required_fields.include?(key) }
         end
+
+        records = model_class.all
 
         { attributes:, records: }.to_json
       end
@@ -55,7 +56,19 @@ module Deployd
         record = model_class.where(id: record_id).first
         halt 404, { error: "Record not found" }.to_json unless record
 
-        record.to_json
+        keys = model_class.fields.keys
+
+        required_fields =
+          model_class.validators
+            .select { |v| v.is_a?(Mongoid::Validatable::PresenceValidator) }
+            .flat_map(&:attributes)
+            .map(&:to_s)
+
+        attributes = keys.map do |key|
+          { name: key, required: required_fields.include?(key) }
+        end
+
+        { attributes:, record: }.to_json
       end
 
       # Create a new record

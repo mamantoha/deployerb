@@ -22,7 +22,10 @@
       </div>
 
       <div class="mb-3" v-for="(value, key) in filteredRecord" :key="key">
-        <label>{{ key }}</label>
+        <label>
+          {{ key }}
+          <span v-if="isRequiredField(key)" class="text-danger">*</span>
+        </label>
         <input v-model="filteredRecord[key]" type="text" class="form-control" />
       </div>
 
@@ -41,6 +44,7 @@ import { store } from "@/store";
 const route = useRoute();
 const router = useRouter();
 const record = ref({});
+const attributes = ref([]);
 
 const validationErrors = ref([]);
 
@@ -56,7 +60,9 @@ const fetchRecord = async () => {
     const response = await axios.get(
       `/api/dashboard/resources/${route.params.resourceName}/data/${route.params.id}`
     );
-    record.value = response.data;
+
+    attributes.value = response.data.attributes;
+    record.value = response.data.record;
   } catch (error) {
     console.error("Error fetching record:", error);
     router.push(`/resources/${route.params.resourceName}`);
@@ -92,6 +98,10 @@ const updateRecord = async () => {
 const cancelEdit = () => {
   store.redirectTab = "data";
   router.push(`/resources/${route.params.resourceName}`);
+};
+
+const isRequiredField = (key) => {
+  return attributes.value.some(attr => attr.name === key && attr.required);
 };
 
 onMounted(fetchRecord);
