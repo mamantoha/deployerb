@@ -22,6 +22,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import { store } from "@/store";
 
 const route = useRoute();
 const router = useRouter();
@@ -56,6 +57,11 @@ const updateRecord = async () => {
       `/api/dashboard/resources/${route.params.resourceName}/data/${route.params.id}`,
       recordData
     );
+
+    validationErrors.value = [];
+
+    store.successMessage = "Record updated successfully!";
+
     router.push(`/resources/${route.params.resourceName}`);
   } catch (error) {
     if (error.response && error.response.status === 422) {
@@ -65,6 +71,7 @@ const updateRecord = async () => {
     }
   }
 };
+
 
 // Cancel edit and return to the resource data list
 const cancelEdit = () => {

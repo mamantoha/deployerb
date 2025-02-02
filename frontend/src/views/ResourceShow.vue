@@ -8,6 +8,10 @@
     </ol>
 
     <div>
+      <div v-if="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+
       <ul class="nav nav-tabs">
         <li :class="{ active: activeTab === 'keys' }">
           <a href="#" @click="activeTab = 'keys'">Keys</a>
@@ -34,13 +38,41 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import { store } from "@/store";
 import ResourceKeys from "@/components/ResourceKeys.vue";
 import ResourceData from "@/components/ResourceData.vue";
 
 const route = useRoute();
 const resource = ref(null);
-const activeTab = ref("keys");
+
+const successMessage = computed(() => store.successMessage);
+const activeTab = ref("data");
+
+watch(successMessage, (newMessage) => {
+  if (newMessage) {
+    setTimeout(() => {
+      store.successMessage = "";
+    }, 3000); // ✅ Clears after 3 seconds
+  }
+});
+
+// Fetch resource details
+const fetchResource = async () => {
+  try {
+    const response = await axios.get(`/api/dashboard/resources/${route.params.resourceName}`);
+    resource.value = response.data;
+  } catch (error) {
+    console.error("Error fetching resource:", error);
+  }
+};
+
+// Watch for query changes and update active tab
+watch(() => route.query.tab, (newTab) => {
+  if (newTab) activeTab.value = newTab;
+});
+
+onMounted(fetchResource);
 </script>
