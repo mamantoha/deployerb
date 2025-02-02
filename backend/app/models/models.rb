@@ -25,7 +25,8 @@ module Deployd
 
         @serializable_keys = [:_id]
 
-        def serializable_hash(options = {})
+        def serializable_hash(options = nil)
+          options ||= {}
           serializable_keys = self.class.serializable_keys
           super({ only: serializable_keys }.merge(options))
         end
