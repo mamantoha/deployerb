@@ -1,41 +1,51 @@
 <template>
   <div class="panel panel-default">
     <div class="panel-body">
-      <table class="table table-hover">
-        <thead>
+      <draggable
+        v-model="keys"
+        tag="table"
+        class="table table-hover"
+        item-key="name"
+        handle=".drag-handle"
+        @end="updateKeyOrder">
+        <template #header>
+          <thead>
+            <tr>
+              <th></th> <!-- Drag Handle -->
+              <th>Name</th>
+              <th>Type</th>
+              <th>Validations</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+        </template>
+
+        <template #item="{ element: key }">
           <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Validations</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="key in keys" :key="key.name">
-            <td class="col-md-4">
-              {{ key.name }}
+            <td class="drag-handle col-md-1">
+              <i class="bi bi-grip-vertical"></i>
             </td>
-            <td class="col-md-2">{{ key.type }}</td>
-            <td class="col-md-2">
+            <td class="col-md-4">{{ key.name }}</td>
+            <td class="col-md-3">{{ key.type }}</td>
+            <td class="col-md-3">
               <span class="options">
                 <span v-if="key.required" class="label label-default">Required</span>
                 <span v-if="key.unique" class="label label-default">Unique</span>
               </span>
             </td>
             <td class="col-md-1">
-              <span class="actions">
+              <div class="btn-group btn-group-xs" role="group">
                 <button class="btn btn-primary btn-xs" @click="editKey(key)">
-                  <span class="glyphicon glyphicon-edit"></span> Edit
+                  Edit
                 </button>
-
                 <button class="btn btn-danger btn-xs" @click="confirmDeleteKey(key.name)">
-                  <span class="glyphicon glyphicon-remove"></span> Delete
+                  Delete
                 </button>
-              </span>
+              </div>
             </td>
           </tr>
-        </tbody>
-      </table>
+        </template>
+      </draggable>
     </div>
   </div>
 
@@ -79,7 +89,7 @@
         <div class="col-sm-offset-2 col-sm-10">
           <div class="form-group" style="float: right">
             <button type="submit" class="btn btn-primary">
-              <span class="glyphicon glyphicon-plus"></span> Add
+              Add
             </button>
           </div>
         </div>
@@ -92,6 +102,7 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter, useRoute } from "vue-router";
+import draggable from 'vuedraggable';
 
 const router = useRouter();
 const route = useRoute();
@@ -188,5 +199,24 @@ const confirmDeleteKey = async (keyName) => {
   }
 };
 
+const updateKeyOrder = async () => {
+  try {
+    const keyNames = keys.value.map(key => key.name);
+
+    await axios.put(`/api/dashboard/resources/${route.params.resourceName}/reorder_keys`, { keys: keyNames });
+
+    console.log("Key order saved successfully.");
+  } catch (error) {
+    console.error("Error updating key order:", error);
+  }
+};
+
 onMounted(fetchKeys);
 </script>
+
+<style>
+.drag-handle {
+  cursor: grab;
+  padding-right: 10px;
+}
+</style>

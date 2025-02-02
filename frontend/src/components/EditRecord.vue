@@ -21,12 +21,12 @@
         </ul>
       </div>
 
-      <div class="mb-3" v-for="(value, key) in filteredRecord" :key="key">
+      <div class="mb-3" v-for="attribute in attributes" :key="attribute.name">
         <label>
-          {{ key }}
-          <span v-if="isRequiredField(key)" class="text-danger">*</span>
+          {{ attribute.name }}
+          <span v-if="attribute.required" class="text-danger">*</span>
         </label>
-        <input v-model="filteredRecord[key]" type="text" class="form-control" />
+        <input v-model="record[attribute.name]" type="text" class="form-control" />
       </div>
 
       <button type="submit" class="btn btn-primary">Save</button>
