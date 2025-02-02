@@ -23,6 +23,77 @@ module Deployd
         @resources = settings.config_file[:resources]
       end
 
+
+      # Fetch all records of a resource
+      get '/resources/:resource_name/data' do
+        resource_name = params[:resource_name].singularize
+
+        # Find the resource model dynamically
+        model_class = Object.const_get(resource_name.classify) rescue nil
+        halt 404, { error: "Resource not found" }.to_json unless model_class
+
+        content_type :json
+        model_class.all.to_json
+      end
+
+      # Create a new record
+      post '/resources/:resource_name/data' do
+        resource_name = params[:resource_name].singularize
+        request_body = request.body.read
+        data = JSON.parse(request_body) rescue {}
+
+        # Find the resource model dynamically
+        model_class = Object.const_get(resource_name.classify) rescue nil
+        halt 404, { error: "Resource not found" }.to_json unless model_class
+
+        record = model_class.create(data)
+
+        content_type :json
+        status 201
+        record.to_json
+      end
+
+      # Update an existing record
+      put '/resources/:resource_name/data/:id' do
+        resource_name = params[:resource_name].singularize
+        record_id = params[:id]
+        request_body = request.body.read
+        data = JSON.parse(request_body) rescue {}
+
+        # Find the resource model dynamically
+        model_class = Object.const_get(resource_name.classify) rescue nil
+        halt 404, { error: "Resource not found" }.to_json unless model_class
+
+        record = model_class.where(id: record_id).first
+        halt 404, { error: "Record not found" }.to_json unless record
+
+        record.update_attributes(data)
+
+        content_type :json
+        status 200
+        record.to_json
+      end
+
+      # Delete a record
+      delete '/resources/:resource_name/data/:id' do
+        resource_name = params[:resource_name].singularize
+        record_id = params[:id]
+
+        # Find the resource model dynamically
+        model_class = Object.const_get(resource_name.classify) rescue nil
+        halt 404, { error: "Resource not found" }.to_json unless model_class
+
+        record = model_class.where(id: record_id).first
+        halt 404, { error: "Record not found" }.to_json unless record
+
+        record.destroy
+
+        content_type :json
+        status 200
+        { message: "Record deleted", id: record_id }.to_json
+      end
+
+
       get '/resources/?' do
         content_type :json
         { resources: @resources }.to_json
@@ -208,6 +279,7 @@ module Deployd
         content_type :json
         { name: key[:name], type: key[:type].to_s, validations: key[:validations] || [] }.to_json
       end
+
     end
 
     private

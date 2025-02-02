@@ -24,7 +24,7 @@
         <ResourceKeys />
       </div>
       <div v-if="activeTab === 'data'">
-        <p>Data tab coming soon...</p>
+        <ResourceData />
       </div>
       <div v-if="activeTab === 'examples'">
         <p>Examples tab coming soon...</p>
@@ -38,6 +38,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import ResourceKeys from "@/components/ResourceKeys.vue";
+import ResourceData from "@/components/ResourceData.vue";
 
 const route = useRoute();
 const resource = ref(null);
