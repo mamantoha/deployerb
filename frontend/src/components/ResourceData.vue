@@ -11,13 +11,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="record in data" :key="record.id">
+        <tr v-for="record in data" :key="record._id">
           <td v-for="key in columns" :key="key">{{ record[key] }}</td>
           <td>
             <button class="btn btn-primary btn-xs" @click="editRecord(record)">
               Edit
             </button>
-            <button class="btn btn-danger btn-xs" @click="deleteRecord(record.id)">
+            <button class="btn btn-danger btn-xs" @click="deleteRecord(record._id)">
               Delete
             </button>
           </td>
@@ -34,7 +34,7 @@
         </ul>
       </div>
 
-      <div v-for="key in columns" :key="key">
+      <div v-for="key in filteredColumns" :key="key">
         <label>{{ key }}</label>
         <input v-model="newRecord[key]" type="text" class="form-control" />
       </div>
@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -55,6 +55,7 @@ const router = useRouter();
 const resourceName = route.params.resourceName;
 const data = ref([]);
 const columns = ref([]);
+const filteredColumns = computed(() => columns.value.filter((key) => key !== "_id"));
 const newRecord = ref({});
 
 const validationErrors = ref([]);
