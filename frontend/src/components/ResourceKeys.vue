@@ -1,7 +1,13 @@
 <template>
   <div class="panel panel-default">
     <div class="panel-body">
-      <draggable v-model="keys" tag="table" class="table table-hover" item-key="name" handle=".drag-handle">
+      <draggable
+        v-model="keys"
+        tag="table"
+        class="table table-hover"
+        item-key="name"
+        handle=".drag-handle"
+        @end="updateKeyOrder">
         <template #header>
           <thead>
             <tr>
@@ -190,6 +196,18 @@ const confirmDeleteKey = async (keyName) => {
     fetchKeys(); // Refresh the list after deletion
   } catch (error) {
     console.error("Error deleting key:", error);
+  }
+};
+
+const updateKeyOrder = async () => {
+  try {
+    const keyNames = keys.value.map(key => key.name);
+
+    await axios.put(`/api/dashboard/resources/${route.params.resourceName}/reorder_keys`, { keys: keyNames });
+
+    console.log("Key order saved successfully.");
+  } catch (error) {
+    console.error("Error updating key order:", error);
   }
 };
 

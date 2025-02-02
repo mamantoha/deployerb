@@ -134,6 +134,32 @@ module Deployd
         { message: "Record deleted", id: record_id }.to_json
       end
 
+      # Update the order of keys in config.yml
+      put '/resources/:resource_name/reorder_keys' do
+        resource_name = params[:resource_name].singularize
+
+        # Parse JSON request body
+        request_body = request.body.read
+        data = JSON.parse(request_body) rescue {}
+
+        new_order = data["keys"]
+
+        halt 400, { error: "Invalid data" }.to_json if new_order.nil?
+
+        # Find the resource
+        resource = @resources.find { |r| r[:name] == resource_name }
+        halt 404, { error: "Resource not found" }.to_json unless resource
+
+        # Reorder keys based on the received order
+        resource[:keys].sort_by! { |key| new_order.index(key[:name]) || resource[:keys].size }
+
+        # Save updated config
+        File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
+          f.write settings.config_file.to_yaml
+        end
+
+        { message: "Key order updated" }.to_json
+      end
 
       get '/resources/?' do
         { resources: @resources }.to_json
