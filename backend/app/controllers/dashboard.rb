@@ -24,10 +24,14 @@ module Deployd
 
         # Find the resource model dynamically
         model_class = Object.const_get(resource_name.classify) rescue nil
-
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
+        records = model_class.all
         keys = model_class.fields.keys
+
+        # Fetch correct key order from config file
+        resource = @resources.find { |r| r[:name] == resource_name }
+        ordered_keys = resource[:keys].map { |k| k[:name] } rescue keys
 
         required_fields =
           model_class.validators
@@ -35,11 +39,9 @@ module Deployd
             .flat_map(&:attributes)
             .map(&:to_s)
 
-        attributes = keys.map do |key|
+        attributes = ordered_keys.map do |key|
           { name: key, required: required_fields.include?(key) }
         end
-
-        records = model_class.all
 
         { attributes:, records: }.to_json
       end
