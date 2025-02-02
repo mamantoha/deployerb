@@ -1,11 +1,14 @@
 <template>
   <div>
-    <ol class="breadcrumb">
-      <li>
-        <router-link to="/resources">Resources</router-link>
-      </li>
-      <li class="active">{{ resource?.name }}</li>
-    </ol>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <router-link to="/resources">Resources</router-link>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">{{ resource?.name }}</li>
+      </ol>
+    </nav>
+
 
     <div>
       <div v-if="successMessage" class="alert alert-success alert-dismissible">

@@ -1,6 +1,19 @@
 <template>
   <div>
-    <h3>Edit Record {{ record._id }}</h3>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <router-link to="/resources">Resources</router-link>
+        </li>
+        <li class="breadcrumb-item">
+          <router-link :to="`/resources/${route.params.resourceName}`">{{ route.params.resourceName }}</router-link>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Edit Record</li>
+      </ol>
+    </nav>
+
+    <h3>ID: {{ record._id }}</h3>
     <form @submit.prevent="updateRecord">
       <div v-if="validationErrors.length" class="alert alert-danger">
         <ul>
