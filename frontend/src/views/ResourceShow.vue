@@ -10,7 +10,7 @@
     <div>
       <div v-if="successMessage" class="alert alert-success alert-dismissible">
         {{ successMessage }}
-        <button type="button" class="btn-close" @click="store.successMessage = ''" data-bs-dismiss="alert" aria-label="Close">
+        <button type="button" class="btn-close" @click="store.successMessage = ''" aria-label="Close">
         </button>
       </div>
 
