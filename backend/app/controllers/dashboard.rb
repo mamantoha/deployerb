@@ -36,6 +36,22 @@ module Deployd
         model_class.all.to_json
       end
 
+      # Fetch a single record
+      get '/resources/:resource_name/data/:id' do
+        resource_name = params[:resource_name].singularize
+        record_id = params[:id]
+
+        # Find the resource model dynamically
+        model_class = Object.const_get(resource_name.classify) rescue nil
+        halt 404, { error: "Resource not found" }.to_json unless model_class
+
+        record = model_class.where(id: record_id).first
+        halt 404, { error: "Record not found" }.to_json unless record
+
+        content_type :json
+        record.to_json
+      end
+
       # Create a new record
       post '/resources/:resource_name/data' do
         resource_name = params[:resource_name].singularize

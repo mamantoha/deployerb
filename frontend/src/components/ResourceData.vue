@@ -40,10 +40,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import axios from "axios";
 
 const route = useRoute();
-const resourceName = route.params.name;
+const router = useRouter();
+
+const resourceName = route.params.resourceName;
 const data = ref([]);
 const columns = ref([]);
 const newRecord = ref({});
@@ -75,7 +78,7 @@ const createRecord = async () => {
 
 // Edit a record
 const editRecord = (record) => {
-  console.log("Edit record", record);
+  router.push(`/resources/${route.params.resourceName}/data/${record._id}/edit`);
 };
 
 // Delete a record
