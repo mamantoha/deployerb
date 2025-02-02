@@ -10,14 +10,6 @@ module Deployd
       redirect '/dashboard/resources'
     end
 
-    get '/tableView' do
-      slim :'resources/_table_view', layout: false
-    end
-
-    get '/editorView' do
-      slim :'resources/_editor_view', layout: false
-    end
-
     namespace '/dashboard' do
       before do
         @resources = settings.config_file[:resources]
@@ -313,12 +305,10 @@ module Deployd
 
     # check if resource_name is in plural form and model exists
     #
-    def check_model_availability!(resource_name)
-      unless resource_name.singularize != resource_name && Object.const_defined?(resource_name.singularize.classify)
-        flash[:warning] = "Resource `#{resource_name}` not found."
-        redirect '/dashboard/resources'
-      end
-    end
+    # def check_model_availability!(resource_name)
+    #   unless resource_name.singularize != resource_name && Object.const_defined?(resource_name.singularize.classify)
+    #   end
+    # end
 
     def validates_resource(name)
       errors = []
@@ -357,13 +347,11 @@ module Deployd
       errors
     end
 
-    def check_mongodb_server
-      Timeout.timeout(5) do
-        Mongoid.default_client.database_names
-      end
-    rescue Timeout::Error
-      content_type :html
-      halt slim :mongodb_error
-    end
+    # def check_mongodb_server
+    #   Timeout.timeout(5) do
+    #     Mongoid.default_client.database_names
+    #   end
+    # rescue Timeout::Error
+    # end
   end
 end

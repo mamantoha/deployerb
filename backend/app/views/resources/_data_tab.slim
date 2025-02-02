@@ -1,8 +1,0 @@
-div ng-init="routeKey='#{@route_key}'; definedKeys=#{@defined_keys.to_json}"
-  div ng-controller='ResourceController'
-    div class='panel-group' id='accordion'
-      div class='panel panel-default'
-        div id='data' class='panel-default'
-          div class='panel-body'
-            ng-include src="'/tableView'" ng-show="displayMode == 'list'"
-            ng-include src="'/editorView'" ng-show="displayMode == 'edit'"

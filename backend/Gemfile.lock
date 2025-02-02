@@ -101,14 +101,8 @@ GEM
       rack-protection (= 4.1.0)
       sinatra (= 4.1.0)
       tilt (~> 2.0)
-    sinatra-flash (0.3.0)
-      sinatra (>= 1.0.0)
     sinatra-subdomain (0.4.0)
       sinatra
-    slim (5.1.1)
-      temple (~> 0.10.0)
-      tilt (>= 2.1.0)
-    temple (0.10.2)
     tilt (2.4.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -133,9 +127,7 @@ DEPENDENCIES
   selenium-webdriver
   sinatra
   sinatra-contrib
-  sinatra-flash
   sinatra-subdomain
-  slim
 
 BUNDLED WITH
    2.4.14

@@ -5,15 +5,10 @@ require 'pp'
 require 'active_support/core_ext/string'
 require 'sinatra/base'
 require 'sinatra/namespace'
-require 'sinatra/flash'
 require 'sinatra/subdomain'
-require 'slim'
 require 'mongoid'
 require 'logger'
 require 'pry'
-
-Slim::Engine.set_options pretty: true,
-                         attr_list_delims: { '(' => ')', '[' => ']' } # removed '{' => '}' from default
 
 module Deployd
   # https://www.mongodb.com/docs/mongoid/current/reference/fields/
@@ -41,7 +36,6 @@ module Deployd
 
   class Application < Sinatra::Base
     register Sinatra::Namespace
-    register Sinatra::Flash
     register Sinatra::Subdomain
 
     def self.load_or_initialize_config_file
@@ -107,7 +101,6 @@ module Deployd
   end
 end
 
-require_relative 'lib/sinatra-flash'
 require_relative 'lib/initializers/mongoid'
 require_relative 'app/models/init'
 require_relative 'app/controllers/init'

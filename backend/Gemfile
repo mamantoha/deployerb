@@ -9,10 +9,7 @@ gem 'rack'
 gem 'rackup'
 gem 'sinatra'
 gem 'sinatra-contrib'
-gem 'sinatra-flash'
 gem 'sinatra-subdomain'
-
-gem 'slim'
 
 gem 'mongoid'
 gem 'mongoid-suicide'
