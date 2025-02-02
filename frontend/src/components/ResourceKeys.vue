@@ -1,9 +1,11 @@
 <template>
   <div class="panel panel-default">
     <div class="panel-body">
+
       <table class="table table-hover">
         <thead>
           <tr>
+            <th></th> <!-- Drag Handle -->
             <th>Name</th>
             <th>Type</th>
             <th>Validations</th>
@@ -11,10 +13,12 @@
           </tr>
         </thead>
         <tbody>
+
           <tr v-for="key in keys" :key="key.name">
-            <td class="col-md-4">
-              {{ key.name }}
+            <td class="drag-handle">
+              <i class="bi bi-grip-vertical"></i>
             </td>
+            <td class="col-md-4">{{ key.name }}</td>
             <td class="col-md-2">{{ key.type }}</td>
             <td class="col-md-2">
               <span class="options">
@@ -23,19 +27,20 @@
               </span>
             </td>
             <td class="col-md-1">
-              <span class="actions">
+              <div class="btn-group btn-group-xs" role="group">
                 <button class="btn btn-primary btn-xs" @click="editKey(key)">
-                  <span class="glyphicon glyphicon-edit"></span> Edit
+                  Edit
                 </button>
-
                 <button class="btn btn-danger btn-xs" @click="confirmDeleteKey(key.name)">
-                  <span class="glyphicon glyphicon-remove"></span> Delete
+                  Delete
                 </button>
-              </span>
+              </div>
             </td>
           </tr>
+
         </tbody>
       </table>
+
     </div>
   </div>
 
@@ -79,7 +84,7 @@
         <div class="col-sm-offset-2 col-sm-10">
           <div class="form-group" style="float: right">
             <button type="submit" class="btn btn-primary">
-              <span class="glyphicon glyphicon-plus"></span> Add
+              Add
             </button>
           </div>
         </div>
@@ -92,6 +97,7 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter, useRoute } from "vue-router";
+import draggable from 'vuedraggable';
 
 const router = useRouter();
 const route = useRoute();
@@ -190,3 +196,10 @@ const confirmDeleteKey = async (keyName) => {
 
 onMounted(fetchKeys);
 </script>
+
+<style>
+.drag-handle {
+  cursor: grab;
+  padding-right: 10px;
+}
+</style>
