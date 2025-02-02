@@ -12,6 +12,8 @@ module Deployd
 
     namespace '/dashboard' do
       before do
+        content_type :json
+
         @resources = settings.config_file[:resources]
       end
 
@@ -24,7 +26,6 @@ module Deployd
         model_class = Object.const_get(resource_name.classify) rescue nil
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
-        content_type :json
         model_class.all.to_json
       end
 
@@ -40,7 +41,6 @@ module Deployd
         record = model_class.where(id: record_id).first
         halt 404, { error: "Record not found" }.to_json unless record
 
-        content_type :json
         record.to_json
       end
 
@@ -57,11 +57,9 @@ module Deployd
         record = model_class.new(data)
 
         if record.save
-          content_type :json
           status 201
           record.to_json
         else
-          content_type :json
           status 422
           { error: "Validation failed", messages: record.errors.full_messages }.to_json
         end
@@ -83,11 +81,9 @@ module Deployd
 
         # Attempt to update the record
         if record.update_attributes(data)
-          content_type :json
           status 200
           { message: "Record updated successfully", record: record }.to_json
         else
-          content_type :json
           status 422
           { error: "Validation failed", messages: record.errors.full_messages }.to_json
         end
@@ -107,14 +103,12 @@ module Deployd
 
         record.destroy
 
-        content_type :json
         status 200
         { message: "Record deleted", id: record_id }.to_json
       end
 
 
       get '/resources/?' do
-        content_type :json
         { resources: @resources }.to_json
       end
 
@@ -149,10 +143,8 @@ module Deployd
         resource = settings.config_file[:resources].find { |r| r[:name] == resource_name }
 
         if resource
-          content_type :json
           resource.to_json
         else
-          content_type :json
           halt 404, { error: "Resource not found" }.to_json
         end
       end
@@ -202,7 +194,6 @@ module Deployd
               f.write settings.config_file.to_yaml
             end
 
-            content_type :json
             status 201
             { message: "Key added", key: key_name }.to_json
           else
@@ -245,7 +236,6 @@ module Deployd
           f.write settings.config_file.to_yaml
         end
 
-        content_type :json
         status 200
         { message: "Key updated successfully", key: key_name }.to_json
       end
@@ -275,7 +265,6 @@ module Deployd
           f.write settings.config_file.to_yaml
         end
 
-        content_type :json
         status 200
         { message: "Key '#{key_name}' successfully removed.", key: key_name }.to_json
       end
@@ -295,7 +284,6 @@ module Deployd
         halt 404, { error: "Key not found" }.to_json unless key
 
         # Return key details
-        content_type :json
         { name: key[:name], type: key[:type].to_s, validations: key[:validations] || [] }.to_json
       end
 
