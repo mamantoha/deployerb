@@ -1,8 +1,33 @@
 <template>
   <div>
-    <h3>Data for {{ resourceName }}</h3>
+    <!-- Form to add new data -->
+    <div class="card">
+      <div class="card-header">
+        Add new {{ resourceName }}
+      </div>
+      <div class="card-body">
+        <form @submit.prevent="createRecord">
+          <div v-if="validationErrors.length" class="alert alert-danger">
+            <ul>
+              <li v-for="error in validationErrors" :key="error">{{ error }}</li>
+            </ul>
+          </div>
+
+          <div class="mb-3" v-for="attribute in permittedAttributes" :key="attribute.name">
+            <label>
+              {{ attribute.name }}
+              <span v-if="attribute.required" class="text-danger">*</span>
+            </label>
+            <input v-model="newRecord[attribute.name]" type="text" class="form-control" />
+          </div>
+
+          <button type="submit" class="btn btn-success">Add</button>
+        </form>
+      </div>
+      </div>
 
     <!-- Table displaying resource data -->
+    <h4>Data for {{ resourceName }}</h4>
     <table class="table table-hover">
       <thead>
         <tr>
@@ -33,25 +58,29 @@
       </tbody>
     </table>
 
-    <!-- Form to add new data -->
-    <h4>Add New Record</h4>
-    <form @submit.prevent="createRecord">
-      <div v-if="validationErrors.length" class="alert alert-danger">
-        <ul>
-          <li v-for="error in validationErrors" :key="error">{{ error }}</li>
-        </ul>
-      </div>
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" v-if="pagination.total_pages > 1">
+      <ul class="pagination">
+        <li class="page-item" :class="{ disabled: pagination.current_page === 1 }">
+          <button class="page-link" @click="changePage(pagination.current_page - 1)">
+            Previous
+          </button>
+        </li>
 
-      <div class="mb-3" v-for="attribute in permittedAttributes" :key="attribute.name">
-        <label>
-          {{ attribute.name }}
-          <span v-if="attribute.required" class="text-danger">*</span>
-        </label>
-        <input v-model="newRecord[attribute.name]" type="text" class="form-control" />
-      </div>
+        <li v-for="page in pagination.total_pages" :key="page" class="page-item" :class="{ active: pagination.current_page === page }">
+          <button class="page-link" @click="changePage(page)">
+            {{ page }}
+          </button>
+        </li>
 
-      <button type="submit" class="btn btn-success">Add</button>
-    </form>
+        <li class="page-item" :class="{ disabled: pagination.current_page === pagination.total_pages }">
+          <button class="page-link" @click="changePage(pagination.current_page + 1)">
+            Next
+          </button>
+        </li>
+      </ul>
+    </nav>
+
   </div>
 </template>
 
@@ -75,14 +104,21 @@ const newRecord = ref({});
 
 const validationErrors = ref([]);
 
+const currentPage = ref(1);
+const perPage = ref(5);
+const pagination = ref({ total_pages: 1, total_records: 0, current_page: 1 });
+
 // Fetch resource data
 const fetchData = async () => {
   try {
-    const response = await axios.get(`/api/dashboard/resources/${resourceName}/data`);
+    const response = await axios.get(`/api/dashboard/resources/${resourceName}/data`, {
+      params: { page: currentPage.value, per_page: perPage.value }
+    });
 
     columns.value = response.data.attributes.map(attr => attr.name);
     attributes.value = response.data.attributes;
     data.value = response.data.records;
+    pagination.value = response.data.pagination;
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -126,6 +162,12 @@ const deleteRecord = async (record) => {
   } catch (error) {
     console.error("Error deleting record:", error);
   }
+};
+
+const changePage = (page) => {
+  if (page < 1 || page > pagination.value.total_pages) return;
+  currentPage.value = page;
+  fetchData();
 };
 
 onMounted(fetchData);

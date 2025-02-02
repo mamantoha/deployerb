@@ -21,12 +21,18 @@ module Deployd
       # Fetch all records of a resource
       get '/resources/:resource_name/data' do
         resource_name = params[:resource_name].singularize
+        page = (params[:page] || 1).to_i
+        per_page = (params[:per_page] || 10).to_i
+        offset = (page - 1) * per_page
 
         # Find the resource model dynamically
         model_class = Object.const_get(resource_name.classify) rescue nil
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
-        records = model_class.all
+        total_records = model_class.count
+        total_pages = (total_records.to_f / per_page).ceil
+
+        records = model_class.skip(offset).limit(per_page)
         keys = model_class.fields.keys
 
         # Fetch correct key order from config file
@@ -43,8 +49,18 @@ module Deployd
           { name: key, required: required_fields.include?(key) }
         end
 
-        { attributes:, records: }.to_json
+        {
+          attributes: attributes,
+          records: records,
+          pagination: {
+            total_records: total_records,
+            total_pages: total_pages,
+            current_page: page,
+            per_page: per_page
+          }
+        }.to_json
       end
+
 
       # Fetch a single record
       get '/resources/:resource_name/data/:id' do
