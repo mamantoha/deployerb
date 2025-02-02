@@ -6,7 +6,7 @@
     <table class="table table-hover">
       <thead>
         <tr>
-          <th v-for="attribute in attributes" :key="attribute.name">
+          <th v-for="attribute in filteredAttributes" :key="attribute.name">
             {{ attribute.name }}
           </th>
           <th>Actions</th>
@@ -36,12 +36,12 @@
         </ul>
       </div>
 
-      <div class="mb-3" v-for="attribute in filteredColumns" :key="attribute">
+      <div class="mb-3" v-for="attribute in filteredAttributes" :key="attribute.name">
         <label>
-          {{ attribute }}
-          <span v-if="isRequiredField(attribute)" class="text-danger">*</span>
+          {{ attribute.name }}
+          <span v-if="attribute.required" class="text-danger">*</span>
         </label>
-        <input v-model="newRecord[attribute]" type="text" class="form-control" />
+        <input v-model="newRecord[attribute.name]" type="text" class="form-control" />
       </div>
 
       <button type="submit" class="btn btn-success">Add</button>
@@ -64,8 +64,7 @@ const resourceName = route.params.resourceName;
 const data = ref([]);
 const columns = ref([]);
 const attributes = ref([]);
-
-const filteredColumns = computed(() => attributes.value.map(attr => attr.name).filter(key => key !== "_id"));
+const filteredAttributes = computed(() => attributes.value.filter(attr => attr.name !== "_id"));
 const newRecord = ref({});
 
 const validationErrors = ref([]);
