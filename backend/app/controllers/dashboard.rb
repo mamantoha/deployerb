@@ -237,7 +237,10 @@ module Deployd
         key[:type] = key_type.constantize
         key[:validations] = validations
 
-        Deployd::Models.update_key(resource_name, key_name.to_sym, validations: validations)
+        # change type and/or options/validations, remove key and add new
+        Deployd::Models.remove_key(resource_name, key_name.to_sym)
+        options = {}
+        Deployd::Models.add_key(resource_name, key_name.to_sym, key_type.constantize, options: options, validations: validations)
 
         # Save updated config
         File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
