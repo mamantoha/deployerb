@@ -1,5 +1,18 @@
 <template>
   <div>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <router-link to="/resources">Resources</router-link>
+        </li>
+        <li class="breadcrumb-item">
+          <router-link :to="`/resources/${route.params.resourceName}`">{{ route.params.resourceName }}</router-link>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Edit Key</li>
+      </ol>
+    </nav>
+
     <h3>Edit Key: {{ key.name }}</h3>
     <form @submit.prevent="updateKey" class="form-horizontal">
       <div class="form-group">
