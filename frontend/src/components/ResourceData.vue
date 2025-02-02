@@ -24,7 +24,7 @@
           <button type="submit" class="btn btn-success">Add</button>
         </form>
       </div>
-      </div>
+    </div>
 
     <!-- Table displaying resource data -->
     <h4>Data for {{ resourceName }}</h4>
