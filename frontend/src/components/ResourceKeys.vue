@@ -1,20 +1,21 @@
 <template>
   <div class="panel panel-default">
     <div class="panel-body">
+      <draggable v-model="keys" tag="table" class="table table-hover" item-key="name" handle=".drag-handle">
+        <template #header>
+          <thead>
+            <tr>
+              <th></th> <!-- Drag Handle -->
+              <th>Name</th>
+              <th>Type</th>
+              <th>Validations</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+        </template>
 
-      <table class="table table-hover">
-        <thead>
+        <template #item="{ element: key }">
           <tr>
-            <th></th> <!-- Drag Handle -->
-            <th>Name</th>
-            <th>Type</th>
-            <th>Validations</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-
-          <tr v-for="key in keys" :key="key.name">
             <td class="drag-handle">
               <i class="bi bi-grip-vertical"></i>
             </td>
@@ -37,10 +38,8 @@
               </div>
             </td>
           </tr>
-
-        </tbody>
-      </table>
-
+        </template>
+      </draggable>
     </div>
   </div>
 
