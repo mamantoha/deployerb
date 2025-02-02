@@ -48,6 +48,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import { store } from "@/store";
 
 const route = useRoute();
 const router = useRouter();
@@ -101,6 +102,8 @@ const deleteRecord = async (id) => {
 
   try {
     await axios.delete(`/api/dashboard/resources/${resourceName}/data/${id}`);
+
+    store.successMessage = "Record deleted successfully!";
     fetchData();
   } catch (error) {
     console.error("Error deleting record:", error);
