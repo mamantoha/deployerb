@@ -103,7 +103,7 @@ module Deployd
     def self.key_required?(resource_name, key_name)
       class_name = resource_name.singularize.classify
       class_name.constantize.validators.detect do |v|
-        v.is_a?(Mongoid::Validatable::PresenceValidator) and v.attributes.include?(key_name.to_sym)
+        v.is_a?(Mongoid::Validatable::PresenceValidator) && v.attributes.include?(key_name.to_sym)
       end
     end
 
@@ -115,7 +115,7 @@ module Deployd
     def self.key_uniqueness?(resource_name, key_name)
       class_name = resource_name.singularize.classify
       class_name.constantize.validators.detect do |v|
-        v.is_a?(Mongoid::Validatable::UniquenessValidator) and v.attributes.include?(key_name.to_sym)
+        v.is_a?(Mongoid::Validatable::UniquenessValidator) && v.attributes.include?(key_name.to_sym)
       end
     end
   end
