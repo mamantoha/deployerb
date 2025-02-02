@@ -75,6 +75,7 @@ const updateRecord = async () => {
     validationErrors.value = [];
 
     store.successMessage = "Record updated successfully!";
+    store.redirectTab = "data";
 
     router.push(`/resources/${route.params.resourceName}`);
   } catch (error) {

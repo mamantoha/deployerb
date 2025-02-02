@@ -44,6 +44,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import { store } from "@/store";
 
 const route = useRoute();
 const router = useRouter();
@@ -64,6 +65,8 @@ const availableTypes = ref([
   "Array",
   "Hash",
 ]);
+
+const validationErrors = ref([]);
 
 // Fetch the key details
 const fetchKey = async () => {
@@ -100,9 +103,18 @@ const updateKey = async () => {
       }
     );
 
+    validationErrors.value = [];
+
+    store.successMessage = "Key updated successfully!";
+    store.redirectTab = "keys"; // ✅ Store the target tab
+
     router.push(`/resources/${route.params.resourceName}`);
   } catch (error) {
-    console.error("Error updating key:", error);
+    if (error.response && error.response.status === 422) {
+      validationErrors.value = error.response.data.messages;
+    } else {
+      console.error("Error updating key:", error);
+    }
   }
 };
 

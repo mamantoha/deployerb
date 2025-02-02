@@ -65,7 +65,7 @@ const route = useRoute();
 const resource = ref(null);
 
 const successMessage = computed(() => store.successMessage);
-const activeTab = ref("data");
+const activeTab = ref(store.redirectTab || "keys");
 
 // Fetch resource details
 const fetchResource = async () => {
@@ -77,9 +77,12 @@ const fetchResource = async () => {
   }
 };
 
-// Watch for query changes and update active tab
-watch(() => route.query.tab, (newTab) => {
-  if (newTab) activeTab.value = newTab;
+
+watch(() => store.successMessage, (newMessage) => {
+  if (newMessage) {
+    activeTab.value = store.redirectTab;
+    store.redirectTab = "keys";
+  }
 });
 
 onMounted(fetchResource);
