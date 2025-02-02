@@ -17,6 +17,9 @@
           <td v-for="key in columns" :key="key">{{ record[key] }}</td>
 
           <td>
+            <button class="btn btn-info btn-xs" @click="showRecord(record)">
+              Show
+            </button>
             <button class="btn btn-primary btn-xs" @click="editRecord(record)">
               Edit
             </button>
@@ -97,6 +100,11 @@ const createRecord = async () => {
       console.error("Error creating record:", error);
     }
   }
+};
+
+// Show a record
+const showRecord = (record) => {
+  router.push(`/resources/${resourceName}/data/${record._id}`);
 };
 
 // Edit a record

@@ -3,6 +3,7 @@ import Home from "@/views/Home.vue";
 import Resources from "@/views/Resources.vue";
 import ResourceShow from "@/views/ResourceShow.vue";
 import EditKey from "@/components/EditKey.vue";
+import ShowRecord from "@/components/ShowRecord.vue";
 import EditRecord from "@/components/EditRecord.vue";
 
 const routes = [
@@ -10,6 +11,7 @@ const routes = [
   { path: "/resources", component: Resources },
   { path: "/resources/:resourceName", component: ResourceShow },
   { path: "/resources/:resourceName/:keyName/edit", component: EditKey },
+  { path: "/resources/:resourceName/data/:id", component: ShowRecord },
   { path: "/resources/:resourceName/data/:id/edit", component: EditRecord },
 ];
 
