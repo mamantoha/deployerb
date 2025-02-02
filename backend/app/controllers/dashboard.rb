@@ -117,7 +117,7 @@ module Deployd
         { resources: @resources }.to_json
       end
 
-      # save new document
+      # create new document
       #
       post '/resources' do
         request_body = request.body.read
@@ -131,11 +131,11 @@ module Deployd
           halt 400, { error: "Resource already exists" }.to_json
         end
 
-        # Add new resource
         Deployd::Models.new(resource_name)
         Deployd::Controllers.new(resource_name)
 
         settings.config_file[:resources] << { name: resource_name, keys: [] }
+
         File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
           f.write settings.config_file.to_yaml
         end
@@ -167,6 +167,10 @@ module Deployd
         halt 404, { error: "Resource not found" }.to_json unless resource
 
         settings.config_file[:resources].delete(resource)
+
+        Deployd::Models.remove(resource_name)
+        Deployd::Controllers.remove(resource_name)
+
         File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
           f.write settings.config_file.to_yaml
         end
