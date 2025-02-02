@@ -127,6 +127,9 @@ module Deployd
         end
 
         # Add new resource
+        Deployd::Models.new(resource_name)
+        Deployd::Controllers.new(resource_name)
+
         settings.config_file[:resources] << { name: resource_name, keys: [] }
         File.open(File.expand_path('config/config.yml', settings.root), 'w') do |f|
           f.write settings.config_file.to_yaml
