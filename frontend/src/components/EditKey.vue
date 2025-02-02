@@ -119,6 +119,7 @@ const updateKey = async () => {
 };
 
 const cancelEdit = () => {
+  store.redirectTab = "keys";
   router.push(`/resources/${route.params.resourceName}`);
 };
 

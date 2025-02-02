@@ -90,6 +90,7 @@ const updateRecord = async () => {
 
 // Cancel edit and return to the resource data list
 const cancelEdit = () => {
+  store.redirectTab = "data";
   router.push(`/resources/${route.params.resourceName}`);
 };
 
