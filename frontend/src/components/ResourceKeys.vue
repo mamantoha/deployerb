@@ -116,7 +116,7 @@ const newKey = ref({
 // Fetch keys for this resource
 const fetchKeys = async () => {
   try {
-    const response = await axios.get(`/api/dashboard/resources/${route.params.name}`);
+    const response = await axios.get(`/api/dashboard/resources/${route.params.resourceName}`);
 
     if (response.data.keys) {
       keys.value = response.data.keys.map((key) => ({
@@ -148,7 +148,7 @@ const addKey = async () => {
     if (newKey.value.validations.presence) validations.push("presence");
     if (newKey.value.validations.uniqueness) validations.push("uniqueness");
 
-    const response = await axios.post(`/api/dashboard/resources/${route.params.name}`, {
+    const response = await axios.post(`/api/dashboard/resources/${route.params.resourceName}`, {
       name: newKey.value.name.trim(),
       type: newKey.value.type,
       validations,
@@ -173,7 +173,7 @@ const addKey = async () => {
 };
 
 const editKey = (key) => {
-  router.push(`/resources/${route.params.name}/${key.name}/edit`);
+  router.push(`/resources/${route.params.resourceName}/${key.name}/edit`);
 };
 
 // Delete a key
@@ -181,7 +181,7 @@ const confirmDeleteKey = async (keyName) => {
   if (!confirm(`Are you sure you want to delete the key '${keyName}'?`)) return;
 
   try {
-    await axios.delete(`/api/dashboard/resources/${route.params.name}/${keyName}`);
+    await axios.delete(`/api/dashboard/resources/${route.params.resourceName}/${keyName}`);
     fetchKeys(); // Refresh the list after deletion
   } catch (error) {
     console.error("Error deleting key:", error);
