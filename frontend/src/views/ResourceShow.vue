@@ -81,7 +81,7 @@ const fetchResource = async () => {
 watch(() => store.successMessage, (newMessage) => {
   if (newMessage) {
     activeTab.value = store.redirectTab;
-    store.redirectTab = "keys";
+    store.redirectTab = "keys"; // Reset to default for next navigation
   }
 });
 
