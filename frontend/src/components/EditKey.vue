@@ -34,10 +34,8 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary">
-        <span class="glyphicon glyphicon-save"></span> Save
-      </button>
-      <router-link to="/resources" class="btn btn-secondary">Cancel</router-link>
+      <button type="submit" class="btn btn-primary">Save</button>
+      <button @click="cancelEdit" class="btn btn-secondary">Cancel</button>
     </form>
   </div>
 </template>
@@ -106,6 +104,10 @@ const updateKey = async () => {
   } catch (error) {
     console.error("Error updating key:", error);
   }
+};
+
+const cancelEdit = () => {
+  router.push(`/resources/${route.params.resourceName}`);
 };
 
 onMounted(fetchKey);
