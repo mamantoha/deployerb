@@ -22,12 +22,12 @@
 
         <template #item="{ element: key }">
           <tr>
-            <td class="drag-handle">
+            <td class="drag-handle col-md-1">
               <i class="bi bi-grip-vertical"></i>
             </td>
             <td class="col-md-4">{{ key.name }}</td>
-            <td class="col-md-2">{{ key.type }}</td>
-            <td class="col-md-2">
+            <td class="col-md-3">{{ key.type }}</td>
+            <td class="col-md-3">
               <span class="options">
                 <span v-if="key.required" class="label label-default">Required</span>
                 <span v-if="key.unique" class="label label-default">Unique</span>
