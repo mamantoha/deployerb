@@ -6,7 +6,9 @@
     <table class="table table-hover">
       <thead>
         <tr>
-          <th v-for="key in columns" :key="key">{{ key }}</th>
+          <th v-for="attribute in attributes" :key="attribute.name">
+            {{ attribute.name }}
+          </th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -34,9 +36,12 @@
         </ul>
       </div>
 
-      <div class="mb-3" v-for="key in filteredColumns" :key="key">
-        <label>{{ key }}</label>
-        <input v-model="newRecord[key]" type="text" class="form-control" />
+      <div class="mb-3" v-for="attribute in filteredColumns" :key="attribute">
+        <label>
+          {{ attribute }}
+          <span v-if="isRequiredField(attribute)" class="text-danger">*</span>
+        </label>
+        <input v-model="newRecord[attribute]" type="text" class="form-control" />
       </div>
 
       <button type="submit" class="btn btn-success">Add</button>
@@ -55,9 +60,12 @@ const route = useRoute();
 const router = useRouter();
 
 const resourceName = route.params.resourceName;
+
 const data = ref([]);
 const columns = ref([]);
-const filteredColumns = computed(() => columns.value.filter((key) => key !== "_id"));
+const attributes = ref([]);
+
+const filteredColumns = computed(() => attributes.value.map(attr => attr.name).filter(key => key !== "_id"));
 const newRecord = ref({});
 
 const validationErrors = ref([]);
@@ -67,7 +75,8 @@ const fetchData = async () => {
   try {
     const response = await axios.get(`/api/dashboard/resources/${resourceName}/data`);
 
-    columns.value = response.data.attributes;
+    columns.value = response.data.attributes.map(attr => attr.name);
+    attributes.value = response.data.attributes;
     data.value = response.data.records;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -107,6 +116,10 @@ const deleteRecord = async (id) => {
   } catch (error) {
     console.error("Error deleting record:", error);
   }
+};
+
+const isRequiredField = (key) => {
+  return attributes.value.some(attr => attr.name === key && attr.required);
 };
 
 onMounted(fetchData);

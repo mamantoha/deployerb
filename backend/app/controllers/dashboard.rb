@@ -27,11 +27,20 @@ module Deployd
 
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
-        {
-          attributes: model_class.attribute_names,
-          records: model_class.all,
+        records = model_class.all
+        keys = model_class.fields.keys
 
-        }.to_json
+        required_fields =
+          model_class.validators
+            .select { |v| v.is_a?(Mongoid::Validatable::PresenceValidator) }
+            .flat_map(&:attributes)
+            .map(&:to_s)
+
+        attributes = keys.map do |key|
+          { name: key, required: required_fields.include?(key) }
+        end
+
+        { attributes:, records: }.to_json
       end
 
       # Fetch a single record
