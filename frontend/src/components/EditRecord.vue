@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>Edit Record</h3>
+    <h3>Edit Record {{ record._id }}</h3>
     <form @submit.prevent="updateRecord">
       <div v-if="validationErrors.length" class="alert alert-danger">
         <ul>
@@ -8,10 +8,11 @@
         </ul>
       </div>
 
-      <div v-for="(value, key) in filteredRecord" :key="key">
+      <div class="mb-3" v-for="(value, key) in filteredRecord" :key="key">
         <label>{{ key }}</label>
         <input v-model="filteredRecord[key]" type="text" class="form-control" />
       </div>
+
       <button type="submit" class="btn btn-primary">Save</button>
       <button @click="cancelEdit" class="btn btn-secondary">Cancel</button>
     </form>

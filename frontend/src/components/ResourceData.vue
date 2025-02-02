@@ -34,10 +34,11 @@
         </ul>
       </div>
 
-      <div v-for="key in filteredColumns" :key="key">
+      <div class="mb-3" v-for="key in filteredColumns" :key="key">
         <label>{{ key }}</label>
         <input v-model="newRecord[key]" type="text" class="form-control" />
       </div>
+
       <button type="submit" class="btn btn-success">Add</button>
     </form>
   </div>
