@@ -83,11 +83,16 @@ module Deployd
         record = model_class.where(id: record_id).first
         halt 404, { error: "Record not found" }.to_json unless record
 
-        record.update_attributes(data)
-
-        content_type :json
-        status 200
-        record.to_json
+        # Attempt to update the record
+        if record.update_attributes(data)
+          content_type :json
+          status 200
+          { message: "Record updated successfully", record: record }.to_json
+        else
+          content_type :json
+          status 422
+          { error: "Validation failed", messages: record.errors.full_messages }.to_json
+        end
       end
 
       # Delete a record

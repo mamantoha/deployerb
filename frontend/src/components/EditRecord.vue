@@ -2,6 +2,12 @@
   <div>
     <h3>Edit Record</h3>
     <form @submit.prevent="updateRecord">
+      <div v-if="validationErrors.length" class="alert alert-danger">
+        <ul>
+          <li v-for="error in validationErrors" :key="error">{{ error }}</li>
+        </ul>
+      </div>
+
       <div v-for="(value, key) in record" :key="key">
         <label>{{ key }}</label>
         <input v-model="record[key]" type="text" class="form-control" />
@@ -20,6 +26,8 @@ import axios from "axios";
 const route = useRoute();
 const router = useRouter();
 const record = ref({});
+
+const validationErrors = ref([]);
 
 // Fetch record details
 const fetchRecord = async () => {
@@ -43,7 +51,11 @@ const updateRecord = async () => {
     );
     router.push(`/resources/${route.params.resourceName}`);
   } catch (error) {
-    console.error("Error updating record:", error);
+    if (error.response && error.response.status === 422) {
+      validationErrors.value = error.response.data.messages;
+    } else {
+      console.error("Error updating record:", error);
+    }
   }
 };
 
