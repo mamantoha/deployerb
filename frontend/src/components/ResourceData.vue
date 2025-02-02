@@ -13,8 +13,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="record in data" :key="record._id">
+        <tr v-for="record in data" :key="record._id" :id="`record-${record._id}`">
           <td v-for="key in columns" :key="key">{{ record[key] }}</td>
+
           <td>
             <button class="btn btn-primary btn-xs" @click="editRecord(record)">
               Edit
