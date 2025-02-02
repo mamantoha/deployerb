@@ -106,7 +106,7 @@ const updateKey = async () => {
     validationErrors.value = [];
 
     store.successMessage = "Key updated successfully!";
-    store.redirectTab = "keys"; // ✅ Store the target tab
+    store.redirectTab = "keys";
 
     router.push(`/resources/${route.params.resourceName}`);
   } catch (error) {
