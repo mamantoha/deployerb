@@ -26,6 +26,8 @@ module Deployd
 
       module ClassMethods; end
 
+      MAX_LIMIT = 100
+
       def initialize(resource_name)
         resource_class = resource_name.classify.constantize
         unless resource_class.include?(Mongoid::Document)
@@ -83,7 +85,7 @@ module Deployd
 
           unless Deployd::Controllers.constants.include?(class_name.to_sym)
             content_type :json
-            halt 404, { status: 'error', data: 'The URI requested is invalid' }.to_json
+            halt(404, { status: 'error', message: 'The URI requested is invalid' }.to_json)
           end
         end
       end
@@ -118,7 +120,19 @@ module Deployd
 
       def index(context)
         instance_variable_set(:"@#{resource_name.pluralize}", resource_name.classify.constantize.all)
-        instance_variable_get(:"@#{resource_name.pluralize}").to_json
+
+        page = (context.params[:page] || 1).to_i
+        limit = [(context.params[:limit] || 5).to_i, MAX_LIMIT].min
+        offset = (page - 1) * limit
+
+        data = instance_variable_get(:"@#{resource_name.pluralize}").skip(offset).limit(limit)
+
+        total = instance_variable_get(:"@#{resource_name.pluralize}").count
+        total_pages = (total.to_f / limit).ceil
+
+        meta = { total:, page:, limit:, total_pages: }
+
+        { data:, meta: }.to_json
       end
 
       # params:
@@ -126,19 +140,21 @@ module Deployd
       #
       def create(context)
         begin
-          data = JSON.parse(context.request.body.read)
+          params = JSON.parse(context.request.body.read)
         rescue JSON::ParserError
           context.halt(406, { status: 'error', message: 'Not acceptable JSON payload' }.to_json)
         end
 
         permitted_params = resource_fields.map { |k| k[:name] }
-        permitted_params = data.select { |k, _| permitted_params.include?(k) }
+        permitted_params = params.select { |k, _| permitted_params.include?(k) }
 
         begin
           instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.new(permitted_params))
 
           if instance_variable_get(:"@#{resource_name}").save
-            instance_variable_get(:"@#{resource_name}").to_json
+            data = instance_variable_get(:"@#{resource_name}")
+
+            { data: }.to_json
           else
             errors = instance_variable_get(:"@#{resource_name}").errors.messages
             context.halt(406, { status: 'error', message: errors }.to_json)
@@ -154,7 +170,9 @@ module Deployd
       def show(context)
         set_resource(context)
 
-        instance_variable_get(:"@#{resource_name}").to_json
+        data = instance_variable_get(:"@#{resource_name}")
+
+        { data: }.to_json
       end
 
       # params:
@@ -162,7 +180,7 @@ module Deployd
       #
       def update(context)
         begin
-          data = JSON.parse(context.request.body.read)
+          params = JSON.parse(context.request.body.read)
         rescue JSON::ParserError
           context.halt(406, { status: 'error', message: 'Not acceptable JSON payload' }.to_json)
         end
@@ -171,11 +189,13 @@ module Deployd
 
         begin
           permitted_params = resource_fields.map { |k| k[:name] }
-          permitted_params = data.select { |k, _| permitted_params.include?(k) }
+          permitted_params = params.select { |k, _| permitted_params.include?(k) }
 
           if instance_variable_get(:"@#{resource_name}").update_attributes(permitted_params)
             instance_variable_get(:"@#{resource_name}").reload
-            instance_variable_get(:"@#{resource_name}").to_json
+            data = instance_variable_get(:"@#{resource_name}")
+
+            { data: }.to_json
           else
             errors = instance_variable_get(:"@#{resource_name}").errors.messages
             context.halt(406, { status: 'error', message: errors }.to_json)
@@ -193,7 +213,8 @@ module Deployd
 
         begin
           instance_variable_get(:"@#{resource_name}").destroy
-          instance_variable_get(:"@#{resource_name}").to_json
+
+          context.halt(204)
         rescue StandardError => e
           context.halt(500, { status: 'error', message: e.message }.to_json)
         end
@@ -208,7 +229,7 @@ module Deployd
         instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.find(context.params[:id]))
 
         unless instance_variable_get(:"@#{resource_name}")
-          context.halt(403, { status: 'error', message: "No #{resource_name.singularize}" }.to_json)
+          context.halt(404, { status: 'error', message: "No #{resource_name.singularize}" }.to_json)
         end
       end
     end
