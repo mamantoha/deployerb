@@ -213,7 +213,8 @@ module Deployd
 
         begin
           instance_variable_get(:"@#{resource_name}").destroy
-          instance_variable_get(:"@#{resource_name}").to_json
+
+          context.halt(204)
         rescue StandardError => e
           context.halt(500, { status: 'error', message: e.message }.to_json)
         end
