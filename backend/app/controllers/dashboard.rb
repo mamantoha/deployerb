@@ -121,6 +121,20 @@ module Deployd
         request_body = request.body.read
         data = JSON.parse(request_body) rescue {}
 
+        data.each do |key, value|
+          if value.is_a?(String)
+            begin
+              parsed_value = JSON.parse(value)
+
+              if [Array, Hash].include?(parsed_value.class)
+                data[key] = parsed_value
+              end
+            rescue JSON::ParserError
+              # If parsing fails, keep it as a string
+            end
+          end
+        end
+
         # Find the resource model dynamically
         model_class = Object.const_get(resource_name.classify) rescue nil
         halt 404, { error: "Resource not found" }.to_json unless model_class
