@@ -23,7 +23,7 @@
 
       <div class="mb-3" v-for="attribute in attributes" :key="attribute.name">
         <label>
-          {{ attribute.name }}
+          {{ attribute.label }}
           <span v-if="attribute.required" class="text-danger">*</span>
         </label>
 
@@ -32,6 +32,9 @@
           type="text"
           class="form-control"
         />
+        <div class="form-text">
+          {{ attribute.type }}
+        </div>
       </div>
 
       <button type="submit" class="btn btn-primary">Save</button>

@@ -33,7 +33,9 @@ module Deployd
         total_pages = (total_records.to_f / per_page).ceil
 
         records = model_class.skip(offset).limit(per_page)
-        keys = model_class.fields.keys
+
+        fields = model_class.fields
+        keys = fields.keys
 
         # Fetch correct key order from config file
         resource = @resources.find { |r| r[:name] == resource_name }
@@ -46,7 +48,12 @@ module Deployd
             .map(&:to_s)
 
         attributes = ordered_keys.map do |key|
-          { name: key, required: required_fields.include?(key) }
+          {
+            name: key,
+            label: key.humanize,
+            required: required_fields.include?(key),
+            type: fields[key].options[:type].to_s,
+          }
         end
 
         {
@@ -74,7 +81,8 @@ module Deployd
         record = model_class.where(id: record_id).first
         halt 404, { error: "Record not found" }.to_json unless record
 
-        keys = model_class.fields.keys
+        fields = model_class.fields
+        keys = fields.keys
 
         # Fetch correct key order from config file
         resource = @resources.find { |r| r[:name] == resource_name }
@@ -87,7 +95,12 @@ module Deployd
             .map(&:to_s)
 
         attributes = ordered_keys.map do |key|
-          { name: key, required: required_fields.include?(key) }
+          {
+            name: key,
+            label: key.humanize,
+            required: required_fields.include?(key),
+            type: fields[key].options[:type].to_s,
+          }
         end
 
         { attributes:, record: }.to_json

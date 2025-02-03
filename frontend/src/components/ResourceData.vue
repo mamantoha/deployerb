@@ -15,10 +15,17 @@
 
           <div class="mb-3" v-for="attribute in permittedAttributes" :key="attribute.name">
             <label>
-              {{ attribute.name }}
+              {{ attribute.label }}
               <span v-if="attribute.required" class="text-danger">*</span>
             </label>
-            <input v-model="newRecord[attribute.name]" type="text" class="form-control" />
+            <input
+              v-model="newRecord[attribute.name]"
+              type="text"
+              class="form-control"
+            />
+            <div class="form-text">
+              {{ attribute.type }}
+            </div>
           </div>
 
           <button type="submit" class="btn btn-success">Add</button>
@@ -32,7 +39,7 @@
       <thead>
         <tr>
           <th v-for="attribute in attributes" :key="attribute.name">
-            {{ attribute.name }}
+            {{ attribute.label }}
           </th>
           <th>Actions</th>
         </tr>
