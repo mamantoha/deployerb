@@ -26,12 +26,18 @@
           {{ attribute.name }}
           <span v-if="attribute.required" class="text-danger">*</span>
         </label>
-        <input v-model="record[attribute.name]" type="text" class="form-control" />
+
+        <input
+          v-model="record[attribute.name]"
+          type="text"
+          class="form-control"
+        />
       </div>
 
       <button type="submit" class="btn btn-primary">Save</button>
       <button @click="cancelEdit" class="btn btn-secondary">Cancel</button>
     </form>
+
   </div>
 </template>
 
@@ -62,7 +68,12 @@ const fetchRecord = async () => {
     );
 
     attributes.value = response.data.attributes;
-    record.value = response.data.record;
+
+    record.value = Object.entries(response.data.record).reduce((acc, [key, value]) => {
+      acc[key] = typeof value === "object" ? JSON.stringify(value) : value;
+      return acc;
+    }, {});
+
   } catch (error) {
     console.error("Error fetching record:", error);
     router.push(`/resources/${route.params.resourceName}`);
