@@ -7,7 +7,12 @@
           <router-link to="/resources">Resources</router-link>
         </li>
         <li class="breadcrumb-item">
-          <router-link :to="`/resources/${route.params.resourceName}`">{{ route.params.resourceName }}</router-link>
+          <router-link
+            :to="`/resources/${route.params.resourceName}`"
+            @click="store.activeResourceTab = 'data'"
+          >
+            {{ route.params.resourceName }}
+          </router-link>
         </li>
         <li class="breadcrumb-item active" aria-current="page">Edit Record</li>
       </ol>
@@ -77,7 +82,7 @@ const updateRecord = async () => {
     validationErrors.value = [];
 
     store.successMessage = "Record updated successfully!";
-    store.redirectTab = "data";
+    store.activeResourceTab = "data";
 
     router.push(`/resources/${route.params.resourceName}`);
   } catch (error) {
@@ -92,7 +97,7 @@ const updateRecord = async () => {
 
 // Cancel edit and return to the resource data list
 const cancelEdit = () => {
-  store.redirectTab = "data";
+  store.activeResourceTab = "data";
   router.push(`/resources/${route.params.resourceName}`);
 };
 
