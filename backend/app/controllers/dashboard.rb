@@ -17,7 +17,6 @@ module Deployd
         @resources = settings.config_file[:resources]
       end
 
-
       # Fetch all records of a resource
       get '/resources/:resource_name/data' do
         resource_name = params[:resource_name].singularize
@@ -67,7 +66,6 @@ module Deployd
           }
         }.to_json
       end
-
 
       # Fetch a single record
       get '/resources/:resource_name/data/:id' do
@@ -313,7 +311,6 @@ module Deployd
         end
       end
 
-
       # update key
       #
       put '/resources/:resource_name/:key_name' do
@@ -381,7 +378,6 @@ module Deployd
         { message: "Key '#{key_name}' successfully removed.", key: key_name }.to_json
       end
 
-
       # Fetch a single key from a resource
       get '/resources/:resource_name/:key_name' do
         resource_name = params[:resource_name].singularize
@@ -398,7 +394,6 @@ module Deployd
         # Return key details
         { name: key[:name], type: key[:type].to_s, validations: key[:validations] || [] }.to_json
       end
-
     end
 
     private
