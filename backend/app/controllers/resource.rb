@@ -85,7 +85,7 @@ module Deployd
 
           unless Deployd::Controllers.constants.include?(class_name.to_sym)
             content_type :json
-            halt 404, { status: 'error', data: 'The URI requested is invalid' }.to_json
+            halt(404, { status: 'error', message: 'The URI requested is invalid' }.to_json)
           end
         end
       end
@@ -229,7 +229,7 @@ module Deployd
         instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.find(context.params[:id]))
 
         unless instance_variable_get(:"@#{resource_name}")
-          context.halt(403, { status: 'error', message: "No #{resource_name.singularize}" }.to_json)
+          context.halt(404, { status: 'error', message: "No #{resource_name.singularize}" }.to_json)
         end
       end
     end
