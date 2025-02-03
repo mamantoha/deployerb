@@ -90,7 +90,6 @@ const resourceName = route.params.resourceName;
 const data = ref([]);
 const columns = ref([]);
 const attributes = ref([]);
-const permittedAttributes = computed(() => attributes.value.filter(attr => attr.name !== "_id"));
 const newRecord = ref({});
 
 const validationErrors = ref([]);
