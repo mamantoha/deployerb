@@ -26,6 +26,8 @@ module Deployd
 
       module ClassMethods; end
 
+      MAX_LIMIT = 100
+
       def initialize(resource_name)
         resource_class = resource_name.classify.constantize
         unless resource_class.include?(Mongoid::Document)
@@ -118,7 +120,19 @@ module Deployd
 
       def index(context)
         instance_variable_set(:"@#{resource_name.pluralize}", resource_name.classify.constantize.all)
-        instance_variable_get(:"@#{resource_name.pluralize}").to_json
+
+        page = (context.params[:page] || 1).to_i
+        limit = [(context.params[:limit] || 5).to_i, MAX_LIMIT].min
+        offset = (page - 1) * limit
+
+        data = instance_variable_get(:"@#{resource_name.pluralize}").skip(offset).limit(limit)
+
+        total = instance_variable_get(:"@#{resource_name.pluralize}").count
+        total_pages = (total.to_f / limit).ceil
+
+        meta = { total:, page:, limit:, total_pages: }
+
+        { data:, meta: }.to_json
       end
 
       # params:
