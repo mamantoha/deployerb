@@ -3,14 +3,16 @@
     <!-- Form to add new data -->
     <div class="card">
       <div
-        class="card-header"
+        class="card-header d-flex justify-content-between align-items-center"
         data-bs-toggle="collapse"
         data-bs-target="#collapseForm"
         role="button"
         aria-expanded="false"
         aria-controls="collapseForm"
+        @click="toggleCollapse"
       >
-        Add new {{ resourceName }}
+        <span>Add New {{ resourceName }}</span>
+        <span class="collapse-icon">{{ isCollapsed ? "▼" : "▲" }}</span>
       </div>
       <div class="card-body collapse" id="collapseForm">
         <RecordForm
@@ -109,6 +111,7 @@ const perPage = ref(5);
 const pagination = ref({ total_pages: 1, total_records: 0, current_page: 1 });
 
 let collapseInstance = null;
+const isCollapsed = ref(true);
 
 // Fetch resource data
 const fetchData = async () => {
@@ -194,8 +197,22 @@ onMounted(() => {
   const collapseElement = document.getElementById("collapseForm");
   if (collapseElement) {
     collapseInstance = new Collapse(collapseElement, { toggle: false });
+
+    // Listen to Bootstrap collapse events
+    collapseElement.addEventListener("show.bs.collapse", () => {
+      isCollapsed.value = false;
+    });
+    collapseElement.addEventListener("hide.bs.collapse", () => {
+      isCollapsed.value = true;
+    });
   }
 });
+
+const toggleCollapse = () => {
+  if (collapseInstance) {
+    isCollapsed.value ? collapseInstance.show() : collapseInstance.hide();
+  }
+};
 </script>
 
 <style scoped>
