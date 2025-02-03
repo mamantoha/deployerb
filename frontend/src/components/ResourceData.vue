@@ -18,21 +18,22 @@
 
     <!-- Table displaying resource data -->
     <h4>Data for {{ resourceName }}</h4>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th v-for="attribute in attributes" :key="attribute.name">
-            {{ attribute.label }}
-          </th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="record in data" :key="record._id" :id="`record-${record._id}`">
-          <td v-for="key in columns" :key="key">{{ record[key] }}</td>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th v-for="attribute in attributes" :key="attribute.name">
+              {{ attribute.label }}
+            </th>
+            <th class="fixed-column">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="record in data" :key="record._id" :id="`record-${record._id}`">
+            <td v-for="key in columns" :key="key">{{ record[key] }}</td>
 
-          <td>
-            <div class="btn-group btn-group-xs" role="group">
+            <td class="fixed-column">
+              <div class="btn-group btn-group-xs" role="group">
               <button class="btn btn-info" @click="showRecord(record)">
                 Show
               </button>
@@ -43,10 +44,11 @@
                 Delete
               </button>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- Pagination -->
     <nav aria-label="Page navigation" v-if="pagination.total_pages > 1">
@@ -168,3 +170,35 @@ const changePage = (page) => {
 
 onMounted(fetchData);
 </script>
+
+<style scoped>
+/* Enable horizontal scrolling */
+.table-responsive {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Ensure the last column (Actions) is always visible */
+.fixed-column {
+  position: sticky;
+  right: 0;
+  background: white;
+  z-index: 2;
+  min-width: 150px;
+  text-align: center;
+}
+
+/* Add shadow effect when scrolling */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+</style>
