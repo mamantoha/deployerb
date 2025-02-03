@@ -76,7 +76,7 @@ const key = ref({
 const availableTypes = ref([
   "String",
   "Integer",
-  "Boolean",
+  "Mongoid::Boolean",
   "Float",
   "Date",
   "Time",
