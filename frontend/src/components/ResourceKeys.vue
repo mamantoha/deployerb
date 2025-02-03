@@ -1,60 +1,10 @@
 <template>
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <draggable
-        v-model="keys"
-        tag="table"
-        class="table table-hover"
-        item-key="name"
-        handle=".drag-handle"
-        @end="updateKeyOrder">
-        <template #header>
-          <thead>
-            <tr>
-              <th></th> <!-- Drag Handle -->
-              <th>Name</th>
-              <th>Type</th>
-              <th>Validations</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-        </template>
-
-        <template #item="{ element: key }">
-          <tr>
-            <td class="drag-handle col-md-1">
-              <i class="bi bi-grip-vertical"></i>
-            </td>
-            <td class="col-md-4">{{ key.name }}</td>
-            <td class="col-md-3">{{ key.type }}</td>
-            <td class="col-md-3">
-              <span class="options">
-                <span v-if="key.required" class="label label-default">Required</span>
-                <span v-if="key.unique" class="label label-default">Unique</span>
-              </span>
-            </td>
-            <td class="col-md-1">
-              <div class="btn-group btn-group-xs" role="group">
-                <button class="btn btn-primary btn-xs" @click="editKey(key)">
-                  Edit
-                </button>
-                <button class="btn btn-danger btn-xs" @click="confirmDeleteKey(key.name)">
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
-        </template>
-      </draggable>
-    </div>
-  </div>
-
   <!-- Add New Key Form -->
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Add New Key</h3>
+  <div class="card">
+    <div class="card-header">
+      Add New Key
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <form @submit.prevent="addKey" class="form-horizontal">
         <div class="form-group">
           <div class="col-sm-2">
@@ -86,16 +36,58 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-offset-2 col-sm-10">
-          <div class="form-group" style="float: right">
-            <button type="submit" class="btn btn-primary">
-              Add
-            </button>
-          </div>
-        </div>
+        <button type="submit" class="btn btn-primary">
+          Add
+        </button>
       </form>
     </div>
   </div>
+
+  <draggable
+    v-model="keys"
+    tag="table"
+    class="table table-hover"
+    item-key="name"
+    handle=".drag-handle"
+    @end="updateKeyOrder">
+    <template #header>
+      <thead>
+        <tr>
+          <th></th> <!-- Drag Handle -->
+          <th>Name</th>
+          <th>Type</th>
+          <th>Validations</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+    </template>
+
+    <template #item="{ element: key }">
+      <tr>
+        <td class="drag-handle col-md-1">
+          <i class="bi bi-grip-vertical"></i>
+        </td>
+        <td class="col-md-4">{{ key.name }}</td>
+        <td class="col-md-3">{{ key.type }}</td>
+        <td class="col-md-3">
+          <span class="options">
+            <span v-if="key.required" class="label label-default">Required</span>
+            <span v-if="key.unique" class="label label-default">Unique</span>
+          </span>
+        </td>
+        <td class="col-md-1">
+          <div class="btn-group btn-group-xs" role="group">
+            <button class="btn btn-primary btn-xs" @click="editKey(key)">
+              Edit
+            </button>
+            <button class="btn btn-danger btn-xs" @click="confirmDeleteKey(key.name)">
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+    </template>
+  </draggable>
 </template>
 
 <script setup>
@@ -110,7 +102,7 @@ const keys = ref([]);
 const availableTypes = ref([
   "String",
   "Integer",
-  "Boolean",
+  "Mongoid::Boolean",
   "Float",
   "Date",
   "Time",

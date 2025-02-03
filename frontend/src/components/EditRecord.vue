@@ -7,31 +7,26 @@
           <router-link to="/resources">Resources</router-link>
         </li>
         <li class="breadcrumb-item">
-          <router-link :to="`/resources/${route.params.resourceName}`">{{ route.params.resourceName }}</router-link>
+          <router-link
+            :to="`/resources/${route.params.resourceName}`"
+            @click="store.activeResourceTab = 'data'"
+          >
+            {{ route.params.resourceName }}
+          </router-link>
         </li>
         <li class="breadcrumb-item active" aria-current="page">Edit Record</li>
       </ol>
     </nav>
 
     <h3>ID: {{ record._id }}</h3>
-    <form @submit.prevent="updateRecord">
-      <div v-if="validationErrors.length" class="alert alert-danger">
-        <ul>
-          <li v-for="error in validationErrors" :key="error">{{ error }}</li>
-        </ul>
-      </div>
+    <RecordForm
+      :record="record"
+      :attributes="attributes"
+      :validationErrors="validationErrors"
+      @submit="updateRecord"
+      @cancel="cancelEdit"
+    />
 
-      <div class="mb-3" v-for="attribute in attributes" :key="attribute.name">
-        <label>
-          {{ attribute.name }}
-          <span v-if="attribute.required" class="text-danger">*</span>
-        </label>
-        <input v-model="record[attribute.name]" type="text" class="form-control" />
-      </div>
-
-      <button type="submit" class="btn btn-primary">Save</button>
-      <button @click="cancelEdit" class="btn btn-secondary">Cancel</button>
-    </form>
   </div>
 </template>
 
@@ -40,6 +35,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { store } from "@/store";
+import RecordForm from "@/components/RecordForm.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -62,7 +58,12 @@ const fetchRecord = async () => {
     );
 
     attributes.value = response.data.attributes;
-    record.value = response.data.record;
+
+    record.value = Object.entries(response.data.record).reduce((acc, [key, value]) => {
+      acc[key] = value !== null && typeof value === "object" ? JSON.stringify(value) : value;
+      return acc;
+    }, {});
+
   } catch (error) {
     console.error("Error fetching record:", error);
     router.push(`/resources/${route.params.resourceName}`);
@@ -81,7 +82,7 @@ const updateRecord = async () => {
     validationErrors.value = [];
 
     store.successMessage = "Record updated successfully!";
-    store.redirectTab = "data";
+    store.activeResourceTab = "data";
 
     router.push(`/resources/${route.params.resourceName}`);
   } catch (error) {
@@ -96,7 +97,7 @@ const updateRecord = async () => {
 
 // Cancel edit and return to the resource data list
 const cancelEdit = () => {
-  store.redirectTab = "data";
+  store.activeResourceTab = "data";
   router.push(`/resources/${route.params.resourceName}`);
 };
 

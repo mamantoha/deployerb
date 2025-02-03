@@ -65,7 +65,7 @@ const route = useRoute();
 const resource = ref(null);
 
 const successMessage = computed(() => store.successMessage);
-const activeTab = ref(store.redirectTab || "keys");
+const activeTab = ref(store.activeResourceTab || "keys");
 
 // Fetch resource details
 const fetchResource = async () => {
@@ -80,8 +80,8 @@ const fetchResource = async () => {
 
 watch(() => store.successMessage, (newMessage) => {
   if (newMessage) {
-    activeTab.value = store.redirectTab;
-    store.redirectTab = "keys"; // Reset to default for next navigation
+    activeTab.value = store.activeResourceTab;
+    store.activeResourceTab = "keys"; // Reset to default for next navigation
   }
 });
 

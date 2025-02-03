@@ -7,7 +7,12 @@
           <router-link to="/resources">Resources</router-link>
         </li>
         <li class="breadcrumb-item">
-          <router-link :to="`/resources/${route.params.resourceName}`">{{ route.params.resourceName }}</router-link>
+          <router-link
+            :to="`/resources/${route.params.resourceName}`"
+            @click="store.activeResourceTab = 'data'"
+          >
+            {{ route.params.resourceName }}
+          </router-link>
         </li>
         <li class="breadcrumb-item active" aria-current="page">Show Record</li>
       </ol>
@@ -18,7 +23,7 @@
     <table class="table table-bordered">
       <tbody>
         <tr v-for="attribute in attributes" :key="attribute.name">
-          <th>{{ attribute.name }}</th>
+          <th>{{ attribute.label }}</th>
           <td>{{ record[attribute.name] }}</td>
         </tr>
       </tbody>
@@ -33,6 +38,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import { store } from "@/store";
 
 const route = useRoute();
 const router = useRouter();
@@ -58,6 +64,7 @@ const editRecord = () => {
 };
 
 const goBack = () => {
+  store.activeResourceTab = "data";
   router.push(`/resources/${route.params.resourceName}`);
 };
 

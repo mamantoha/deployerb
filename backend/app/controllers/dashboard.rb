@@ -21,13 +21,21 @@ module Deployd
       # Fetch all records of a resource
       get '/resources/:resource_name/data' do
         resource_name = params[:resource_name].singularize
+        page = (params[:page] || 1).to_i
+        per_page = (params[:per_page] || 10).to_i
+        offset = (page - 1) * per_page
 
         # Find the resource model dynamically
         model_class = Object.const_get(resource_name.classify) rescue nil
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
-        records = model_class.all
-        keys = model_class.fields.keys
+        total_records = model_class.count
+        total_pages = (total_records.to_f / per_page).ceil
+
+        records = model_class.skip(offset).limit(per_page)
+
+        fields = model_class.fields
+        keys = fields.keys
 
         # Fetch correct key order from config file
         resource = @resources.find { |r| r[:name] == resource_name }
@@ -40,11 +48,26 @@ module Deployd
             .map(&:to_s)
 
         attributes = ordered_keys.map do |key|
-          { name: key, required: required_fields.include?(key) }
+          {
+            name: key,
+            label: key.humanize,
+            required: required_fields.include?(key),
+            type: fields[key].options[:type].to_s,
+          }
         end
 
-        { attributes:, records: }.to_json
+        {
+          attributes: attributes,
+          records: records,
+          pagination: {
+            total_records: total_records,
+            total_pages: total_pages,
+            current_page: page,
+            per_page: per_page
+          }
+        }.to_json
       end
+
 
       # Fetch a single record
       get '/resources/:resource_name/data/:id' do
@@ -58,7 +81,8 @@ module Deployd
         record = model_class.where(id: record_id).first
         halt 404, { error: "Record not found" }.to_json unless record
 
-        keys = model_class.fields.keys
+        fields = model_class.fields
+        keys = fields.keys
 
         # Fetch correct key order from config file
         resource = @resources.find { |r| r[:name] == resource_name }
@@ -71,7 +95,12 @@ module Deployd
             .map(&:to_s)
 
         attributes = ordered_keys.map do |key|
-          { name: key, required: required_fields.include?(key) }
+          {
+            name: key,
+            label: key.humanize,
+            required: required_fields.include?(key),
+            type: fields[key].options[:type].to_s,
+          }
         end
 
         { attributes:, record: }.to_json
@@ -104,6 +133,20 @@ module Deployd
         record_id = params[:id]
         request_body = request.body.read
         data = JSON.parse(request_body) rescue {}
+
+        data.each do |key, value|
+          if value.is_a?(String)
+            begin
+              parsed_value = JSON.parse(value)
+
+              if [Array, Hash].include?(parsed_value.class)
+                data[key] = parsed_value
+              end
+            rescue JSON::ParserError
+              # If parsing fails, keep it as a string
+            end
+          end
+        end
 
         # Find the resource model dynamically
         model_class = Object.const_get(resource_name.classify) rescue nil

@@ -7,7 +7,12 @@
           <router-link to="/resources">Resources</router-link>
         </li>
         <li class="breadcrumb-item">
-          <router-link :to="`/resources/${route.params.resourceName}`">{{ route.params.resourceName }}</router-link>
+          <router-link
+            :to="`/resources/${route.params.resourceName}`"
+            @click="store.activeResourceTab = 'keys'"
+          >
+            {{ route.params.resourceName }}
+          </router-link>
         </li>
         <li class="breadcrumb-item active" aria-current="page">Edit Key</li>
       </ol>
@@ -119,7 +124,7 @@ const updateKey = async () => {
     validationErrors.value = [];
 
     store.successMessage = "Key updated successfully!";
-    store.redirectTab = "keys";
+    store.activeResourceTab = "keys";
 
     router.push(`/resources/${route.params.resourceName}`);
   } catch (error) {
@@ -132,7 +137,7 @@ const updateKey = async () => {
 };
 
 const cancelEdit = () => {
-  store.redirectTab = "keys";
+  store.activeResourceTab = "keys";
   router.push(`/resources/${route.params.resourceName}`);
 };
 
