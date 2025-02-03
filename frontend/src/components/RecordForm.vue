@@ -32,6 +32,26 @@
         :required="attribute.required"
       />
 
+      <!-- Number Input for Integer Fields -->
+      <input
+        v-else-if="attribute.type === 'Integer'"
+        v-model.number="record[attribute.name]"
+        type="number"
+        class="form-control"
+        :required="attribute.required"
+        step="1"
+      />
+
+      <!-- Number Input for Float Fields -->
+      <input
+        v-else-if="attribute.type === 'Float'"
+        v-model.number="record[attribute.name]"
+        type="number"
+        class="form-control"
+        :required="attribute.required"
+        step="any"
+      />
+
       <!-- Default Text Input -->
       <input
         v-else
