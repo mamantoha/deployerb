@@ -2,10 +2,17 @@
   <div>
     <!-- Form to add new data -->
     <div class="card">
-      <div class="card-header">
+      <div
+        class="card-header"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseForm"
+        role="button"
+        aria-expanded="false"
+        aria-controls="collapseForm"
+      >
         Add new {{ resourceName }}
       </div>
-      <div class="card-body">
+      <div class="card-body collapse" id="collapseForm">
         <RecordForm
           :record="newRecord"
           :attributes="attributes"
@@ -200,5 +207,9 @@ onMounted(fetchData);
 
 .table-responsive::-webkit-scrollbar-track {
   background: #f5f5f5;
+}
+
+.card {
+  margin-bottom: 10px;
 }
 </style>
