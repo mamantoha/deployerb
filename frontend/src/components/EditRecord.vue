@@ -55,7 +55,7 @@ const fetchRecord = async () => {
     attributes.value = response.data.attributes;
 
     record.value = Object.entries(response.data.record).reduce((acc, [key, value]) => {
-      acc[key] = typeof value === "object" ? JSON.stringify(value) : value;
+      acc[key] = value !== null && typeof value === "object" ? JSON.stringify(value) : value;
       return acc;
     }, {});
 
