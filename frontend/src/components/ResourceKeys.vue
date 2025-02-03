@@ -70,9 +70,9 @@
         <td class="col-md-4">{{ key.name }}</td>
         <td class="col-md-3">{{ key.type }}</td>
         <td class="col-md-3">
-          <span class="options">
-            <span v-if="key.required" class="label label-default">Required</span>
-            <span v-if="key.unique" class="label label-default">Unique</span>
+          <span class="validations">
+            <span v-if="key.required" class="badge bg-primary">Required</span>
+            <span v-if="key.unique" class="badge bg-success">Unique</span>
           </span>
         </td>
         <td class="col-md-1">
@@ -210,5 +210,10 @@ onMounted(fetchKeys);
 .drag-handle {
   cursor: grab;
   padding-right: 10px;
+}
+
+.validations {
+  display: flex;
+  gap: 5px;
 }
 </style>
