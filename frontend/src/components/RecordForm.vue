@@ -12,12 +12,35 @@
         <span v-if="attribute.required" class="text-danger">*</span>
       </label>
 
-      <input
+      <!-- Dropdown for Boolean Fields -->
+      <select
+        v-if="attribute.type === 'Mongoid::Boolean'"
         v-model="record[attribute.name]"
-        :type="attribute.type === 'Date' ? 'date' : 'text'"
+        class="form-select"
+      >
+        <option :value="null">Null</option>
+        <option :value="true">True</option>
+        <option :value="false">False</option>
+      </select>
+
+      <!-- Date Picker for Date Fields -->
+      <input
+        v-else-if="attribute.type === 'Date'"
+        v-model="record[attribute.name]"
+        type="date"
         class="form-control"
         :required="attribute.required"
       />
+
+      <!-- Default Text Input -->
+      <input
+        v-else
+        v-model="record[attribute.name]"
+        type="text"
+        class="form-control"
+        :required="attribute.required"
+      />
+
       <div class="form-text">
         {{ attribute.type }}
       </div>
