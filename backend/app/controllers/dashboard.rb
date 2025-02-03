@@ -76,8 +76,12 @@ module Deployd
         model_class = Object.const_get(resource_name.classify) rescue nil
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
-        record = model_class.where(id: record_id).first
+        # Fetch raw MongoDB document
+        record = model_class.collection.find({ _id: BSON::ObjectId(record_id) }).first
         halt 404, { error: "Record not found" }.to_json unless record
+
+        # Convert BSON::ObjectId to String for frontend compatibility
+        record["_id"] = record["_id"].to_s if record["_id"].is_a?(BSON::ObjectId)
 
         fields = model_class.fields
         keys = fields.keys

@@ -29,6 +29,9 @@
       </tbody>
     </table>
 
+    <h4>Raw Document</h4>
+    <pre class="raw-document">{{ JSON.stringify(record, null, 2) }}</pre>
+
     <button class="btn btn-primary" @click="editRecord">Edit</button>
     <button class="btn btn-secondary" @click="goBack">Back</button>
   </div>
@@ -70,3 +73,16 @@ const goBack = () => {
 
 onMounted(fetchRecord);
 </script>
+
+<style scoped>
+.raw-document {
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+  border: 1px solid #ddd;
+}
+</style>
