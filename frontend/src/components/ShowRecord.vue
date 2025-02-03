@@ -30,17 +30,19 @@
     </table>
 
     <h4>Raw Document</h4>
-    <pre class="raw-document">{{ JSON.stringify(record, null, 2) }}</pre>
+    <pre class="raw-document" v-html="highlightedJSON"></pre>
 
-    <button class="btn btn-primary" @click="editRecord">Edit</button>
+    <button class="btn btn-primary me-1" @click="editRecord">Edit</button>
     <button class="btn btn-secondary" @click="goBack">Back</button>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
 import { store } from "@/store";
 
 const route = useRoute();
@@ -70,6 +72,12 @@ const goBack = () => {
   store.activeResourceTab = "data";
   router.push(`/resources/${route.params.resourceName}`);
 };
+
+// Format JSON and apply syntax highlighting
+const highlightedJSON = computed(() => {
+  const jsonStr = JSON.stringify(record.value, null, 2);
+  return hljs.highlight(jsonStr, { language: "json" }).value;
+});
 
 onMounted(fetchRecord);
 </script>
