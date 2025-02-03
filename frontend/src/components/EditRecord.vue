@@ -14,32 +14,13 @@
     </nav>
 
     <h3>ID: {{ record._id }}</h3>
-    <form @submit.prevent="updateRecord">
-      <div v-if="validationErrors.length" class="alert alert-danger">
-        <ul>
-          <li v-for="error in validationErrors" :key="error">{{ error }}</li>
-        </ul>
-      </div>
-
-      <div class="mb-3" v-for="attribute in attributes" :key="attribute.name">
-        <label>
-          {{ attribute.label }}
-          <span v-if="attribute.required" class="text-danger">*</span>
-        </label>
-
-        <input
-          v-model="record[attribute.name]"
-          type="text"
-          class="form-control"
-        />
-        <div class="form-text">
-          {{ attribute.type }}
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn-primary">Save</button>
-      <button @click="cancelEdit" class="btn btn-secondary">Cancel</button>
-    </form>
+    <RecordForm
+      :record="record"
+      :attributes="attributes"
+      :validationErrors="validationErrors"
+      @submit="updateRecord"
+      @cancel="cancelEdit"
+    />
 
   </div>
 </template>
@@ -49,6 +30,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { store } from "@/store";
+import RecordForm from "@/components/RecordForm.vue";
 
 const route = useRoute();
 const router = useRouter();

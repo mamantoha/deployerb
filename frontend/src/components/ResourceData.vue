@@ -6,30 +6,13 @@
         Add new {{ resourceName }}
       </div>
       <div class="card-body">
-        <form @submit.prevent="createRecord">
-          <div v-if="validationErrors.length" class="alert alert-danger">
-            <ul>
-              <li v-for="error in validationErrors" :key="error">{{ error }}</li>
-            </ul>
-          </div>
-
-          <div class="mb-3" v-for="attribute in permittedAttributes" :key="attribute.name">
-            <label>
-              {{ attribute.label }}
-              <span v-if="attribute.required" class="text-danger">*</span>
-            </label>
-            <input
-              v-model="newRecord[attribute.name]"
-              type="text"
-              class="form-control"
-            />
-            <div class="form-text">
-              {{ attribute.type }}
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-success">Add</button>
-        </form>
+        <RecordForm
+          :record="newRecord"
+          :attributes="attributes"
+          :validationErrors="validationErrors"
+          @submit="createRecord"
+          @cancel="resetForm"
+        />
       </div>
     </div>
 
@@ -97,6 +80,7 @@ import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { store } from "@/store";
+import RecordForm from "@/components/RecordForm.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -138,6 +122,7 @@ const createRecord = async () => {
     newRecord.value = {};
     validationErrors.value = [];
     fetchData();
+    store.successMessage = "Record created successfully!";
   } catch (error) {
     if (error.response && error.response.status === 422) {
       validationErrors.value = error.response.data.messages;
@@ -145,6 +130,11 @@ const createRecord = async () => {
       console.error("Error creating record:", error);
     }
   }
+};
+
+const resetForm = () => {
+  newRecord.value = {};
+  validationErrors.value = [];
 };
 
 // Show a record
