@@ -88,6 +88,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import { Collapse } from "bootstrap";
 import { store } from "@/store";
 import RecordForm from "@/components/RecordForm.vue";
 
@@ -106,6 +107,8 @@ const validationErrors = ref([]);
 const currentPage = ref(1);
 const perPage = ref(5);
 const pagination = ref({ total_pages: 1, total_records: 0, current_page: 1 });
+
+let collapseInstance = null;
 
 // Fetch resource data
 const fetchData = async () => {
@@ -127,10 +130,15 @@ const fetchData = async () => {
 const createRecord = async () => {
   try {
     await axios.post(`/api/dashboard/resources/${resourceName}/data`, newRecord.value);
+    store.activeResourceTab = "data";
     newRecord.value = {};
     validationErrors.value = [];
     fetchData();
     store.successMessage = "Record created successfully!";
+
+    if (collapseInstance) {
+      collapseInstance.hide();
+    }
   } catch (error) {
     if (error.response && error.response.status === 422) {
       validationErrors.value = error.response.data.messages;
@@ -143,6 +151,10 @@ const createRecord = async () => {
 const resetForm = () => {
   newRecord.value = {};
   validationErrors.value = [];
+
+  if (collapseInstance) {
+    collapseInstance.hide();
+  }
 };
 
 // Show a record
@@ -161,7 +173,7 @@ const deleteRecord = async (record) => {
 
   try {
     await axios.delete(`/api/dashboard/resources/${resourceName}/data/${record._id}`);
-
+    store.activeResourceTab = "data";
     store.successMessage = "Record deleted successfully!";
     fetchData();
   } catch (error) {
@@ -175,7 +187,15 @@ const changePage = (page) => {
   fetchData();
 };
 
-onMounted(fetchData);
+
+onMounted(() => {
+  fetchData();
+
+  const collapseElement = document.getElementById("collapseForm");
+  if (collapseElement) {
+    collapseInstance = new Collapse(collapseElement, { toggle: false });
+  }
+});
 </script>
 
 <style scoped>
