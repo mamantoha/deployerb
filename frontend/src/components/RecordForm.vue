@@ -66,13 +66,13 @@
       </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary me-1">Save</button>
     <button @click="cancel" type="button" class="btn btn-secondary">Cancel</button>
   </form>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from "vue";
+import { defineEmits } from "vue";
 
 const props = defineProps({
   record: Object,

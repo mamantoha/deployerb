@@ -2,10 +2,19 @@
   <div>
     <!-- Form to add new data -->
     <div class="card">
-      <div class="card-header">
-        Add new {{ resourceName }}
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseForm"
+        role="button"
+        aria-expanded="false"
+        aria-controls="collapseForm"
+        @click="toggleCollapse"
+      >
+        <span>Add New {{ resourceName }}</span>
+        <span class="collapse-icon">{{ isCollapsed ? "▼" : "▲" }}</span>
       </div>
-      <div class="card-body">
+      <div class="card-body collapse" id="collapseForm">
         <RecordForm
           :record="newRecord"
           :attributes="attributes"
@@ -18,21 +27,22 @@
 
     <!-- Table displaying resource data -->
     <h4>Data for {{ resourceName }}</h4>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th v-for="attribute in attributes" :key="attribute.name">
-            {{ attribute.label }}
-          </th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="record in data" :key="record._id" :id="`record-${record._id}`">
-          <td v-for="key in columns" :key="key">{{ record[key] }}</td>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th v-for="attribute in attributes" :key="attribute.name">
+              {{ attribute.label }}
+            </th>
+            <th class="fixed-column">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="record in data" :key="record._id" :id="`record-${record._id}`">
+            <td v-for="key in columns" :key="key">{{ record[key] }}</td>
 
-          <td>
-            <div class="btn-group btn-group-xs" role="group">
+            <td class="fixed-column">
+              <div class="btn-group btn-group-xs" role="group">
               <button class="btn btn-info" @click="showRecord(record)">
                 Show
               </button>
@@ -43,10 +53,11 @@
                 Delete
               </button>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- Pagination -->
     <nav aria-label="Page navigation" v-if="pagination.total_pages > 1">
@@ -79,6 +90,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import { Collapse } from "bootstrap";
 import { store } from "@/store";
 import RecordForm from "@/components/RecordForm.vue";
 
@@ -97,6 +109,9 @@ const validationErrors = ref([]);
 const currentPage = ref(1);
 const perPage = ref(5);
 const pagination = ref({ total_pages: 1, total_records: 0, current_page: 1 });
+
+let collapseInstance = null;
+const isCollapsed = ref(true);
 
 // Fetch resource data
 const fetchData = async () => {
@@ -118,10 +133,15 @@ const fetchData = async () => {
 const createRecord = async () => {
   try {
     await axios.post(`/api/dashboard/resources/${resourceName}/data`, newRecord.value);
+    store.activeResourceTab = "data";
     newRecord.value = {};
     validationErrors.value = [];
     fetchData();
     store.successMessage = "Record created successfully!";
+
+    if (collapseInstance) {
+      collapseInstance.hide();
+    }
   } catch (error) {
     if (error.response && error.response.status === 422) {
       validationErrors.value = error.response.data.messages;
@@ -134,6 +154,10 @@ const createRecord = async () => {
 const resetForm = () => {
   newRecord.value = {};
   validationErrors.value = [];
+
+  if (collapseInstance) {
+    collapseInstance.hide();
+  }
 };
 
 // Show a record
@@ -152,7 +176,7 @@ const deleteRecord = async (record) => {
 
   try {
     await axios.delete(`/api/dashboard/resources/${resourceName}/data/${record._id}`);
-
+    store.activeResourceTab = "data";
     store.successMessage = "Record deleted successfully!";
     fetchData();
   } catch (error) {
@@ -166,5 +190,63 @@ const changePage = (page) => {
   fetchData();
 };
 
-onMounted(fetchData);
+
+onMounted(() => {
+  fetchData();
+
+  const collapseElement = document.getElementById("collapseForm");
+  if (collapseElement) {
+    collapseInstance = new Collapse(collapseElement, { toggle: false });
+
+    // Listen to Bootstrap collapse events
+    collapseElement.addEventListener("show.bs.collapse", () => {
+      isCollapsed.value = false;
+    });
+    collapseElement.addEventListener("hide.bs.collapse", () => {
+      isCollapsed.value = true;
+    });
+  }
+});
+
+const toggleCollapse = () => {
+  if (collapseInstance) {
+    isCollapsed.value ? collapseInstance.show() : collapseInstance.hide();
+  }
+};
 </script>
+
+<style scoped>
+/* Enable horizontal scrolling */
+.table-responsive {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Ensure the last column (Actions) is always visible */
+.fixed-column {
+  position: sticky;
+  right: 0;
+  background: white;
+  z-index: 2;
+  min-width: 150px;
+  text-align: center;
+}
+
+/* Add shadow effect when scrolling */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.card {
+  margin-bottom: 10px;
+}
+</style>
