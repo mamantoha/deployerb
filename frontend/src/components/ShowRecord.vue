@@ -18,7 +18,7 @@
     <table class="table table-bordered">
       <tbody>
         <tr v-for="attribute in attributes" :key="attribute.name">
-          <th>{{ attribute.name }}</th>
+          <th>{{ attribute.label }}</th>
           <td>{{ record[attribute.name] }}</td>
         </tr>
       </tbody>
