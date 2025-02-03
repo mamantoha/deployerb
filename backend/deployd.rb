@@ -98,6 +98,11 @@ module Deployd
     end
 
     enable :sessions
+
+    # Set Time.zone per request
+    before do
+      ::Time.zone = 'UTC'
+    end
   end
 end
 
