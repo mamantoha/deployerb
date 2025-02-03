@@ -16,6 +16,7 @@
         v-model="record[attribute.name]"
         type="text"
         class="form-control"
+        :required="attribute.required"
       />
       <div class="form-text">
         {{ attribute.type }}
