@@ -140,19 +140,21 @@ module Deployd
       #
       def create(context)
         begin
-          data = JSON.parse(context.request.body.read)
+          params = JSON.parse(context.request.body.read)
         rescue JSON::ParserError
           context.halt(406, { status: 'error', message: 'Not acceptable JSON payload' }.to_json)
         end
 
         permitted_params = resource_fields.map { |k| k[:name] }
-        permitted_params = data.select { |k, _| permitted_params.include?(k) }
+        permitted_params = params.select { |k, _| permitted_params.include?(k) }
 
         begin
           instance_variable_set(:"@#{resource_name}", resource_name.classify.constantize.new(permitted_params))
 
           if instance_variable_get(:"@#{resource_name}").save
-            instance_variable_get(:"@#{resource_name}").to_json
+            data = instance_variable_get(:"@#{resource_name}")
+
+            { data: }.to_json
           else
             errors = instance_variable_get(:"@#{resource_name}").errors.messages
             context.halt(406, { status: 'error', message: errors }.to_json)
@@ -168,7 +170,9 @@ module Deployd
       def show(context)
         set_resource(context)
 
-        instance_variable_get(:"@#{resource_name}").to_json
+        data = instance_variable_get(:"@#{resource_name}")
+
+        { data: }.to_json
       end
 
       # params:
@@ -176,7 +180,7 @@ module Deployd
       #
       def update(context)
         begin
-          data = JSON.parse(context.request.body.read)
+          params = JSON.parse(context.request.body.read)
         rescue JSON::ParserError
           context.halt(406, { status: 'error', message: 'Not acceptable JSON payload' }.to_json)
         end
@@ -185,11 +189,13 @@ module Deployd
 
         begin
           permitted_params = resource_fields.map { |k| k[:name] }
-          permitted_params = data.select { |k, _| permitted_params.include?(k) }
+          permitted_params = params.select { |k, _| permitted_params.include?(k) }
 
           if instance_variable_get(:"@#{resource_name}").update_attributes(permitted_params)
             instance_variable_get(:"@#{resource_name}").reload
-            instance_variable_get(:"@#{resource_name}").to_json
+            data = instance_variable_get(:"@#{resource_name}")
+
+            { data: }.to_json
           else
             errors = instance_variable_get(:"@#{resource_name}").errors.messages
             context.halt(406, { status: 'error', message: errors }.to_json)
