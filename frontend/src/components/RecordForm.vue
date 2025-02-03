@@ -14,7 +14,7 @@
 
       <input
         v-model="record[attribute.name]"
-        type="text"
+        :type="attribute.type === 'Date' ? 'date' : 'text'"
         class="form-control"
         :required="attribute.required"
       />
