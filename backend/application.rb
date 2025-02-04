@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require 'pp'
 require 'active_support/core_ext/string'
 require 'sinatra/base'
 require 'sinatra/namespace'
