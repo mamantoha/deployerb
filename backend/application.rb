@@ -32,6 +32,8 @@ module Deployd
     ActiveSupport::TimeWithZone,
   ].freeze
 
+  API_TOKEN = ENV['API_TOKEN'] || 'my-secret-token'
+
   class Application < Sinatra::Base
     register Sinatra::Namespace
     register Sinatra::Subdomain
@@ -90,6 +92,13 @@ module Deployd
     # Set Time.zone per request
     before do
       ::Time.zone = 'UTC'
+    end
+
+    helpers do
+      def authorized?
+        token = params['token']
+        token == API_TOKEN
+      end
     end
   end
 end

@@ -40,6 +40,7 @@ module Deployd
         @member_route = "/#{route_key}/:id/?"
 
         set_content_type(:json)
+        protected!
         set_access_control_header
         require_resource!(resource_name)
       end
@@ -60,6 +61,14 @@ module Deployd
       def set_content_type(type)
         Deployd::Application.send :before, %r{/#{route_key}(/)?(.)*} do
           content_type type
+        end
+      end
+
+      def protected!
+        Deployd::Application.send :before, %r{/#{route_key}(/)?(.)*} do
+          unless authorized?
+            halt 401, { error: 'Not Authorized' }.to_json
+          end
         end
       end
 
@@ -85,7 +94,6 @@ module Deployd
           class_name = "#{resource_name.singularize.classify.pluralize}Controller"
 
           unless Deployd::Controllers.constants.include?(class_name.to_sym)
-            content_type :json
             halt(404, { status: 'error', message: 'The URI requested is invalid' }.to_json)
           end
         end
