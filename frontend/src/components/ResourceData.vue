@@ -203,6 +203,12 @@ const openDeleteModal = (record) => {
   deleteModalInstance.show();
 };
 
+const hideDeleteModal = () => {
+  if (deleteModalInstance) {
+    deleteModalInstance.hide();
+  }
+};
+
 // Confirm Deletion
 const confirmDelete = async () => {
   if (!recordToDelete.value) return;
@@ -212,7 +218,7 @@ const confirmDelete = async () => {
     store.activeResourceTab = "data";
     store.successMessage = "Record deleted successfully!";
     fetchData();
-    deleteModalInstance.hide();
+    hideDeleteModal();
   } catch (error) {
     console.error("Error deleting record:", error);
   }
