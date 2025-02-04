@@ -77,11 +77,13 @@ module Deployd
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
         # Fetch raw MongoDB document
-        record = model_class.collection.find({ _id: BSON::ObjectId(record_id) }).first
-        halt 404, { error: "Record not found" }.to_json unless record
+        raw_document = model_class.collection.find({ _id: BSON::ObjectId(record_id) }).first
+        halt 404, { error: "Record not found" }.to_json unless raw_document
+
+        record = model_class.where(id: record_id).first
 
         # Convert BSON::ObjectId to String for frontend compatibility
-        record["_id"] = record["_id"].to_s if record["_id"].is_a?(BSON::ObjectId)
+        raw_document["_id"] = raw_document["_id"].to_s if raw_document["_id"].is_a?(BSON::ObjectId)
 
         fields = model_class.fields
         keys = fields.keys
@@ -105,7 +107,7 @@ module Deployd
           }
         end
 
-        { attributes:, record: }.to_json
+        { attributes:, record:, raw_document: }.to_json
       end
 
       # Create a new record
