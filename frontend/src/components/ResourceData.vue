@@ -25,6 +25,25 @@
       </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" v-show="false" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Deletion</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to delete this record?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" @click="confirmDelete">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Table displaying resource data -->
     <h4>Data for {{ resourceName }}</h4>
     <div class="table-responsive">
@@ -49,7 +68,7 @@
               <button class="btn btn-primary" @click="editRecord(record)">
                 Edit
               </button>
-              <button class="btn btn-danger" @click="deleteRecord(record)">
+              <button class="btn btn-danger" @click="openDeleteModal(record)">
                 Delete
               </button>
             </div>
@@ -91,6 +110,7 @@ import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { Collapse } from "bootstrap";
+import { Modal } from "bootstrap";
 import { store } from "@/store";
 import RecordForm from "@/components/RecordForm.vue";
 
@@ -112,6 +132,9 @@ const pagination = ref({ total_pages: 1, total_records: 0, current_page: 1 });
 
 let collapseInstance = null;
 const isCollapsed = ref(true);
+
+const recordToDelete = ref(null);
+let deleteModalInstance = null;
 
 // Fetch resource data
 const fetchData = async () => {
@@ -170,15 +193,26 @@ const editRecord = (record) => {
   router.push(`/resources/${route.params.resourceName}/data/${record._id}/edit`);
 };
 
-// Delete a record
-const deleteRecord = async (record) => {
-  if (!confirm("Are you sure you want to delete this record?")) return;
+const openDeleteModal = (record) => {
+  recordToDelete.value = record;
+
+  // Initialize & Show Bootstrap Modal
+  if (!deleteModalInstance) {
+    deleteModalInstance = new Modal(document.getElementById("deleteModal"));
+  }
+  deleteModalInstance.show();
+};
+
+// Confirm Deletion
+const confirmDelete = async () => {
+  if (!recordToDelete.value) return;
 
   try {
-    await axios.delete(`/api/dashboard/resources/${resourceName}/data/${record._id}`);
+    await axios.delete(`/api/dashboard/resources/${resourceName}/data/${recordToDelete.value._id}`);
     store.activeResourceTab = "data";
     store.successMessage = "Record deleted successfully!";
     fetchData();
+    deleteModalInstance.hide();
   } catch (error) {
     console.error("Error deleting record:", error);
   }
