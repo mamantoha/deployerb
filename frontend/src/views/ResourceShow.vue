@@ -9,7 +9,6 @@
       </ol>
     </nav>
 
-
     <div>
       <div v-if="successMessage" class="alert alert-success alert-dismissible">
         {{ successMessage }}
@@ -53,30 +52,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
-import { useRoute } from "vue-router";
-import axios from "axios";
+import { ref, watch, computed } from "vue";
 import { store } from "@/store";
 import ResourceKeys from "@/components/ResourceKeys.vue";
 import ResourceData from "@/components/ResourceData.vue";
 import ResourceExamples from "@/components/ResourceExamples.vue";
 
-const route = useRoute();
 const resource = ref(null);
 
 const successMessage = computed(() => store.successMessage);
 const activeTab = ref(store.activeResourceTab || "keys");
-
-// Fetch resource details
-const fetchResource = async () => {
-  try {
-    const response = await axios.get(`/api/dashboard/resources/${route.params.resourceName}`);
-    resource.value = response.data;
-  } catch (error) {
-    console.error("Error fetching resource:", error);
-  }
-};
-
 
 watch(() => store.successMessage, (newMessage) => {
   if (newMessage) {
@@ -85,5 +70,4 @@ watch(() => store.successMessage, (newMessage) => {
   }
 });
 
-onMounted(fetchResource);
 </script>
