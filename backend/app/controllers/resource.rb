@@ -15,6 +15,9 @@ module Deployd
         destroy: { method: :delete, type: :member }
       }.freeze
 
+      MAX_LIMIT     = 100
+      DEFAULT_LIMIT = 5
+
       included do
         class_eval do
           attr_reader :collection_route, :member_route
@@ -25,8 +28,6 @@ module Deployd
       end
 
       module ClassMethods; end
-
-      MAX_LIMIT = 100
 
       def initialize(resource_name)
         resource_class = resource_name.classify.constantize
@@ -122,7 +123,7 @@ module Deployd
         instance_variable_set(:"@#{resource_name.pluralize}", resource_name.classify.constantize.all)
 
         page = (context.params[:page] || 1).to_i
-        limit = [(context.params[:limit] || 5).to_i, MAX_LIMIT].min
+        limit = [(context.params[:limit] || DEFAULT_LIMIT).to_i, MAX_LIMIT].min
         offset = (page - 1) * limit
 
         data = instance_variable_get(:"@#{resource_name.pluralize}").skip(offset).limit(limit)
