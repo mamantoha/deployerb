@@ -230,7 +230,6 @@ const changePage = (page) => {
   fetchData();
 };
 
-
 onMounted(() => {
   fetchData();
 
