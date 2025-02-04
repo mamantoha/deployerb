@@ -4,6 +4,6 @@ require 'bundler'
 
 Bundler.require
 
-require './deployd'
+require './application'
 
 run Deployd::Application
