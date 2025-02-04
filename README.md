@@ -27,25 +27,7 @@ cd ./frontend
 npm install
 ```
 
-### Using subdomains in development
-
-Network configuration for supporting subdomains in development:
-
-/etc/hosts
-
-```text
-127.0.0.1 deployerb-dev.com
-127.0.0.1 api.deployerb-dev.com
-```
-
-On Windows, look for `C:\WINDOWS\system32\drivers\etc\hosts`
-
-The following URLs now available on local machine:
-
-* <http://web.deployerb-dev.com:9292>
-* <http://api.deployerb-dev.com:9292>
-
-### Run Deployerb development server
+### Development
 
 ```console
 cd ./backend
@@ -55,4 +37,54 @@ bundle exec rackup
 ```console
 cd ./frontend
 npm run dev
+```
+
+## Production
+
+### Build the Vue 3 Frontend
+
+```
+cd ./frontend
+npm install
+npm run build
+mv dist/* ../backend/public
+```
+
+## Configure Nginx
+
+`/etc/nginx/sites-available/default`
+
+```
+server {
+    listen 80;
+    server_name localhost;
+
+    root /path/to/deployerb/backend/public;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:9292/;
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+This setup serves:
+
+- Frontend (Vue 3) → `/` (served as static files)
+- Backend (Sinatra API) → `/api/` (proxied to Puma)
+
+### Start the Sinatra Backend
+
+```
+cd ./backend
+bundle install
+RAILS_ENV=production bundle exec puma -C config/puma.rb
 ```
