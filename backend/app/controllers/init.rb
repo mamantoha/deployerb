@@ -8,6 +8,7 @@ module Deployd
   module Controllers
     # keep a list of generated classes in a class variable
     class << self; attr_reader :generated_classes; end
+
     @generated_classes = []
 
     # params:
@@ -23,8 +24,11 @@ module Deployd
         end
       end
 
-      instance_variable_set(:"@#{resource_name.pluralize}_controller",
-                            "Deployd::Controllers::#{resource_name.classify.pluralize}Controller".constantize.new(resource_name))
+      instance_variable_set(
+        :"@#{resource_name.pluralize}_controller",
+        "Deployd::Controllers::#{resource_name.classify.pluralize}Controller".constantize.new(resource_name)
+      )
+
       instance_variable_get(:"@#{resource_name.pluralize}_controller").mount_actions
     end
 
@@ -34,7 +38,9 @@ module Deployd
     def self.remove(resource_name)
       class_name = "#{resource_name.classify.pluralize}Controller"
       klass = "Deployd::Controllers::#{class_name}".constantize
+
       @generated_classes.delete(klass)
+
       if Deployd::Controllers.constants.include?(class_name.to_sym)
         Deployd::Controllers.send(:remove_const, class_name.to_sym)
       end
