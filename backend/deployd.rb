@@ -8,7 +8,6 @@ require 'sinatra/namespace'
 require 'sinatra/subdomain'
 require 'mongoid'
 require 'logger'
-require 'pry'
 
 module Deployd
   # https://www.mongodb.com/docs/mongoid/current/reference/fields/

@@ -15,7 +15,6 @@ gem 'mongoid'
 gem 'mongoid-suicide'
 
 group :development do
-  gem 'pry'
   gem 'racksh'
 end
 
