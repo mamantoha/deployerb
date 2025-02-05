@@ -62,16 +62,16 @@
 
             <td class="fixed-column">
               <div class="btn-group btn-group-xs" role="group">
-              <button class="btn btn-info" @click="showRecord(record)">
-                Show
-              </button>
-              <button class="btn btn-primary" @click="editRecord(record)">
-                Edit
-              </button>
-              <button class="btn btn-danger" @click="openDeleteModal(record)">
-                Delete
-              </button>
-            </div>
+                <button class="btn btn-info" @click="showRecord(record)">
+                  Show
+                </button>
+                <button class="btn btn-primary" @click="editRecord(record)">
+                  Edit
+                </button>
+                <button class="btn btn-danger" @click="openDeleteModal(record)">
+                  Delete
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
