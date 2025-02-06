@@ -14,7 +14,7 @@
         <span>Add New {{ resourceName }}</span>
         <span class="collapse-icon">{{ isCollapsed ? "▼" : "▲" }}</span>
       </div>
-      <div class="card-body collapse" :class="{ show: !attributes.length }" id="collapseForm">
+      <div class="card-body collapse" :class="{ show: !data.length }" id="collapseForm">
         <RecordForm
           :record="newRecord"
           :attributes="attributes"
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div v-if="attributes.length">
+    <div v-if="data.length">
       <!-- Table displaying resource data -->
       <h4>Data for {{ resourceName }}</h4>
       <div class="table-responsive">
@@ -133,7 +133,7 @@ const perPage = ref(5);
 const pagination = ref({ total_pages: 1, total_records: 0, current_page: 1 });
 
 let collapseInstance = null;
-const isCollapsed = ref(attributes.length === 0);
+const isCollapsed = ref(data.length === 0);
 
 const recordToDelete = ref(null);
 let deleteModalInstance = null;
