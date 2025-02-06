@@ -1,9 +1,7 @@
-# Puma configuration for Sinatra
+# Puma configuration for Sinatra (Single-Process Mode)
 
-# Define Puma threads & workers (adjust based on your server)
+# Define Puma threads (Set both min and max threads to the same value)
 threads_count = ENV.fetch("PUMA_THREADS", 5).to_i
-workers ENV.fetch("PUMA_WORKERS", 2).to_i
-
 threads threads_count, threads_count
 
 environment ENV.fetch("RACK_ENV", "production").to_s
@@ -14,10 +12,6 @@ port ENV.fetch("PORT", 9292)
 pidfile "tmp/puma.pid"
 state_path "tmp/puma.state"
 
-# Preload the application before forking workers
-preload_app!
-
 on_worker_boot do
-  # Reconnect to database (Mongoid, ActiveRecord, etc.)
   puts "Worker booting..."
 end
