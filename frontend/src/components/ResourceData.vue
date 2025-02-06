@@ -14,7 +14,7 @@
         <span>Add New {{ resourceName }}</span>
         <span class="collapse-icon">{{ isCollapsed ? "▼" : "▲" }}</span>
       </div>
-      <div class="card-body collapse" id="collapseForm">
+      <div class="card-body collapse" :class="{ show: !attributes.length }" id="collapseForm">
         <RecordForm
           :record="newRecord"
           :attributes="attributes"
@@ -44,38 +44,40 @@
       </div>
     </div>
 
-    <!-- Table displaying resource data -->
-    <h4>Data for {{ resourceName }}</h4>
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th v-for="attribute in attributes" :key="attribute.name">
-              {{ attribute.label }}
-            </th>
-            <th class="fixed-column">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="record in data" :key="record._id" :id="`record-${record._id}`">
-            <td v-for="key in columns" :key="key">{{ record[key] }}</td>
+    <div v-if="attributes.length">
+      <!-- Table displaying resource data -->
+      <h4>Data for {{ resourceName }}</h4>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th v-for="attribute in attributes" :key="attribute.name">
+                {{ attribute.label }}
+              </th>
+              <th class="fixed-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="record in data" :key="record._id" :id="`record-${record._id}`">
+              <td v-for="key in columns" :key="key">{{ record[key] }}</td>
 
-            <td class="fixed-column">
-              <div class="btn-group btn-group-xs" role="group">
-                <button class="btn btn-info" @click="showRecord(record)">
-                  Show
-                </button>
-                <button class="btn btn-primary" @click="editRecord(record)">
-                  Edit
-                </button>
-                <button class="btn btn-danger" @click="openDeleteModal(record)">
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <td class="fixed-column">
+                <div class="btn-group btn-group-xs" role="group">
+                  <button class="btn btn-info" @click="showRecord(record)">
+                    Show
+                  </button>
+                  <button class="btn btn-primary" @click="editRecord(record)">
+                    Edit
+                  </button>
+                  <button class="btn btn-danger" @click="openDeleteModal(record)">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Pagination -->
@@ -131,7 +133,7 @@ const perPage = ref(5);
 const pagination = ref({ total_pages: 1, total_records: 0, current_page: 1 });
 
 let collapseInstance = null;
-const isCollapsed = ref(true);
+const isCollapsed = ref(attributes.length === 0);
 
 const recordToDelete = ref(null);
 let deleteModalInstance = null;
