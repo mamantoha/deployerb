@@ -50,7 +50,7 @@ const router = useRouter();
 
 const attributes = ref([]);
 const record = ref({});
-const raw_document = ref({});
+const document = ref({});
 
 // Fetch record details
 const fetchRecord = async () => {
@@ -58,7 +58,7 @@ const fetchRecord = async () => {
     const response = await axios.get(`/api/dashboard/resources/${route.params.resourceName}/data/${route.params.id}`);
 
     attributes.value = response.data.attributes;
-    raw_document.value = response.data.raw_document;
+    document.value = response.data.document;
     record.value = response.data.record;
   } catch (error) {
     console.error("Error fetching record:", error);
@@ -77,7 +77,7 @@ const goBack = () => {
 
 // Format JSON and apply syntax highlighting
 const highlightedJSON = computed(() => {
-  const jsonStr = JSON.stringify(raw_document.value, null, 2);
+  const jsonStr = JSON.stringify(document.value, null, 2);
   return hljs.highlight(jsonStr, { language: "json" }).value;
 });
 
