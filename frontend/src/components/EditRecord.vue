@@ -94,15 +94,10 @@ const updateRecord = async () => {
   }
 };
 
-
 // Cancel edit and return to the resource data list
 const cancelEdit = () => {
   store.activeResourceTab = "data";
   router.push(`/resources/${route.params.resourceName}`);
-};
-
-const isRequiredField = (key) => {
-  return attributes.value.some(attr => attr.name === key && attr.required);
 };
 
 onMounted(fetchRecord);
