@@ -47,7 +47,7 @@ const attributes = ref([]);
 
 const validationErrors = ref({});
 
-const filteredRecord = computed(() => {
+const editableRecord = computed(() => {
   const newRecord = { ...record.value };
   delete newRecord._id;
   return newRecord;
@@ -77,7 +77,7 @@ const fetchRecord = async () => {
 // Update record
 const updateRecord = async () => {
   try {
-    const recordData = { ...filteredRecord.value };
+    const recordData = { ...editableRecord.value };
     await axios.put(
       `/api/dashboard/resources/${route.params.resourceName}/data/${route.params.id}`,
       recordData
