@@ -84,7 +84,7 @@ const availableTypes = ref([
   "Hash",
 ]);
 
-const validationErrors = ref(null);
+const validationErrors = ref([]);
 
 // Fetch the key details
 const fetchKey = async () => {
