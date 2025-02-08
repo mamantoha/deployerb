@@ -79,7 +79,7 @@ const updateRecord = async () => {
       recordData
     );
 
-    validationErrors.value = [];
+    validationErrors.value = {};
 
     store.successMessage = "Record updated successfully!";
     store.activeResourceTab = "data";

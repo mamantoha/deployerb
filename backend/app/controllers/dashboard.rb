@@ -126,7 +126,7 @@ module Deployd
           record.to_json
         else
           status 422
-          { error: "Validation failed", messages: record.errors.full_messages }.to_json
+          { error: "Validation failed", messages: record.errors }.to_json
         end
       end
 
@@ -164,7 +164,7 @@ module Deployd
           { message: "Record updated successfully", record: record }.to_json
         else
           status 422
-          { error: "Validation failed", messages: record.errors.full_messages }.to_json
+          { error: "Validation failed", messages: record.errors }.to_json
         end
       end
 

@@ -1,11 +1,5 @@
 <template>
   <form @submit.prevent="submitForm">
-    <div v-if="validationErrors.length" class="alert alert-danger">
-      <ul>
-        <li v-for="error in validationErrors" :key="error">{{ error }}</li>
-      </ul>
-    </div>
-
     <div class="mb-3" v-for="attribute in attributes" :key="attribute.name">
       <label>
         {{ attribute.label }}
@@ -17,6 +11,7 @@
         v-if="attribute.type === 'Mongoid::Boolean'"
         v-model="record[attribute.name]"
         class="form-select"
+        :class="{ 'is-invalid': validationErrors[attribute.name] }"
       >
         <option :value="null">Null</option>
         <option :value="true">True</option>
@@ -29,6 +24,7 @@
         v-model="record[attribute.name]"
         type="date"
         class="form-control"
+        :class="{ 'is-invalid': validationErrors[attribute.name] }"
         :required="attribute.required"
       />
 
@@ -38,6 +34,7 @@
         v-model.number="record[attribute.name]"
         type="number"
         class="form-control"
+        :class="{ 'is-invalid': validationErrors[attribute.name] }"
         :required="attribute.required"
         step="1"
       />
@@ -48,6 +45,7 @@
         v-model.number="record[attribute.name]"
         type="number"
         class="form-control"
+        :class="{ 'is-invalid': validationErrors[attribute.name] }"
         :required="attribute.required"
         step="any"
       />
@@ -58,8 +56,17 @@
         v-model="record[attribute.name]"
         type="text"
         class="form-control"
+        :class="{ 'is-invalid': validationErrors[attribute.name] }"
         :required="attribute.required"
       />
+
+      <div v-if="validationErrors[attribute.name]" class="invalid-feedback">
+        <ul>
+          <li v-for="error in validationErrors[attribute.name]" :key="error">
+            {{ error }}
+          </li>
+        </ul>
+      </div>
 
       <div class="form-text">
         {{ attribute.type }}
@@ -75,7 +82,7 @@
 const props = defineProps({
   record: Object,
   attributes: Array,
-  validationErrors: Array,
+  validationErrors: Object,
 });
 
 const emit = defineEmits(["submit", "cancel"]);
@@ -88,3 +95,9 @@ const cancel = () => {
   emit("cancel");
 };
 </script>
+
+<style scoped>
+.invalid-feedback ul {
+  padding-left: 1rem;
+}
+</style>

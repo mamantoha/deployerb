@@ -84,7 +84,7 @@ const availableTypes = ref([
   "Hash",
 ]);
 
-const validationErrors = ref([]);
+const validationErrors = ref(null);
 
 // Fetch the key details
 const fetchKey = async () => {
@@ -121,7 +121,7 @@ const updateKey = async () => {
       }
     );
 
-    validationErrors.value = [];
+    validationErrors.value = {};
 
     store.successMessage = "Key updated successfully!";
     store.activeResourceTab = "keys";
