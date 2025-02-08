@@ -23,8 +23,10 @@
       :record="record"
       :attributes="attributes"
       :validationErrors="validationErrors"
+      :showResetButton="true"
       @submit="updateRecord"
       @cancel="cancelEdit"
+      @reset="resetForm"
     />
 
   </div>
@@ -40,9 +42,10 @@ import RecordForm from "@/components/RecordForm.vue";
 const route = useRoute();
 const router = useRouter();
 const record = ref({});
+const originalRecord = ref({});
 const attributes = ref([]);
 
-const validationErrors = ref([]);
+const validationErrors = ref({});
 
 const filteredRecord = computed(() => {
   const newRecord = { ...record.value };
@@ -64,6 +67,7 @@ const fetchRecord = async () => {
       return acc;
     }, {});
 
+    originalRecord.value = { ...record.value };
   } catch (error) {
     console.error("Error fetching record:", error);
     router.push(`/resources/${route.params.resourceName}`);
@@ -98,6 +102,12 @@ const updateRecord = async () => {
 const cancelEdit = () => {
   store.activeResourceTab = "data";
   router.push(`/resources/${route.params.resourceName}`);
+};
+
+// Reset form to original values
+const resetForm = () => {
+  record.value = { ...originalRecord.value };
+  validationErrors.value = {};
 };
 
 onMounted(fetchRecord);

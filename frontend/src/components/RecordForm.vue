@@ -74,7 +74,15 @@
     </div>
 
     <button type="submit" class="btn btn-primary me-1">Save</button>
-    <button @click="cancel" type="button" class="btn btn-secondary">Cancel</button>
+    <button @click="cancel" type="button" class="btn btn-secondary me-1">Cancel</button>
+    <button
+      v-if="showResetButton"
+      type="button"
+      class="btn btn-warning"
+      @click="$emit('reset')"
+    >
+      Reset
+    </button>
   </form>
 </template>
 
@@ -83,9 +91,10 @@ const props = defineProps({
   record: Object,
   attributes: Array,
   validationErrors: Object,
+  showResetButton: Boolean,
 });
 
-const emit = defineEmits(["submit", "cancel"]);
+const emit = defineEmits(["submit", "cancel", "reset"]);
 
 const submitForm = () => {
   emit("submit");

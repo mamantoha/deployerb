@@ -19,6 +19,7 @@
           :record="newRecord"
           :attributes="attributes"
           :validationErrors="validationErrors"
+          :showResetButton="false"
           @submit="createRecord"
           @cancel="resetForm"
         />
@@ -126,7 +127,7 @@ const columns = ref([]);
 const attributes = ref([]);
 const newRecord = ref({});
 
-const validationErrors = ref([]);
+const validationErrors = ref({});
 
 const currentPage = ref(1);
 const perPage = ref(5);
