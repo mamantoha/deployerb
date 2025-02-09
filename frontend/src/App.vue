@@ -34,9 +34,6 @@
 </template>
 
 <script setup>
-import "bootstrap/dist/css/bootstrap.min.css";
-// import "bootstrap/dist/js/bootstrap.bundle.min.js";
-
 import { ref, onMounted } from "vue";
 import { store } from "@/store";
 
