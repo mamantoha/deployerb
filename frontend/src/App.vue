@@ -20,7 +20,7 @@
           <div class="form-check form-switch ms-auto">
             <input class="form-check-input" type="checkbox" id="themeSwitch" @change="toggleTheme" :checked="theme === 'dark-theme'" />
             <label class="form-check-label" for="themeSwitch">
-              {{ theme === "dark-theme" ? "🌙 Dark" : "☀️ Light" }}
+              {{ store.theme === "dark-theme" ? "🌙 Dark" : "☀️ Light" }}
             </label>
           </div>
         </div>
