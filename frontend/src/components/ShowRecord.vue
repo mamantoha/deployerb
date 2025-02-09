@@ -89,8 +89,8 @@ const loadHighlightTheme = (theme) => {
   newTheme.id = "hljs-theme";
   newTheme.rel = "stylesheet";
   newTheme.href = theme === "dark-theme"
-    ? "/node_modules/highlight.js/styles/github-dark.css"
-    : "/node_modules/highlight.js/styles/github.css";
+    ? "/hljs-themes/github-dark.min.css"
+    : "/hljs-themes/github.min.css";
 
   document.head.appendChild(newTheme); // Apply new theme
 };

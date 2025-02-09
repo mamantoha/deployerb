@@ -36,6 +36,10 @@ bundle exec rackup
 
 ```console
 cd ./frontend
+
+cp node_modules/highlight.js/styles/github.min.css public/hljs-themes
+cp node_modules/highlight.js/styles/github-dark.min.css public/hljs-themes
+
 npm run dev
 ```
 
@@ -47,7 +51,10 @@ npm run dev
 cd ./frontend
 npm install
 npm run build
-mv dist/* ../backend/public
+cp -r dist/* ../backend/public
+
+cp node_modules/highlight.js/styles/github.min.css ../backend/public/hljs-themes
+cp node_modules/highlight.js/styles/github-dark.min.css ../backend/public/hljs-theme
 ```
 
 ## Configure Nginx
