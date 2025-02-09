@@ -210,6 +210,7 @@ const applyFilter = () => {
 const clearFilters = () => {
   filterField.value = "";
   filterValue.value = "";
+  currentPage.value = 1;
   fetchData();
 };
 
