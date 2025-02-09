@@ -47,9 +47,9 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "axios";
 import hljs from "highlight.js";
 import { store } from "@/store";
+import { resourceApi } from "@/api/resourceApi";
 
 const route = useRoute();
 const router = useRouter();
@@ -63,7 +63,7 @@ const documentJSON = computed(() => JSON.stringify(raw_document.value, null, 2))
 // Fetch record details
 const fetchRecord = async () => {
   try {
-    const response = await axios.get(`/api/dashboard/resources/${route.params.resourceName}/data/${route.params.id}`);
+    const response = await resourceApi.fetchRecord(route.params.resourceName, route.params.id);
 
     attributes.value = response.data.attributes;
     raw_document.value = response.data.document;
