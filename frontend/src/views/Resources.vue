@@ -37,7 +37,7 @@
                   class="btn btn-danger btn-xs"
                   @click="confirmDelete(resource.name)"
                 >
-                  <span class="glyphicon glyphicon-remove"></span> Delete
+                  <i class="bi bi-trash"></i>
                 </button>
               </span>
             </td>

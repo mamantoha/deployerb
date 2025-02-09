@@ -105,13 +105,13 @@
               <td class="fixed-column">
                 <div class="btn-group btn-group-xs" role="group">
                   <button class="btn btn-info" @click="showRecord(record)">
-                    Show
+                    <i class="bi bi-eye"></i>
                   </button>
                   <button class="btn btn-primary" @click="editRecord(record)">
-                    Edit
+                    <i class="bi bi-pencil"></i>
                   </button>
                   <button class="btn btn-danger" @click="openDeleteModal(record)">
-                    Delete
+                    <i class="bi bi-trash"></i>
                   </button>
                 </div>
               </td>
