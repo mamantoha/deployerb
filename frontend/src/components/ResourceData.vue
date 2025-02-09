@@ -147,11 +147,11 @@
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
-import axios from "axios";
 import { Collapse } from "bootstrap";
 import { Modal } from "bootstrap";
 import { store } from "@/store";
 import RecordForm from "@/components/RecordForm.vue";
+import { resourceApi } from "@/api/resourceApi";
 
 const route = useRoute();
 const router = useRouter();
@@ -184,15 +184,13 @@ let deleteModalInstance = null;
 // Fetch resource data
 const fetchData = async () => {
   try {
-    const response = await axios.get(`/api/dashboard/resources/${resourceName}/data`, {
-      params: {
-        page: currentPage.value,
-        per_page: perPage.value,
-        sort_by: sortColumn.value,
-        sort_order: sortOrder.value,
-        filter_field: filterField.value,
-        filter_value: filterValue.value,
-      }
+    const response = await resourceApi.fetchData(resourceName, {
+      page: currentPage.value,
+      per_page: perPage.value,
+      sort_by: sortColumn.value,
+      sort_order: sortOrder.value,
+      filter_field: filterField.value,
+      filter_value: filterValue.value,
     });
 
     columns.value = response.data.attributes.map(attr => attr.name);
@@ -228,7 +226,7 @@ const sortBy = (column) => {
 // Create a new record
 const createRecord = async () => {
   try {
-    await axios.post(`/api/dashboard/resources/${resourceName}/data`, newRecord.value);
+    await resourceApi.createRecord(resourceName, newRecord.value);
     store.activeResourceTab = "data";
     newRecord.value = {};
     validationErrors.value = [];
@@ -287,7 +285,7 @@ const confirmDelete = async () => {
   if (!recordToDelete.value) return;
 
   try {
-    await axios.delete(`/api/dashboard/resources/${resourceName}/data/${recordToDelete.value._id}`);
+    await resourceApi.deleteRecord(resourceName, recordToDelete.value._id);
     store.activeResourceTab = "data";
     store.successMessage = "Record deleted successfully!";
     fetchData();
