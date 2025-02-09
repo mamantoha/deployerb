@@ -203,6 +203,7 @@ const fetchData = async () => {
 };
 
 const applyFilter = () => {
+  currentPage.value = 1;
   fetchData();
 };
 
