@@ -29,8 +29,15 @@
       </tbody>
     </table>
 
-    <h4>Raw Document</h4>
-    <pre class="raw-document" v-html="highlightedJSON"></pre>
+    <div>
+      <h4>Raw Document</h4>
+      <div class="code-container">
+        <button class="copy-btn" @click="copyToClipboard">
+          {{ copied ? "✔ Copied!" : "📋 Copy" }}
+        </button>
+        <pre class="raw-document" v-html="highlightedJSON"></pre>
+      </div>
+    </div>
 
     <button class="btn btn-primary me-1" @click="editRecord">Edit</button>
     <button class="btn btn-secondary" @click="goBack">Back</button>
@@ -50,6 +57,8 @@ const router = useRouter();
 const attributes = ref([]);
 const record = ref({});
 const raw_document = ref({});
+
+const documentJSON = computed(() => JSON.stringify(raw_document.value, null, 2));
 
 // Fetch record details
 const fetchRecord = async () => {
@@ -76,8 +85,7 @@ const goBack = () => {
 
 // Format JSON and apply syntax highlighting
 const highlightedJSON = computed(() => {
-  const jsonStr = JSON.stringify(raw_document.value, null, 2);
-  return hljs.highlight(jsonStr, { language: "json" }).value;
+  return hljs.highlight(documentJSON.value, { language: "json" }).value;
 });
 
 const loadHighlightTheme = (theme) => {
@@ -93,6 +101,14 @@ const loadHighlightTheme = (theme) => {
     : "/hljs-themes/github.min.css";
 
   document.head.appendChild(newTheme); // Apply new theme
+};
+
+const copied = ref(false);
+const copyToClipboard = () => {
+  navigator.clipboard.writeText(documentJSON.value).then(() => {
+    copied.value = true;
+    setTimeout(() => (copied.value = false), 1500);
+  });
 };
 
 onMounted(() => {
@@ -126,5 +142,26 @@ watch(() => store.theme, (newTheme) => {
   background: #0d1117;
   color: #c9d1d9;
   border-color: #30363d;
+}
+
+.code-container {
+  position: relative;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background: #0056b3;
 }
 </style>
