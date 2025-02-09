@@ -65,7 +65,7 @@
     <template #item="{ element: key }">
       <tr>
         <td class="drag-handle col-md-1">
-          <i class="bi bi-grip-vertical"></i>
+          <i class="bi bi-arrows-move"></i>
         </td>
         <td class="col-md-4">{{ key.name }}</td>
         <td class="col-md-3">{{ key.type }}</td>
