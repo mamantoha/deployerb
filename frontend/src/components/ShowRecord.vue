@@ -38,11 +38,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import hljs from "highlight.js";
-import "highlight.js/styles/github.css";
 import { store } from "@/store";
 
 const route = useRoute();
@@ -81,18 +80,51 @@ const highlightedJSON = computed(() => {
   return hljs.highlight(jsonStr, { language: "json" }).value;
 });
 
-onMounted(fetchRecord);
+const loadHighlightTheme = (theme) => {
+  const oldTheme = document.getElementById("hljs-theme");
+  if (oldTheme) oldTheme.remove(); // Remove previous theme
+
+  // Dynamically create a new <link> element for the theme
+  const newTheme = document.createElement("link");
+  newTheme.id = "hljs-theme";
+  newTheme.rel = "stylesheet";
+  newTheme.href = theme === "dark-theme"
+    ? "/node_modules/highlight.js/styles/github-dark.css"
+    : "/node_modules/highlight.js/styles/github.css";
+
+  document.head.appendChild(newTheme); // Apply new theme
+};
+
+onMounted(() => {
+  fetchRecord();
+  loadHighlightTheme(store.theme);
+});
+
+watch(() => store.theme, (newTheme) => {
+  console.log("Theme changed to:", newTheme);
+  loadHighlightTheme(newTheme);
+});
 </script>
 
 <style scoped>
 .raw-document {
-  background: #f5f5f5;
   padding: 10px;
   border-radius: 5px;
   font-family: monospace;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-x: auto;
+}
+
+[data-bs-theme="light"] .raw-document {
+  background: #f5f5f5;
+  color: #24292e;
   border: 1px solid #ddd;
+}
+
+[data-bs-theme="dark"] .raw-document {
+  background: #0d1117;
+  color: #c9d1d9;
+  border-color: #30363d;
 }
 </style>
