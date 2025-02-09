@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="theme">
     <nav class="navbar navbar-expand-lg">
       <div class="container-fluid">
         <router-link class="navbar-brand" to="/">Deployerb</router-link>
@@ -16,6 +16,13 @@
               <router-link class="nav-link" to="/resources">Resources</router-link>
             </li>
           </ul>
+          <!-- Theme Toggle Switch -->
+          <div class="form-check form-switch ms-auto">
+            <input class="form-check-input" type="checkbox" id="themeSwitch" @change="toggleTheme" :checked="theme === 'dark-theme'" />
+            <label class="form-check-label" for="themeSwitch">
+              {{ theme === "dark-theme" ? "🌙 Dark" : "☀️ Light" }}
+            </label>
+          </div>
         </div>
       </div>
     </nav>
@@ -27,6 +34,20 @@
 </template>
 
 <script setup>
-import "bootstrap/dist/css/bootstrap.min.css";
-// import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { ref, onMounted } from "vue";
+import { store } from "@/store";
+
+const theme = ref(localStorage.getItem("theme") || "light-theme");
+
+// Toggle Theme and Save to Local Storage
+const toggleTheme = () => {
+  store.theme = store.theme === "light-theme" ? "dark-theme" : "light-theme";
+  document.documentElement.setAttribute("data-bs-theme", store.theme === "dark-theme" ? "dark" : "light");
+  localStorage.setItem("theme", store.theme);
+};
+
+// Apply Theme on Page Load
+onMounted(() => {
+  document.documentElement.setAttribute("data-bs-theme", theme.value === "dark-theme" ? "dark" : "light");
+});
 </script>

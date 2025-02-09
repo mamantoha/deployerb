@@ -268,7 +268,6 @@ const toggleCollapse = () => {
 .fixed-column {
   position: sticky;
   right: 0;
-  background: white;
   z-index: 2;
   min-width: 150px;
   text-align: center;
