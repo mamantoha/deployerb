@@ -149,7 +149,7 @@ watch(() => store.theme, (newTheme) => {
 }
 
 [data-bs-theme="dark"] .raw-document {
-  background: #0d1117;
+  background: #1D1D1D;
   color: #c9d1d9;
   border-color: #30363d;
 }
