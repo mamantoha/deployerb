@@ -78,10 +78,10 @@
         <td class="col-md-1">
           <div class="btn-group btn-group-xs" role="group">
             <button class="btn btn-primary btn-xs" @click="editKey(key)">
-              Edit
+              <i class="bi bi-pencil"></i>
             </button>
             <button class="btn btn-danger btn-xs" @click="confirmDeleteKey(key.name)">
-              Delete
+              <i class="bi bi-trash"></i>
             </button>
           </div>
         </td>
