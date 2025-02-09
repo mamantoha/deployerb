@@ -97,6 +97,8 @@ module Deployd
         # Convert BSON::ObjectId to String for frontend compatibility
         document["_id"] = document["_id"].to_s if document["_id"].is_a?(BSON::ObjectId)
 
+        etag Digest::SHA256.hexdigest(document.to_json)
+
         fields = model_class.fields
         keys = fields.keys
 
