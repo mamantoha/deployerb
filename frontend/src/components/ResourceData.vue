@@ -184,7 +184,7 @@ let deleteModalInstance = null;
 // Fetch resource data
 const fetchData = async () => {
   try {
-    const response = await resourceApi.fetchData(resourceName, {
+    const response = await resourceApi.fetchRecords(resourceName, {
       page: currentPage.value,
       per_page: perPage.value,
       sort_by: sortColumn.value,

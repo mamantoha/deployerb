@@ -6,7 +6,7 @@ export const resourceApi = {
   /**
    * Fetch resource data with optional filters, sorting, and pagination.
    */
-  fetchData(resourceName, params = {}) {
+  fetchRecords(resourceName, params = {}) {
     return axios.get(`${API_BASE_URL}/${resourceName}/data`, { params });
   },
 
