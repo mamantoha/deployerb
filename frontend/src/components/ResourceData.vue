@@ -52,8 +52,16 @@
         <table class="table table-hover">
           <thead>
             <tr>
-              <th v-for="attribute in attributes" :key="attribute.name">
+              <th
+                v-for="attribute in attributes"
+                :key="attribute.name"
+                @click="sortBy(attribute.name)"
+                class="sortable"
+              >
                 {{ attribute.label }}
+                <span v-if="sortColumn === attribute.name">
+                  {{ sortOrder === "asc" ? "▲" : "▼" }}
+                </span>
               </th>
               <th class="fixed-column">Actions</th>
             </tr>
@@ -127,6 +135,9 @@ const columns = ref([]);
 const attributes = ref([]);
 const newRecord = ref({});
 
+const sortColumn = ref("_id");
+const sortOrder = ref("asc");
+
 const validationErrors = ref({});
 
 const currentPage = ref(1);
@@ -143,7 +154,7 @@ let deleteModalInstance = null;
 const fetchData = async () => {
   try {
     const response = await axios.get(`/api/dashboard/resources/${resourceName}/data`, {
-      params: { page: currentPage.value, per_page: perPage.value }
+      params: { page: currentPage.value, per_page: perPage.value, sort_by: sortColumn.value, sort_order: sortOrder.value }
     });
 
     columns.value = response.data.attributes.map(attr => attr.name);
@@ -153,6 +164,17 @@ const fetchData = async () => {
   } catch (error) {
     console.error("Error fetching data:", error);
   }
+};
+
+const sortBy = (column) => {
+  if (sortColumn.value === column) {
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
+  } else {
+    sortColumn.value = column;
+    sortOrder.value = "asc";
+  }
+
+  fetchData();
 };
 
 // Create a new record

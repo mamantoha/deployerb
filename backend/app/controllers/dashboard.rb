@@ -31,7 +31,10 @@ module Deployd
         total_records = model_class.count
         total_pages = (total_records.to_f / per_page).ceil
 
-        records = model_class.skip(offset).limit(per_page)
+        sort_by = params[:sort_by] || '_id'
+        sort_order = params[:sort_order] == 'desc' ? :desc : :asc
+
+        records = model_class.order_by(sort_by.to_sym => sort_order).skip(offset).limit(per_page)
 
         fields = model_class.fields
         keys = fields.keys
