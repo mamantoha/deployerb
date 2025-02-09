@@ -18,7 +18,8 @@
       </ol>
     </nav>
 
-    <h3>ID: {{ record._id }}</h3>
+    <h3>Edit {{ route.params.resourceName }}</h3>
+    <h4>ID: <span class="badge bg-secondary">{{ record._id }}</span></h4>
     <RecordForm
       :record="record"
       :attributes="attributes"

@@ -19,6 +19,7 @@
     </nav>
 
     <h3>Record Details</h3>
+    <h4>ID: <span class="badge bg-secondary">{{ record._id }}</span></h4>
 
     <div v-if="validationErrors.length" class="alert alert-danger">
       <h5>Validation Errors</h5>
