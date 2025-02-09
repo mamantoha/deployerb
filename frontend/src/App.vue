@@ -38,14 +38,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 import { ref, onMounted } from "vue";
+import { store } from "@/store";
 
 const theme = ref(localStorage.getItem("theme") || "light-theme");
 
 // Toggle Theme and Save to Local Storage
 const toggleTheme = () => {
-  theme.value = theme.value === "light-theme" ? "dark-theme" : "light-theme";
-  document.documentElement.setAttribute("data-bs-theme", theme.value === "dark-theme" ? "dark" : "light");
-  localStorage.setItem("theme", theme.value);
+  store.theme = store.theme === "light-theme" ? "dark-theme" : "light-theme";
+  document.documentElement.setAttribute("data-bs-theme", store.theme === "dark-theme" ? "dark" : "light");
+  localStorage.setItem("theme", store.theme);
 };
 
 // Apply Theme on Page Load
