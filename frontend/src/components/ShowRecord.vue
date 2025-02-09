@@ -33,7 +33,7 @@
       <h4>Raw Document</h4>
       <div class="code-container">
         <button class="copy-btn" @click="copyToClipboard">
-          {{ copied ? "✔ Copied!" : "📋 Copy" }}
+          <i :class="copied ? 'bi bi-clipboard-check' : 'bi bi-clipboard'"></i>
         </button>
         <pre class="raw-document" v-html="highlightedJSON"></pre>
       </div>
