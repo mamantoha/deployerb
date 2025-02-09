@@ -28,16 +28,26 @@ module Deployd
         model_class = Object.const_get(resource_name.classify) rescue nil
         halt 404, { error: "Resource not found" }.to_json unless model_class
 
-        total_records = model_class.count
-        total_pages = (total_records.to_f / per_page).ceil
-
         sort_by = params[:sort_by] || '_id'
         sort_order = params[:sort_order] == 'desc' ? :desc : :asc
 
-        records = model_class.order_by(sort_by.to_sym => sort_order).skip(offset).limit(per_page)
+        filter_field = params[:filter_field]
+        filter_value = params[:filter_value]
+
+        query = model_class.all
 
         fields = model_class.fields
         keys = fields.keys
+
+        if keys.include?(filter_field) && filter_value.present?
+          regexp = Regexp.new(filter_value, Regexp::IGNORECASE) rescue filter_value
+          query = query.where(filter_field.to_sym => regexp)
+        end
+
+        records = query.order_by(sort_by.to_sym => sort_order).skip(offset).limit(per_page)
+
+        total_records = records.count
+        total_pages = (total_records.to_f / per_page).ceil
 
         # Fetch correct key order from config file
         resource = @resources.find { |r| r[:name] == resource_name }
