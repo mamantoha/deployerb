@@ -121,7 +121,9 @@ module Deployd
           }
         end
 
-        { attributes:, record:, document: }.to_json
+        errors = record.valid? ? [] : record.errors.full_messages
+
+        { attributes:, record:, document:, errors: }.to_json
       end
 
       # Create a new record

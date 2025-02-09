@@ -20,6 +20,13 @@
 
     <h3>Record Details</h3>
 
+    <div v-if="validationErrors.length" class="alert alert-danger">
+      <h5>Validation Errors</h5>
+      <ul>
+        <li v-for="error in validationErrors" :key="error">{{ error }}</li>
+      </ul>
+    </div>
+
     <table class="table table-bordered">
       <tbody>
         <tr v-for="attribute in attributes" :key="attribute.name">
@@ -57,6 +64,7 @@ const router = useRouter();
 const attributes = ref([]);
 const record = ref({});
 const raw_document = ref({});
+const validationErrors = ref([]);
 
 const documentJSON = computed(() => JSON.stringify(raw_document.value, null, 2));
 
@@ -68,6 +76,7 @@ const fetchRecord = async () => {
     attributes.value = response.data.attributes;
     raw_document.value = response.data.document;
     record.value = response.data.record;
+    validationErrors.value = response.data.errors;
   } catch (error) {
     console.error("Error fetching record:", error);
     router.push(`/resources/${route.params.resourceName}`);
