@@ -35,9 +35,9 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "axios";
 import { store } from "@/store";
 import RecordForm from "@/components/RecordForm.vue";
+import { resourceApi } from "@/api/resourceApi";
 
 const route = useRoute();
 const router = useRouter();
@@ -56,9 +56,7 @@ const editableRecord = computed(() => {
 // Fetch record details
 const fetchRecord = async () => {
   try {
-    const response = await axios.get(
-      `/api/dashboard/resources/${route.params.resourceName}/data/${route.params.id}`
-    );
+    const response = await resourceApi.fetchRecord(route.params.resourceName, route.params.id);
 
     attributes.value = response.data.attributes;
 
@@ -78,10 +76,8 @@ const fetchRecord = async () => {
 const updateRecord = async () => {
   try {
     const recordData = { ...editableRecord.value };
-    await axios.put(
-      `/api/dashboard/resources/${route.params.resourceName}/data/${route.params.id}`,
-      recordData
-    );
+
+    await resourceApi.updateRecord(route.params.resourceName, route.params.id, recordData);
 
     validationErrors.value = {};
 
