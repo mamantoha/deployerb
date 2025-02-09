@@ -37,11 +37,4 @@ export const resourceApi = {
   deleteRecord(resourceName, recordId) {
     return axios.delete(`${API_BASE_URL}/${resourceName}/data/${recordId}`);
   },
-
-  /**
-   * Fetch all available attributes for a resource.
-   */
-  fetchAttributes(resourceName) {
-    return axios.get(`${API_BASE_URL}/${resourceName}`);
-  },
 };
