@@ -14,7 +14,7 @@
         <span>Add New {{ resourceName }}</span>
         <span class="collapse-icon">{{ isCollapsed ? "▼" : "▲" }}</span>
       </div>
-      <div class="card-body collapse" :class="{ show: !data.length }" id="collapseForm">
+      <div class="card-body collapse" id="collapseForm">
         <RecordForm
           :record="newRecord"
           :attributes="attributes"
@@ -45,10 +45,38 @@
       </div>
     </div>
 
-    <div v-if="data.length">
-      <!-- Table displaying resource data -->
+    <div>
       <h4>Data for {{ resourceName }}</h4>
-      <div class="table-responsive">
+
+      <!-- Filter Section -->
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label for="filterField">Filter By</label>
+          <select v-model="filterField" class="form-control">
+            <option value="" disabled selected>Select a field</option>
+            <option v-for="attribute in attributes" :key="attribute.name" :value="attribute.name">
+              {{ attribute.label }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="filterValue">Search Value</label>
+          <input
+            v-model="filterValue"
+            class="form-control"
+            type="text"
+            placeholder="Enter value..."
+            @keyup.enter="applyFilter"
+          />
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-primary me-2" @click="applyFilter">Filter</button>
+          <button class="btn btn-secondary" @click="clearFilters">Clear</button>
+        </div>
+      </div>
+
+      <!-- Table displaying resource data -->
+      <div class="table-responsive" v-if="data.length">
         <table class="table table-hover">
           <thead>
             <tr>
@@ -138,6 +166,9 @@ const newRecord = ref({});
 const sortColumn = ref("_id");
 const sortOrder = ref("asc");
 
+const filterField = ref("");
+const filterValue = ref("");
+
 const validationErrors = ref({});
 
 const currentPage = ref(1);
@@ -154,7 +185,14 @@ let deleteModalInstance = null;
 const fetchData = async () => {
   try {
     const response = await axios.get(`/api/dashboard/resources/${resourceName}/data`, {
-      params: { page: currentPage.value, per_page: perPage.value, sort_by: sortColumn.value, sort_order: sortOrder.value }
+      params: {
+        page: currentPage.value,
+        per_page: perPage.value,
+        sort_by: sortColumn.value,
+        sort_order: sortOrder.value,
+        filter_field: filterField.value,
+        filter_value: filterValue.value,
+      }
     });
 
     columns.value = response.data.attributes.map(attr => attr.name);
@@ -164,6 +202,16 @@ const fetchData = async () => {
   } catch (error) {
     console.error("Error fetching data:", error);
   }
+};
+
+const applyFilter = () => {
+  fetchData();
+};
+
+const clearFilters = () => {
+  filterField.value = "";
+  filterValue.value = "";
+  fetchData();
 };
 
 const sortBy = (column) => {
