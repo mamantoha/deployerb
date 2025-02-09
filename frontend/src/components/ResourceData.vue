@@ -54,7 +54,11 @@
           <label for="filterField">Filter By</label>
           <select v-model="filterField" class="form-control">
             <option value="" disabled selected>Select a field</option>
-            <option v-for="attribute in attributes" :key="attribute.name" :value="attribute.name">
+            <option
+              v-for="attribute in attributes.filter(attr => attr.type === 'String')"
+              :key="attribute.name"
+              :value="attribute.name"
+            >
               {{ attribute.label }}
             </option>
           </select>
