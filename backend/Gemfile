@@ -17,9 +17,3 @@ gem 'mongoid-suicide'
 group :development do
   gem 'racksh'
 end
-
-group :test do
-  gem 'capybara'
-  gem 'rspec'
-  gem 'selenium-webdriver'
-end
